@@ -2,6 +2,7 @@ import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { userRoute } from './userRoute'
 import { moduleRoute } from './moduleRoute'
+import { moduleItemRoute } from './moduleItemRoute'
 
 const Router = express.Router()
 
@@ -15,5 +16,8 @@ Router.use('/users', userRoute)
 
 /** Module APIs */
 Router.use('/modules', moduleRoute)
+
+/** Module Item APIs */
+Router.use('/module_items', moduleItemRoute)
 
 export const APIs_V1 = Router

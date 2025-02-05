@@ -14,7 +14,6 @@ const login = async (reqBody) => {
     if (!existUser) throw new ApiError(StatusCodes.NOT_FOUND, 'Account not found!')
 
     if (!existUser.Active) throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Your account is not active!')
-
     // if (!bcryptjs.compareSync(reqBody.password, existUser.Password)) {
     //   throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Your Account or Password is incorrect!')
     // }
