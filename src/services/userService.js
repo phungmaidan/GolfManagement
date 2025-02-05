@@ -12,6 +12,7 @@ const login = async (reqBody) => {
     const existUser = await userModel.findOneByAccount(reqBody.account)
 
     if (!existUser) throw new ApiError(StatusCodes.NOT_FOUND, 'Account not found!')
+
     if (!existUser.Active) throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Your account is not active!')
 
     // if (!bcryptjs.compareSync(reqBody.password, existUser.Password)) {
@@ -32,7 +33,8 @@ const login = async (reqBody) => {
       env.REFRESH_TOKEN_LIFE
     )
 
-    return { accessToken, refreshToken, ...pickUser(existUser) }
+    const userModule = await userModel.findUserModule(reqBody.account)
+    return { accessToken, refreshToken, ...pickUser(existUser), userModule }
 
   } catch (error) { throw error }
 }
