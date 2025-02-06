@@ -1,3 +1,4 @@
+// frontend/src/theme.js
 import { createTheme } from '@mui/material/styles'
 
 const theme = createTheme({
@@ -11,7 +12,7 @@ const theme = createTheme({
     },
     secondary: {
       main: '#D4AF37', // Màu vàng sang trọng
-      light: '#E6C65C',
+      light: '#fde047',
       dark: '#A88A2A',
       contrastText: '#000000'
     },

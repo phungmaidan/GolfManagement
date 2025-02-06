@@ -1,4 +1,3 @@
-// Header.jsx
 import { useState } from 'react'
 import {
   AppBar,
@@ -81,7 +80,7 @@ const Header = ({ logo, isAuthenticated }) => {
           {/* User Section */}
           <Box sx={{ flexGrow: 0, ml: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
             {isAuthenticated ? (
-            // User đã đăng nhập
+              // User đã đăng nhập
               <>
                 {isMobile ? (
                   <IconButton
@@ -104,7 +103,7 @@ const Header = ({ logo, isAuthenticated }) => {
                 )}
               </>
             ) : (
-            // Chưa đăng nhập - chỉ hiện nút đăng nhập
+              // Chưa đăng nhập - chỉ hiện nút đăng nhập
               <Button
                 variant="contained"
                 color="primary"
@@ -114,7 +113,7 @@ const Header = ({ logo, isAuthenticated }) => {
                   minWidth: '100px'
                 }}
               >
-                                Đăng nhập
+                Đăng nhập
               </Button>
             )}
           </Box>
@@ -135,23 +134,22 @@ const Header = ({ logo, isAuthenticated }) => {
               }}
               open={Boolean(anchorEl)}
               onClose={handleClose}
-              PaperProps={{
-                sx: {
-                  mt: 1.5,
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              slotProps={{
+                paper: {
+                  sx: {
+                    mt: 1.5,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                  }
                 }
               }}
             >
               {/* Mobile Menu Items */}
-              {isMobile && menuItems.map((item) => (
-                <MenuItem
-                  key={item.title}
-                  onClick={handleClose}
-                  sx={{ minWidth: 180 }}
-                >
-                  {item.title}
-                </MenuItem>
-              ))}
+              {isMobile &&
+                menuItems.map((item) => (
+                  <MenuItem key={item.title} onClick={handleClose} sx={{ minWidth: 180 }}>
+                    {item.title}
+                  </MenuItem>
+                ))}
 
               {/* Logout Option */}
               <MenuItem onClick={handleClose}>Đăng xuất</MenuItem>

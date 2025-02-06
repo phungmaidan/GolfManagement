@@ -10,7 +10,12 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    svgr()
+    svgr({
+      svgrOptions: {
+        icon: true,
+        exportType: 'named'
+      }
+    })
   ],
   // base: './'
   resolve: {

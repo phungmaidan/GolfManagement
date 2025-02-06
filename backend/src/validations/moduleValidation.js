@@ -6,9 +6,9 @@ const moduleSchema = Joi.object({
   moduleId: Joi.string().required().messages({
     'any.required': 'Module ID is required'
   }),
-  moduleType: Joi.string().valid('Tasks', 'Reports', 'Settings').required().messages({
+  moduleType: Joi.string().valid('Tasks', 'Reports', 'Setting').required().messages({
     'any.required': 'Module type is required',
-    'any.only': 'Module type must be one of [Tasks, Reports, Settings]'
+    'any.only': 'Module type must be one of [Tasks, Reports, Setting]'
   })
 })
 

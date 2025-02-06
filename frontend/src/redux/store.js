@@ -1,7 +1,6 @@
 //Redux: State management tool
 import { configureStore } from '@reduxjs/toolkit'
-//import { activeBoardReducer } from './activeBoard/activeBoardSlice'
-//import { userReducer } from './user/userSlice'
+import { userReducer } from './user/userSlice'
 
 /**
  * Cấu hình redux-persist
@@ -9,6 +8,7 @@ import { configureStore } from '@reduxjs/toolkit'
  * Bài viết hướng dẫn này dễ hiểu hơn:
  * https://edvins.io/how-to-use-redux-persist-with-redux-toolkit
  */
+
 import { combineReducers } from 'redux' // lưu ý chúng ta có sẵn redux trong node_modules bởi vì khi cài @reduxjs/toolkit là đã có luôn
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // default là localstorage
@@ -24,7 +24,7 @@ const rootPersistConfig = {
 // Combine các reducers trong dự án ở đây
 const reducers = combineReducers({
   //activeBoard: activeBoardReducer,
-  //user: userReducer
+  user: userReducer
 })
 
 // Thực hiện persist Reducer

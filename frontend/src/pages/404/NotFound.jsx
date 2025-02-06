@@ -3,8 +3,8 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import HomeIcon from '@mui/icons-material/Home'
 import SvgIcon from '@mui/material/SvgIcon'
-import { ReactComponent as PlanetSvg } from '~/assets/404/planet.svg'
-import { ReactComponent as AstronautSvg } from '~/assets/404/astronaut.svg'
+//import { ReactComponent as PlanetSvg } from '~/assets/404/planet.svg?component'
+//import { ReactComponent as AstronautSvg } from '~/assets/404/astronaut.svg?component'
 import { Link } from 'react-router-dom'
 
 function NotFound() {
@@ -27,7 +27,6 @@ function NotFound() {
         backgroundSize: 'contain',
         backgroundRepeat: 'repeat',
         backgroundPosition: 'center',
-        // boxShadow: 'inset 0 0 0 2000px rgba(0, 0, 0, 0.2)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -49,19 +48,10 @@ function NotFound() {
           }}>
             &nbsp;SPACE&nbsp;
           </Typography>
-          &nbsp;<Typography variant="span" sx={{ color: '#fdba26', fontWeight: 500 }}>TrungQuanDev</Typography>?<br />Hmm, looks like that page doesn&apos;t exist.
+          &nbsp;<Typography variant="span" sx={{ color: '#fdba26', fontWeight: 500 }}></Typography>?<br />Hmm, looks like that page doesn&apos;t exist.
         </Typography>
         <Box sx={{ width: '390px', height: '390px', position: 'relative' }}>
-          <SvgIcon component={AstronautSvg} inheritViewBox sx={{
-            width: '50px', height: '50px', position: 'absolute', top: '20px', right: '25px',
-            '@keyframes spinAround': {
-              from: { transform: 'rotate(0deg)' },
-              to: { transform: 'rotate(360deg)' }
-            },
-            animation: 'spinAround 5s linear 0s infinite'
-          }} />
-          {/* Đoạn này nếu chỉ cần hiện file SVG mà không cần custom css bằng SX prop thì không cần dùng SvgIcon mà cứ gọi trực tiếp luôn cũng được */}
-          <PlanetSvg />
+          
         </Box>
         <Link to="/" style={{ textDecoration: 'none' }}>
           <Button
