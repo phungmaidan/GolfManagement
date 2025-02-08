@@ -9,10 +9,10 @@ function PageLoadingSpinner({ caption }) {
       alignItems: 'center',
       justifyContent: 'center',
       gap: 2,
-      width: '100vw',
-      height: '100vh'
+      height: "100%",
+      width: "100%",
     }}>
-      <CircularProgress />
+      <CircularProgress sx={{ color: (theme) => theme.palette.success.main }} />
       <Typography>{caption}</Typography>
     </Box>
   )

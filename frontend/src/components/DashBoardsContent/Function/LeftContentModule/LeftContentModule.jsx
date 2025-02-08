@@ -1,27 +1,43 @@
 import Box from "@mui/material/Box"
-import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
 import Button from "@mui/material/Button"
+import { setSelectedFunction, getItemAPI } from '~/redux/module/moduleSlice'
+
+// Import các icon từ MUI
+import ChecklistIcon from '@mui/icons-material/Checklist' // Icon cho Tasks
+import BarChartIcon from '@mui/icons-material/BarChart' // Icon cho Reports
+import SettingsIcon from '@mui/icons-material/Settings' // Icon cho Setting
 
 const LeftContentModule = () => {
-    const [selectedFunction, setSelectedFunction] = useState('Tasks');
+    const selectedFunction = useSelector((state) => state.module.selectedFunction);
+    const dispatch = useDispatch();
 
     const handleFunctionClick = (functionType) => {
-        setSelectedFunction(functionType);
-    };
+        if (selectedFunction !== functionType) {
+            dispatch(setSelectedFunction(functionType))
+            dispatch(getItemAPI())
+        }
+    }
+
+    // Định nghĩa icon tương ứng với mỗi chức năng
+    const functionIcons = {
+        Tasks: <ChecklistIcon />,
+        Reports: <BarChartIcon />,
+        Setting: <SettingsIcon />
+    }
 
     return (
         <Box sx={{
             height: '100%',
             width: '30vh',
-            //display: 'flex',
             color: 'white',
             flexWrap: 'wrap',
-            //gap: '2rem', // Thay đổi giá trị gap thành 2 rem
         }}>
             {['Tasks', 'Reports', 'Setting'].map((functionType) => (
                 <Button
                     key={functionType}
-                    variant={selectedFunction === functionType ? 'contained' : 'contained'}
+                    variant="contained"
+                    startIcon={functionIcons[functionType]} // Thêm icon tương ứng
                     sx={{
                         width: '90%',
                         height: 50,
@@ -29,6 +45,8 @@ const LeftContentModule = () => {
                         bgcolor: selectedFunction === functionType ? 'primary.main' : 'secondary.light',
                         color: selectedFunction === functionType ? 'secondary.light' : 'primary.main',
                         borderColor: 'secondary.light',
+                        justifyContent: 'flex-start', // Căn lề icon và chữ
+                        textTransform: 'none' // Không viết hoa toàn bộ chữ
                     }}
                     onClick={() => handleFunctionClick(functionType)}
                 >

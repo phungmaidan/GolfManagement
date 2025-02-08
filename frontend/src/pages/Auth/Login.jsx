@@ -13,7 +13,6 @@ function Login() {
   const handleSubmit = (event) => {
     event.preventDefault()
     dispatch(loginUserAPI({ account, password }))
-    
   }
 
   return (

@@ -1,7 +1,7 @@
 //Redux: State management tool
 import { configureStore } from '@reduxjs/toolkit'
 import { userReducer } from './user/userSlice'
-
+import { moduleReducer } from './module/moduleSlice'
 /**
  * Cấu hình redux-persist
  * https://www.npmjs.com/package/redux-persist
@@ -17,14 +17,15 @@ import storage from 'redux-persist/lib/storage' // default là localstorage
 const rootPersistConfig = {
   key: 'root', // key của persist do chúng ta chỉ định, để mặc định là root
   storage: storage, // Biến storage ở trên - lưu vào localstorage
-  whitelist: ['user'] // định nghĩa các slice dữ liệu ĐƯỢC PHÉP duy trì qua mỗi lần f5 trình duyệt
+  whitelist: ['user', 'module'] // định nghĩa các slice dữ liệu ĐƯỢC PHÉP duy trì qua mỗi lần f5 trình duyệt
   // blacklist: ['user'] // định nghĩa các slice KHÔNG ĐƯỢC PHÉP duy trì qua mỗi lần f5 trình duyệt
 }
 
 // Combine các reducers trong dự án ở đây
 const reducers = combineReducers({
   //activeBoard: activeBoardReducer,
-  user: userReducer
+  user: userReducer,
+  module: moduleReducer
 })
 
 // Thực hiện persist Reducer
