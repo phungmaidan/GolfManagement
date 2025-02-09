@@ -1,91 +1,51 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import { selectCurrentUser } from '~/redux/user/userSlice';
-import { setSelectedModule } from '~/redux/module/moduleSlice';
-import { getItemAPI } from '~/redux/module/moduleSlice'
+import React, { useEffect } from 'react'; 
+import { useSelector, useDispatch } from 'react-redux'; 
+import { selectCurrentUser } from '~/redux/user/userSlice'; 
+import { setSelectedModule } from '~/redux/module/moduleSlice'; 
+import { getItemAPI } from '~/redux/module/moduleSlice';
 
-const Module = () => {
-  const dispatch = useDispatch();
-  const currentUser = useSelector(selectCurrentUser);
-  const userModules = currentUser?.userModule || [];
+const Module = () => { 
+  const dispatch = useDispatch(); 
+  const currentUser = useSelector(selectCurrentUser); 
+  const userModules = currentUser?.userModule || []; 
   const selectedModule = useSelector((state) => state.module.selectedModule);
-
-  // Khi danh sách modules có dữ liệu và chưa có module nào được chọn thì chọn module đầu tiên
-  useEffect(() => {
-    if (!selectedModule && userModules.length > 0) {
-      dispatch(setSelectedModule(userModules[0]));
-    }
+  
+  useEffect(() => { 
+    if (!selectedModule && userModules.length > 0) { 
+      dispatch(setSelectedModule(userModules[0])); 
+    } 
   }, [selectedModule, userModules, dispatch]);
 
-  const handleModuleClick = (module) => {
-    if (selectedModule !== module) {
-      dispatch(setSelectedModule(module))
-      dispatch(getItemAPI())
-    }
+  const handleModuleClick = (module) => { 
+    if (selectedModule !== module) { 
+      dispatch(setSelectedModule(module)); 
+      dispatch(getItemAPI()); 
+    } 
+  };
+
+  if (!currentUser || !userModules.length) { 
+    return <div>Loading...</div>; 
   }
 
   return (
-    <Box
-      sx={{
-        height: '15vh',
-        width: '100%',
-        borderRadius: '8px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'white',
-        flexWrap: 'nowrap',
-      }}
-    >
+    <div className="h-[15vh] w-full rounded-lg flex items-center justify-center text-white">
       {userModules.map((module) => (
-        <Button
+        <button
           key={module.ModuleID}
-          variant={
-            selectedModule?.ModuleName === module.ModuleName
-              ? 'contained'
-              : 'outlined'
-          }
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            p: 3.5,
-            border: '1px solid',
-            borderColor: 'primary.main',
-            borderRadius: 2,
-            textAlign: 'center',
-            cursor: 'pointer',
-            m: 1,
-            width: 130,
-            height: 50,
-            bgcolor:
-              selectedModule?.ModuleName === module.ModuleName
-                ? 'primary.main'
-                : 'secondary.light',
-            color:
-              selectedModule?.ModuleName === module.ModuleName
-                ? 'secondary.light'
-                : 'primary.main',
-          }}
+          className={`flex flex-col items-center justify-center p-4 border-2 border-solid rounded-lg text-center cursor-pointer m-1 w-[150px] h-[60px] 
+            ${selectedModule?.ModuleName === module.ModuleName ? 
+              'bg-luxury-gold-500 text-golf-green-50' : 
+              'bg-golf-green-500 text-luxury-gold-50'} 
+            transition-all duration-300 ease-in-out 
+            transform hover:scale-105 hover:shadow-lg hover:shadow-luxury-gold-300`}
           onClick={() => handleModuleClick(module)}
         >
-          <Typography
-            variant="h6"
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
+          <h6 className="text-lg font-semibold">
             {module.ModuleName}
-          </Typography>
-        </Button>
+          </h6>
+        </button>
       ))}
-    </Box>
+    </div>
   );
 };
 

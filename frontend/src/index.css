@@ -1,0 +1,217 @@
+@import "tailwindcss";
+
+:root {
+  /* Main Colors */
+  --golf-green-50: #f0f9f4;
+  --golf-green-100: #dcf1e4;
+  --golf-green-200: #bbe3cc;
+  --golf-green-300: #8acca8;
+  --golf-green-400: #5ab083;
+  --golf-green-500: #3a9567;
+  --golf-green-600: #2b7751;
+  --golf-green-700: #255f43;
+  --golf-green-800: #214c38;
+  --golf-green-900: #1d3f30;
+  
+  /* Gold Colors */
+  --luxury-gold-50: #fdfbf2;
+  --luxury-gold-100: #fbf4d9;
+  --luxury-gold-200: #f7e7b3;
+  --luxury-gold-300: #f2d47d;
+  --luxury-gold-400: #edc04f;
+  --luxury-gold-500: #e6ac2f;
+  --luxury-gold-600: #d49423;
+  --luxury-gold-700: #b0721f;
+  --luxury-gold-800: #8f5a20;
+  --luxury-gold-900: #754b1d;
+}
+
+/* Custom Background Colors */
+.bg-golf-green-50 { background-color: var(--golf-green-50); }
+.bg-golf-green-100 { background-color: var(--golf-green-100); }
+.bg-golf-green-200 { background-color: var(--golf-green-200); }
+.bg-golf-green-300 { background-color: var(--golf-green-300); }
+.bg-golf-green-400 { background-color: var(--golf-green-400); }
+.bg-golf-green-500 { background-color: var(--golf-green-500); }
+.bg-golf-green-600 { background-color: var(--golf-green-600); }
+.bg-golf-green-700 { background-color: var(--golf-green-700); }
+.bg-golf-green-800 { background-color: var(--golf-green-800); }
+.bg-golf-green-900 { background-color: var(--golf-green-900); }
+
+.bg-luxury-gold-50 { background-color: var(--luxury-gold-50); }
+.bg-luxury-gold-100 { background-color: var(--luxury-gold-100); }
+.bg-luxury-gold-200 { background-color: var(--luxury-gold-200); }
+.bg-luxury-gold-300 { background-color: var(--luxury-gold-300); }
+.bg-luxury-gold-400 { background-color: var(--luxury-gold-400); }
+.bg-luxury-gold-500 { background-color: var(--luxury-gold-500); }
+.bg-luxury-gold-600 { background-color: var(--luxury-gold-600); }
+.bg-luxury-gold-700 { background-color: var(--luxury-gold-700); }
+.bg-luxury-gold-800 { background-color: var(--luxury-gold-800); }
+.bg-luxury-gold-900 { background-color: var(--luxury-gold-900); }
+
+/* Text Colors */
+.text-golf-green-50 { color: var(--golf-green-50); }
+.text-golf-green-100 { color: var(--golf-green-100); }
+.text-golf-green-200 { color: var(--golf-green-200); }
+.text-golf-green-300 { color: var(--golf-green-300); }
+.text-golf-green-400 { color: var(--golf-green-400); }
+.text-golf-green-500 { color: var(--golf-green-500); }
+.text-golf-green-600 { color: var(--golf-green-600); }
+.text-golf-green-700 { color: var(--golf-green-700); }
+.text-golf-green-800 { color: var(--golf-green-800); }
+.text-golf-green-900 { color: var(--golf-green-900); }
+
+.text-luxury-gold-50 { color: var(--luxury-gold-50); }
+.text-luxury-gold-100 { color: var(--luxury-gold-100); }
+.text-luxury-gold-200 { color: var(--luxury-gold-200); }
+.text-luxury-gold-300 { color: var(--luxury-gold-300); }
+.text-luxury-gold-400 { color: var(--luxury-gold-400); }
+.text-luxury-gold-500 { color: var(--luxury-gold-500); }
+.text-luxury-gold-600 { color: var(--luxury-gold-600); }
+.text-luxury-gold-700 { color: var(--luxury-gold-700); }
+.text-luxury-gold-800 { color: var(--luxury-gold-800); }
+.text-luxury-gold-900 { color: var(--luxury-gold-900); }
+
+/* Border Colors */
+.border-golf-green-50 { border-color: var(--golf-green-50); }
+.border-golf-green-100 { border-color: var(--golf-green-100); }
+.border-golf-green-200 { border-color: var(--golf-green-200); }
+.border-golf-green-300 { border-color: var(--golf-green-300); }
+.border-golf-green-400 { border-color: var(--golf-green-400); }
+.border-golf-green-500 { border-color: var(--golf-green-500); }
+.border-golf-green-600 { border-color: var(--golf-green-600); }
+.border-golf-green-700 { border-color: var(--golf-green-700); }
+.border-golf-green-800 { border-color: var(--golf-green-800); }
+.border-golf-green-900 { border-color: var(--golf-green-900); }
+
+.border-luxury-gold-50 { border-color: var(--luxury-gold-50); }
+.border-luxury-gold-100 { border-color: var(--luxury-gold-100); }
+.border-luxury-gold-200 { border-color: var(--luxury-gold-200); }
+.border-luxury-gold-300 { border-color: var(--luxury-gold-300); }
+.border-luxury-gold-400 { border-color: var(--luxury-gold-400); }
+.border-luxury-gold-500 { border-color: var(--luxury-gold-500); }
+.border-luxury-gold-600 { border-color: var(--luxury-gold-600); }
+.border-luxury-gold-700 { border-color: var(--luxury-gold-700); }
+.border-luxury-gold-800 { border-color: var(--luxury-gold-800); }
+.border-luxury-gold-900 { border-color: var(--luxury-gold-900); }
+
+/* Ring Colors */
+.ring-golf-green-50 { --tw-ring-color: var(--golf-green-50); }
+.ring-golf-green-100 { --tw-ring-color: var(--golf-green-100); }
+.ring-golf-green-200 { --tw-ring-color: var(--golf-green-200); }
+.ring-golf-green-300 { --tw-ring-color: var(--golf-green-300); }
+.ring-golf-green-400 { --tw-ring-color: var(--golf-green-400); }
+.ring-golf-green-500 { --tw-ring-color: var(--golf-green-500); }
+.ring-golf-green-600 { --tw-ring-color: var(--golf-green-600); }
+.ring-golf-green-700 { --tw-ring-color: var(--golf-green-700); }
+.ring-golf-green-800 { --tw-ring-color: var(--golf-green-800); }
+.ring-golf-green-900 { --tw-ring-color: var(--golf-green-900); }
+
+.ring-luxury-gold-50 { --tw-ring-color: var(--luxury-gold-50); }
+.ring-luxury-gold-100 { --tw-ring-color: var(--luxury-gold-100); }
+.ring-luxury-gold-200 { --tw-ring-color: var(--luxury-gold-200); }
+.ring-luxury-gold-300 { --tw-ring-color: var(--luxury-gold-300); }
+.ring-luxury-gold-400 { --tw-ring-color: var(--luxury-gold-400); }
+.ring-luxury-gold-500 { --tw-ring-color: var(--luxury-gold-500); }
+.ring-luxury-gold-600 { --tw-ring-color: var(--luxury-gold-600); }
+.ring-luxury-gold-700 { --tw-ring-color: var(--luxury-gold-700); }
+.ring-luxury-gold-800 { --tw-ring-color: var(--luxury-gold-800); }
+.ring-luxury-gold-900 { --tw-ring-color: var(--luxury-gold-900); }
+
+/* Custom Gradients */
+.bg-gradient-golf {
+  background-image: linear-gradient(to right, var(--golf-green-600), var(--golf-green-400));
+}
+
+.bg-gradient-gold {
+  background-image: linear-gradient(to right, var(--luxury-gold-600), var(--luxury-gold-400));
+}
+
+.bg-gradient-luxury {
+  background-image: linear-gradient(45deg, var(--golf-green-500), var(--luxury-gold-500));
+}
+
+/* Custom Shadows */
+.shadow-golf {
+  box-shadow: 0 4px 14px -3px rgba(43, 119, 81, 0.3);
+}
+
+.shadow-gold {
+  box-shadow: 0 4px 14px -3px rgba(212, 148, 35, 0.3);
+}
+
+/* Custom Hover Effects */
+.hover\:bg-golf-green-500:hover {
+  background-color: var(--golf-green-500);
+}
+
+.hover\:bg-luxury-gold-500:hover {
+  background-color: var(--luxury-gold-500);
+}
+
+.hover\:text-golf-green-500:hover {
+  color: var(--golf-green-500);
+}
+
+.hover\:text-luxury-gold-500:hover {
+  color: var(--luxury-gold-500);
+}
+
+/* Custom Focus Effects */
+.focus\:ring-golf-green-500:focus {
+  --tw-ring-color: var(--golf-green-500);
+}
+
+.focus\:ring-luxury-gold-500:focus {
+  --tw-ring-color: var(--luxury-gold-500);
+}
+
+/* Custom Animation */
+@keyframes shimmer-golf {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.animate-shimmer-golf {
+  background: linear-gradient(
+    to right,
+    var(--golf-green-400) 0%,
+    var(--golf-green-300) 20%,
+    var(--golf-green-400) 40%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer-golf 2s infinite linear;
+}
+
+@keyframes shimmer-gold {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.animate-shimmer-gold {
+  background: linear-gradient(
+    to right,
+    var(--luxury-gold-400) 0%,
+    var(--luxury-gold-300) 20%,
+    var(--luxury-gold-400) 40%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer-gold 2s infinite linear;
+}
+
+/* Đặt hiệu ứng fade-in cho các nút */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Áp dụng animation fadeIn cho các nút */
+.animation-show {
+    animation: fadeIn 0.3s ease-out forwards;
+}

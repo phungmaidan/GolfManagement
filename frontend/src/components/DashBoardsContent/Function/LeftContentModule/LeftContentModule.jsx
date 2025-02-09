@@ -1,12 +1,8 @@
-import Box from "@mui/material/Box"
-import { useSelector, useDispatch } from 'react-redux'
-import Button from "@mui/material/Button"
-import { setSelectedFunction, getItemAPI } from '~/redux/module/moduleSlice'
+import { useSelector, useDispatch } from 'react-redux';
+import { setSelectedFunction, getItemAPI } from '~/redux/module/moduleSlice';
 
-// Import các icon từ MUI
-import ChecklistIcon from '@mui/icons-material/Checklist' // Icon cho Tasks
-import BarChartIcon from '@mui/icons-material/BarChart' // Icon cho Reports
-import SettingsIcon from '@mui/icons-material/Settings' // Icon cho Setting
+// Import các icon từ lucide-react
+import { CheckCircle, BarChart, Settings } from 'lucide-react';
 
 const LeftContentModule = () => {
     const selectedFunction = useSelector((state) => state.module.selectedFunction);
@@ -14,47 +10,36 @@ const LeftContentModule = () => {
 
     const handleFunctionClick = (functionType) => {
         if (selectedFunction !== functionType) {
-            dispatch(setSelectedFunction(functionType))
-            dispatch(getItemAPI())
+            dispatch(setSelectedFunction(functionType));
+            dispatch(getItemAPI());
         }
-    }
+    };
 
     // Định nghĩa icon tương ứng với mỗi chức năng
     const functionIcons = {
-        Tasks: <ChecklistIcon />,
-        Reports: <BarChartIcon />,
-        Setting: <SettingsIcon />
-    }
+        Tasks: <CheckCircle />,
+        Reports: <BarChart />,
+        Setting: <Settings />,
+    };
 
     return (
-        <Box sx={{
-            height: '100%',
-            width: '30vh',
-            color: 'white',
-            flexWrap: 'wrap',
-        }}>
+        <div className="h-full w-[30vh] flex-start flex-wrap">
             {['Tasks', 'Reports', 'Setting'].map((functionType) => (
-                <Button
+                <button
                     key={functionType}
-                    variant="contained"
-                    startIcon={functionIcons[functionType]} // Thêm icon tương ứng
-                    sx={{
-                        width: '90%',
-                        height: 50,
-                        m: 1,
-                        bgcolor: selectedFunction === functionType ? 'primary.main' : 'secondary.light',
-                        color: selectedFunction === functionType ? 'secondary.light' : 'primary.main',
-                        borderColor: 'secondary.light',
-                        justifyContent: 'flex-start', // Căn lề icon và chữ
-                        textTransform: 'none' // Không viết hoa toàn bộ chữ
-                    }}
+                    className={`w-[90%] h-12 m-2 flex items-center justify-center px-4 py-2 rounded-lg transition-all duration-300 ease-in-out transform ${
+                        selectedFunction === functionType
+                            ? 'bg-golf-green-500 text-white border border-luxury-gold-400'
+                            : 'bg-gray-700 text-luxury-gold-50 border border-gray-600 hover:bg-golf-green-600 hover:text-white hover:scale-105'
+                    }`}
                     onClick={() => handleFunctionClick(functionType)}
                 >
+                    <span className="mr-2">{functionIcons[functionType]}</span>
                     {functionType}
-                </Button>
+                </button>
             ))}
-        </Box>
-    )
-}
+        </div>
+    );
+};
 
-export default LeftContentModule
+export default LeftContentModule;

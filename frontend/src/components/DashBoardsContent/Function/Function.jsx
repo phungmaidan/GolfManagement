@@ -1,22 +1,13 @@
-import Box from "@mui/material/Box"
-import LeftContentModule from "./LeftContentModule/LeftContentModule"
-import RightContentModule from "./RightContentModule/RightContentModule"
+import LeftContentModule from "./LeftContentModule/LeftContentModule";
+import RightContentModule from "./RightContentModule/RightContentModule";
 
 const Function = () => {
-    return (
-        <Box sx={{
-            height: '100%',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            flexWrap: 'nowrap' // Changed from 'wrap' to 'nowrap'
-        }}>
-            <LeftContentModule />
-            <RightContentModule />
-        </Box>
-    )
-}
+  return (
+    <div className="h-full w-full flex items-center justify-center flex-nowrap">
+      <LeftContentModule />
+      <RightContentModule />
+    </div>
+  );
+};
 
-export default Function
+export default Function;

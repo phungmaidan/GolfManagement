@@ -16,19 +16,13 @@
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-alpha.5",
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^6.4.3",
-    "@mui/material": "^6.4.3",
-    "@mui/system": "^6.4.3",
-    "@mui/x-date-pickers": "^7.25.0",
     "@reduxjs/toolkit": "^2.5.1",
     "@tsparticles/engine": "^3.8.1",
     "axios": "^1.5.1",
+    "babel-runtime": "^5.3.3",
     "cross-env": "^7.0.3",
     "lodash": "^4.17.21",
-    "luxon": "^3.5.0",
-    "material-ui-confirm": "^3.0.18",
+    "lucide-react": "^0.475.0",
     "randomcolor": "^0.6.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -40,6 +34,7 @@
     "redux-persist": "^6.0.0"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.0.4",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react-swc": "^3.7.2",
@@ -47,6 +42,7 @@
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.18",
+    "tailwindcss": "^4.0.4",
     "vite": "^6.0.11",
     "vite-plugin-svgr": "^4.3.0"
   }

@@ -1,17 +1,16 @@
-import Box from "@mui/material/Box";
-import { useEffect } from "react";
-import Button from "@mui/material/Button";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getItemAPI, setSelectedItem } from "~/redux/module/moduleSlice";
 import { useNavigate } from "react-router-dom";
 // Giả sử hàm slugify đã được export từ '~/utils/formatter'
 import { slugify } from "~/utils/formatter";
-import Typography from "@mui/material/Typography";
 
 const RightContentModule = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { items, selectedItem } = useSelector((state) => state.module);
+
+    const [loading, setLoading] = useState(true); // State cho hiệu ứng loading
 
     const handleFunctionClick = (item) => {
         // Cập nhật selectedItem trong Redux
@@ -25,45 +24,37 @@ const RightContentModule = () => {
     // Gọi API khi component mount
     useEffect(() => {
         dispatch(getItemAPI());
+        // Khi API trả về dữ liệu, cập nhật state loading
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false); // Dừng loading khi dữ liệu đã được fetch
+        }, 1000); // Đặt thời gian chờ cho việc hiển thị loading
     }, [dispatch]);
 
     return (
-        <Box
-            sx={{
-                height: "100%",
-                width: "100%",
-                alignItems: "center",
-                justifyContent: "center",
-                flexWrap: "wrap",
-            }}
-        >
-            <Box
-                sx={{
-                    height: "50%",
-                    width: "90%",
-                    display: "grid",
-                    gridTemplateColumns: "repeat(2, 1fr)", // 2 cột
-                    flexWrap: "wrap",
-                }}
-            >
-                {items.map((item) => (
-                    <Button
-                        key={item.ItemID}
-                        variant="outlined" // Sử dụng variant cố định cho tất cả các Button
-                        sx={{
-                            height: 50,
-                            m: 1,
-                            bgcolor: "background.paper",
-                            color: "primary.main",
-                            borderColor: "secondary.light",
-                        }}
-                        onClick={() => handleFunctionClick(item)}
-                    >
-                        <Typography variant="h6"> {item.ItemName}</Typography>
-                    </Button>
-                ))}
-            </Box>
-        </Box>
+        <div className="h-full w-full flex-start items-center justify-center flex-wrap">
+            {loading ? (
+                <div className="flex mt-50 justify-center h-full w-full">
+                    {/* Hiệu ứng loading */}
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-primary-500"></div>
+                </div>
+            ) : (
+                <div className="h-1/2 w-[90%] grid grid-cols-2 gap-2 flex-wrap">
+                    {items.map((item, index) => (
+                        <button
+                            key={item.ItemID}
+                            className={`h-12 m-2 bg-white text-primary-500 border border-secondary-500 flex items-center justify-center rounded-md hover:bg-primary-500 hover:text-primary-500 hover:scale-105 hover:shadow-lg transition-all opacity-0 animation-show`}
+                            style={{
+                                animationDelay: `${index * 0.05}s`, // Thêm độ trễ giữa các nút
+                            }}
+                            onClick={() => handleFunctionClick(item)}
+                        >
+                            <span className="text-lg">{item.ItemName}</span>
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
     );
 };
 

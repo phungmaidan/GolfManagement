@@ -1,36 +1,22 @@
-import { Navigate, useLocation } from 'react-router-dom'
-import Box from '@mui/material/Box'
-import Login from './Login'
-//mport RegisterForm from './RegisterForm'
-import { useSelector } from 'react-redux'
-import { selectCurrentUser } from '~/redux/user/userSlice'
+import { Navigate, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from '~/redux/user/userSlice';
+import Login from './Login';
 
 function Auth() {
-  const location = useLocation()
-  // console.log(location)
-  const isLogin = location.pathname === '/login'
+  const location = useLocation();
+  const isLogin = location.pathname === '/login';
+  const currentUser = useSelector(selectCurrentUser);
 
-  const currentUser = useSelector(selectCurrentUser)
   if (currentUser) {
-    return <Navigate to='/' replace={true} />
+    return <Navigate to='/' replace={true} />;
   }
 
   return (
-    <Box sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100vh',
-      alignItems: 'center',
-      justifyContent: 'flex-start',
-      backgroundColor: 'white',
-      backgroundRepeat: 'no-repeat',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      boxShadow: 'inset 0 0 0 2000px rgba(0, 0, 0, 0.2)'
-    }}>
+    <div className="min-h-screen bg-gradient-luxury flex items-center justify-center px-4">
       {isLogin && <Login />}
-    </Box>
-  )
+    </div>
+  );
 }
 
-export default Auth
+export default Auth;

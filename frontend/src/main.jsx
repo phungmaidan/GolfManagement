@@ -2,21 +2,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client' // Chú ý là import từ 'react-dom/client'
 import App from './App'
-import { ThemeProvider } from '@mui/material/styles'
 
-// Chuẩn hóa và reset các kiểu CSS mặc định của trình duyệt
-import CssBaseline from '@mui/material/CssBaseline'
-
-// Định nghĩa các quy tắc CSS toàn cục mà không cần chỉnh sửa từng thành phần riêng lẻ
-import GlobalStyles from '@mui/material/GlobalStyles'
-import theme from '~/theme'
-
-// Cấu hình react-toastify thông báo đẩy
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-
-// Cấu hình MUI Dialog
-import { ConfirmProvider } from 'material-ui-confirm'
+import "./index.css"; // Import Tailwind CSS
+//import { ToastContainer } from 'react-toastify'
+//import 'react-toastify/dist/ReactToastify.css'
 
 // Cấu hình Redux Store
 import { Provider } from "react-redux"
@@ -40,21 +29,9 @@ root.render(
         <BrowserRouter basename='/'>
             <Provider store={store}>
                 <PersistGate persistor={persistor}>
-                    <ThemeProvider theme={theme}>
-                        <ConfirmProvider defaultOptions={{
-                            allowClose: false,
-                            dialogProps: { maxWidth: 'xs' },
-                            cancellationButtonProps: { color: 'inherit' },
-                            confirmationButtonProps: { color: 'secondary', variant: 'outlined' },
-                            //confirmationKeyword: 'CONFIRM',
-                            buttonOrder: ['confirm', 'cancel']
-                        }}>
-                            <GlobalStyles styles={{ a: { textDecoration: 'none' } }} />
-                            <CssBaseline />
-                            <App />
-                            <ToastContainer position="bottom-left" theme="colored" />
-                        </ConfirmProvider>
-                    </ThemeProvider>
+                    {/* Thay thế MUI GlobalStyles bằng CSS của Tailwind trong index.css */}
+                    <App />
+                    {/* <ToastContainer position="bottom-left" theme="colored" /> */}
                 </PersistGate>
             </Provider>
         </BrowserRouter>
