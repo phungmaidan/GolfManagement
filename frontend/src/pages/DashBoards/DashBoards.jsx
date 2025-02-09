@@ -3,10 +3,10 @@ import Function from '~/components/DashBoardsContent/Function/Function';
 
 const Dashboard = () => {
   return (
-    <>
+    <div>
       <Module />
       <Function />
-    </>
+    </div>
   );
 };
 

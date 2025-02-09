@@ -1,33 +1,40 @@
-import React from 'react'
-import { useSelector } from "react-redux"
-import { selectSelectedItem } from "~/redux/module/moduleSlice"
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import { Link } from 'react-router-dom'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack' // Import icon back của MUI
+import React from 'react';
+import { useSelector } from "react-redux";
+import { selectSelectedItem } from "~/redux/module/moduleSlice";
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
 const FunctionItemsTitle = () => {
-    const selectedItem = useSelector(selectSelectedItem); // Lấy item đã chọn từ Redux
+  const selectedItem = useSelector(selectSelectedItem);
 
-    return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Link to="/dashboards" style={{ textDecoration: 'none' }}>
-                <Button
-                    variant="contained"
-                    startIcon={<ArrowBackIcon />} // Thêm icon back
-                    sx={{ padding: '10px 20px', fontSize: '16px', marginRight: '10px' }}
-                >
-                    Back
-                </Button>
-            </Link>
-            <Box sx={{ alignItems: 'center', justifyContent: 'center' }}>
-                <Typography variant="h4" sx={{ color: 'primary.contrastText' }}>
-                    {selectedItem?.ItemName || "No Item Selected"}
-                </Typography>
-            </Box>
-        </Box>
-    )
-}
+return (
+    <div className="flex items-center gap-6 p-4 animation-show">
+        <Link 
+            to="/dashboards" 
+            className="no-underline"
+        >
+            <button
+                className="
+                    flex items-center justify-center cursor-pointer
+                    bg-gradient-gold hover:bg-golf-green-600 
+                    text-white font-medium
+                    px-6 py-2.5 rounded-lg
+                    transform hover:scale-105 hover:shadow-lg hover:shadow-luxury-gold-300
+                    transition-all duration-200 ease-in-out
+                "
+            >
+                <ArrowLeft className="h-5 w-5 mr-2" />
+                Back
+            </button>
+        </Link>
+        
+        <div className="flex items-start">
+            <h4 className="text-3xl font-semibold text-golf-green-50 m-0">
+                {selectedItem?.ItemName || "No Item Selected"}
+            </h4>
+        </div>
+    </div>
+);
+};
 
 export default FunctionItemsTitle;

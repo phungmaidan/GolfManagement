@@ -3,9 +3,15 @@ import RightContentModule from "./RightContentModule/RightContentModule";
 
 const Function = () => {
   return (
-    <div className="h-full w-full flex items-center justify-center flex-nowrap">
-      <LeftContentModule />
-      <RightContentModule />
+    <div className="min-h-screen flex">
+      {/* Sidebar bên trái với chiều rộng cố định */}
+      <aside className="w-64 p-4 flex flex-col items-center justify-center">
+        <LeftContentModule />
+      </aside>
+      {/* Nội dung chính bên phải */}
+      <main className="flex-1 p-6 overflow-y-auto">
+        <RightContentModule />
+      </main>
     </div>
   );
 };

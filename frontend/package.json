@@ -23,6 +23,7 @@
     "cross-env": "^7.0.3",
     "lodash": "^4.17.21",
     "lucide-react": "^0.475.0",
+    "luxon": "^3.5.0",
     "randomcolor": "^0.6.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -28,13 +28,13 @@ const Module = () => {
   }
 
   return (
-    <div className="h-[15vh] w-full rounded-lg flex items-center justify-center text-white">
+    <div className="h-[15vh] w-full rounded-lg animation-show flex items-center justify-center text-white">
       {userModules.map((module) => (
         <button
           key={module.ModuleID}
-          className={`flex flex-col items-center justify-center p-4 border-2 border-solid rounded-lg text-center cursor-pointer m-1 w-[150px] h-[60px] 
+          className={`flex flex-col items-center justify-center p-4 rounded-lg text-center cursor-pointer m-1 w-[150px] h-[60px]
             ${selectedModule?.ModuleName === module.ModuleName ? 
-              'bg-luxury-gold-500 text-golf-green-50' : 
+              'bg-luxury-gold-500 text-golf-green-50 shadow-golf' : 
               'bg-golf-green-500 text-luxury-gold-50'} 
             transition-all duration-300 ease-in-out 
             transform hover:scale-105 hover:shadow-lg hover:shadow-luxury-gold-300`}
