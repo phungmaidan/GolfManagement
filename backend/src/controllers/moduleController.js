@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 import { moduleService } from '~/services/moduleService'
-import ApiError from '~/utils/ApiError'
+
 
 const getModuleData = async (req, res, next) => {
   try {
@@ -9,9 +9,7 @@ const getModuleData = async (req, res, next) => {
     const { itemName } = req.query
     const data = await moduleService.getModuleData(moduleId, userId, moduleType, itemName)
     res.status(StatusCodes.OK).json(data)
-  } catch (error) {
-    next(new ApiError(StatusCodes.FORBIDDEN, 'You don\'t have permission'))
-  }
+  } catch (error) { next(error) }
 }
 
 export const moduleController = {

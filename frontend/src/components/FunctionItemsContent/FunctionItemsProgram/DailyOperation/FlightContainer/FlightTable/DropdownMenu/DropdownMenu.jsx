@@ -15,7 +15,7 @@ const DropdownMenu = ({ flightId, onAction }) => {
     return (
         <div className="relative">
             <button 
-                className="text-gray-500 cursor-pointer hover:text-gray-700"
+                className="text-gray-300 cursor-pointer hover:text-gray-500 transition-colors"
                 onClick={toggleDropdown}
             >
                 <svg

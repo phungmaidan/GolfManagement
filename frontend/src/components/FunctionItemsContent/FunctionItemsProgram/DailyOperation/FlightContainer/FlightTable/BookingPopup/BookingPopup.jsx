@@ -1,5 +1,12 @@
 import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
+import BookingInfo from "./BookingPopupProps/BookingInfo";
+import CourseInfo from "./BookingPopupProps/CourseInfo";
+import IDInfo from "./BookingPopupProps/IDInfo";
+import GuestList from "./BookingPopupProps/GuestList";
+import ChargeInfo from "./BookingPopupProps/ChargeInfo";
+import TotalInfo from "./BookingPopupProps/TotalInfo";
+import OtherInfo from "./BookingPopupProps/OtherInfo";
 
 const BookingPopup = ({ isOpen, onClose, playerName, onSave }) => {
     useEffect(() => {
@@ -11,45 +18,59 @@ const BookingPopup = ({ isOpen, onClose, playerName, onSave }) => {
 
     return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div className="relative p-6 bg-white rounded-lg shadow-lg w-150">
+            <div className="relative p-6 bg-white  shadow-golf w-[95vw] h-[90vh] overflow-auto">
                 <button
                     onClick={onClose}
-                    className="absolute cursor-pointer text-gray-600 top-2 right-2 hover:text-red-500"
-                >
-                    ✕
-                </button>
-                <h2 className="mb-4 text-lg font-semibold">Cập nhật khách</h2>
-                <div className="p-8 flex justify-center">
-                    <div className="grid grid-cols-7 grid-rows-7 gap-2 aspect-square p-1">
-                        {/* Block 1 - (0,0) */}
-                        <div className="bg-blue-500 rounded-lg row-start-1 row-end-2 col-start-1 col-end-2 p-2">
+                    className="fixed cursor-pointer text-golf-green-300 top-16 right-14 hover:text-golf-green-600 shadow-golf bg-gray-50 hover:bg-gray-200 rounded-lg p-2 transition-colors"
+                >✕</button>
+                <h2 className="mb-4 text-lg font-semibold text-golf-green-700">Booking Information</h2>
+                <div className="p-4">
+                    <div className="grid grid-cols-7 grid-rows-7 gap-4 h-full">
+                        {/* Block 1 - Booking Info */}
+                        <div className="row-start-1 row-end-2 col-start-1 col-end-2 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf hover:bg-golf-green-50 transition-colors">
+                            <BookingInfo />
                         </div>
-
-                        {/* Block 2 - (0,1) (0,2) (0,3) (0,4) */}
-                        <div className="bg-green-500 rounded-lg row-start-1 row-end-2 col-start-2 col-end-6"></div>
-
-                        {/* Block 3 - (0,5) (0,6) */}
-                        <div className="bg-yellow-500 rounded-lg row-start-1 row-end-2 col-start-6 col-end-8"></div>
-
-                        {/* Block 4 - (1,0)-(2,4) */}
-                        <div className="bg-red-500 rounded-lg row-start-2 row-end-4 col-start-1 col-end-6"></div>
-
-                        {/* Block 5 - (3,0)-(4,2) */}
-                        <div className="bg-purple-500 rounded-lg row-start-4 row-end-6 col-start-1 col-end-4"></div>
-
-                        {/* Block 6 - (3,3)-(4,4) */}
-                        <div className="bg-pink-500 rounded-lg row-start-4 row-end-6 col-start-4 col-end-6"></div>
-
-                        {/* Block 7 - (1,5)-(4,6) */}
-                        <div className="bg-indigo-500 rounded-lg row-start-2 row-end-6 col-start-6 col-end-8"></div>
-
-                        {/* Block 8 - Các ô còn lại */}
-                        <div className="bg-gray-500 rounded-lg row-start-6 row-end-8 col-start-1 col-end-8"></div>
+                        {/* Block 2 - Course Info */}
+                        <div className="row-start-1 row-end-2 col-start-2 col-end-6 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf hover:bg-golf-green-50 transition-colors">
+                            <CourseInfo />
+                        </div>
+                        {/* Block 3 - ID Info */}
+                        <div className="row-start-1 row-end-2 col-start-6 col-end-8 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf hover:bg-golf-green-50 transition-colors">
+                            <IDInfo />
+                        </div>
+                        {/* Block 4 - Guest List */}
+                        <div className="row-start-2 row-end-4 col-start-1 col-end-6 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf hover:bg-golf-green-50 transition-colors overflow-auto">
+                            <GuestList />
+                        </div>
+                        {/* Block 5 - Charge Info */}
+                        <div className="row-start-4 row-end-6 col-start-1 col-end-4 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf hover:bg-golf-green-50 transition-colors">
+                            <ChargeInfo />
+                        </div>
+                        {/* Block 6 - Total Info */}
+                        <div className="row-start-4 row-end-6 col-start-4 col-end-6 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf hover:bg-golf-green-50 transition-colors">
+                            <TotalInfo />
+                        </div>
+                        {/* Block 7 - Other Info */}
+                        <div className="row-start-2 row-end-6 col-start-6 col-end-8 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf hover:bg-golf-green-50 transition-colors">
+                            <OtherInfo />
+                        </div>
+                        {/* Block 8 - Action Buttons */}
+                        <div className="row-start-6 row-end-8 col-start-1 col-end-8 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf">
+                            {/* Để trống cho các nút chức năng sau này */}
+                        </div>
                     </div>
                 </div>
-                <div className="flex justify-end gap-2">
-                    <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">Hủy</button>
-                    <button onClick={() => onSave(playerName)} className="px-4 py-2 text-white rounded bg-golf-green-500">Lưu</button>
+                <div className=" fixed bottom-14 left-8/9 transform -translate-x-1/2 flex gap-2">
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition-colors">
+                        Hủy
+                    </button>
+                    <button
+                        onClick={() => onSave(playerName)}
+                        className="px-4 py-2 text-white rounded bg-golf-green-500 hover:bg-golf-green-600 transition-colors shadow-golf">
+                        Lưu
+                    </button>
                 </div>
             </div>
         </div>,

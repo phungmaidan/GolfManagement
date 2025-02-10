@@ -1,10 +1,12 @@
 import { moduleModel } from '~/models/moduleModel'
 
 const getModuleData = async (moduleId, userId, moduleType, itemName) => {
-  if (moduleType === 'Tasks' && itemName === 'Daily Operation') {
-    return moduleModel.findDailyOperationData()
-  }
-  return moduleModel.findModuleOptionType(moduleId, userId, moduleType)
+  try {
+    if (moduleType === 'Tasks' && itemName === 'Daily Operation') {
+      return await moduleModel.findDailyOperationData()
+    }
+    return await moduleModel.findModuleOptionType(moduleId, userId, moduleType)
+  } catch (error) { next(error) }
 }
 
 export const moduleService = {

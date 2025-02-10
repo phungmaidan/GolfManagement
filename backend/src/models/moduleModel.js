@@ -1,6 +1,7 @@
 import { GET_DB } from '~/config/sqldb'
 import moment from 'moment'
-
+import { StatusCodes } from 'http-status-codes'
+import ApiError from '~/utils/ApiError'
 const findModuleOptionType = async (moduleId, userId, optionType) => {
   try {
     const pool = GET_DB()
@@ -11,9 +12,10 @@ const findModuleOptionType = async (moduleId, userId, optionType) => {
       .query('SELECT ItemID, ItemName, OptionType, ModuleID FROM sysOnUserMenuView WHERE ModuleID = @ModuleID AND OptionType = @OptionType AND ID = @ID AND PrimaryItemID IS NULL AND Active = 1 ORDER BY ItemSequence')
     return result.recordset
   } catch (error) {
-    throw new Error('Database query failed')
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, error.message)
   }
 }
+
 
 const findDailyOperationData = async () => {
   try {
@@ -39,7 +41,7 @@ const findDailyOperationData = async () => {
       courseMasters: courseMasterResult.recordset
     }
   } catch (error) {
-    throw new Error('Database query failed')
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, error.message)
   }
 }
 

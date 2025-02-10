@@ -2,24 +2,35 @@ import Joi from 'joi'
 import ApiError from '~/utils/ApiError'
 import { StatusCodes } from 'http-status-codes'
 
-const moduleItemSchema = Joi.object({
-  itemName: Joi.string().required().messages({
-    'any.required': 'Item Name is required'
-  })
-})
+const getTemplateSchedule = async (req, res, next) => {
+  const getTemplateScheduleSchema = Joi.object({
+    itemName: Joi.string().required().messages({
+      'any.required': 'Item Name is required'
+    }),
+    selectedDate: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/).required().messages({
+      'string.pattern.base': 'Invalid Date format (YYYY-MM-DD)',
+      'any.required': 'Date is required'
+    }),
+    CourseID: Joi.string().required().messages({
+      'any.required': 'CourseID is required'
+    }),
+  });
 
-const getItemData = async (req, res, next) => {
   try {
-    await moduleItemSchema.validateAsync(req.params, { abortEarly: false })
-    req.itemName = req.params.itemName
-    req.CourseID = req.query.CourseID
-    next()
+    // Gộp cả req.params và req.query thành một object để validate
+    const validatedData = await getTemplateScheduleSchema.validateAsync(
+      { ...req.params, ...req.query },
+      { abortEarly: false }
+    );
+    // Gán dữ liệu đã validate vào req để sử dụng trong middleware tiếp theo
+    Object.assign(req, validatedData);
+    next();
   } catch (error) {
-    const errorMessage = error.details.map(detail => detail.message).join(', ')
-    next(new ApiError(StatusCodes.BAD_REQUEST, errorMessage))
+    const errorMessage = error.details.map(detail => detail.message).join(', ');
+    next(new ApiError(StatusCodes.BAD_REQUEST, errorMessage));
   }
-}
+};
 
 export const moduleItemValidation = {
-  getItemData
-}
+  getTemplateSchedule
+};

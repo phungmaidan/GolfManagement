@@ -1,12 +1,13 @@
 import { moduleItemModel } from '~/models/moduleItemModel'
 
-const getItemData = async (CourseID, itemName) => {
+const getTemplateSchedule = async (CourseID, itemName, selectedDate) => {
+
   if (itemName === 'daily-operation') {
-    return moduleItemModel.getTeeTimeTemplate(CourseID)
+    return await moduleItemModel.getTeeTimeTemplate(CourseID, selectedDate)
     
   }
 }
 
 export const moduleItemService = {
-  getItemData
+  getTemplateSchedule
 }

@@ -1,6 +1,15 @@
-import React from 'react';
-import FlightTable from './FlightTable/FlightTable'
-// Dữ liệu Flight cho buổi sáng (6:00 - 12:00 AM)
+// FlightContainer.js
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { 
+    getBookingListAPI, 
+    selectBookingStatus, 
+    selectSelectedFreTemplateofDay, 
+    selectBookingError, 
+    selectTeeTimeInfo
+} from '~/redux/booking/bookingSlice';
+import FlightTable from './FlightTable/FlightTable';
+
 const morningFlights = [
     {
         id: 1,
@@ -93,16 +102,27 @@ const afternoonFlights = [
     },
 ];
 
-
 const FlightContainer = () => {
-  return (
-    <div className=" grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Bảng Flight cho buổi sáng */}
-      <FlightTable title="Morning" flights={morningFlights} />
-      {/* Bảng Flight cho buổi trưa */}
-      <FlightTable title="Afternoon" flights={afternoonFlights} />
-    </div>
-  );
+    const dispatch = useDispatch();
+    const status = useSelector(selectBookingStatus);
+    const bookingData = useSelector(selectSelectedFreTemplateofDay);
+    const error = useSelector(selectBookingError);
+    const teeTimeInfo = useSelector(selectTeeTimeInfo)
+    // Gọi API khi component mount
+    useEffect(() => {
+        if (status === 'idle') {
+            dispatch(getBookingListAPI({})); // Gọi API lấy danh sách booking, truyền data cần thiết vào đây
+        }
+    }, [dispatch, status]);
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Bảng Flight cho buổi sáng */}
+            <FlightTable title="Morning" flights={morningFlights} teeTimeInfo={teeTimeInfo.teeTimeDetails.Morning} />
+            {/* Bảng Flight cho buổi trưa */}
+            <FlightTable title="Afternoon" flights={afternoonFlights} teeTimeInfo={teeTimeInfo.teeTimeDetails.Afternoon} />
+        </div>
+    );
 };
 
 export default FlightContainer;
