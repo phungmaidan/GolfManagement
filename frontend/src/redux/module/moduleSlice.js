@@ -9,6 +9,7 @@ const initialState = {
     selectedFunction: 'Tasks',
     selectedItem: null,
     items: [], // Lưu danh sách các items từ API
+    
 };
 
 // Các hành động gọi api (bất đồng bộ) và cập nhật dữ liệu vào Redux, dùng Middleware createAsyncThunk đi kèm với extraReducers

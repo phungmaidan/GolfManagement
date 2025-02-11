@@ -2,96 +2,113 @@ import React, { useState } from "react";
 import DropdownMenu from "./DropdownMenu/DropdownMenu";
 import BookingPopup from "./BookingPopup/BookingPopup";
 
-const FlightTable = ({ title, flights, teeTimeInfo }) => {
-  // Ghép dữ liệu teeTime từ teeTimeInfo vào từng flight dựa trên flight.id
-  const flightsWithTeeTime = flights.map(flight => {
-    // Tìm đối tượng teeTime có Flight trùng với flight.id
-    const teeTimeData = teeTimeInfo.find(item => item.Flight === flight.id);
-    return {
-      ...flight,
-      // Nếu tìm thấy, gán teeTime; nếu không, gán giá trị 'N/A' hoặc giữ nguyên flight.id
-      teeTime: teeTimeData ? teeTimeData.TeeTime : 'N/A'
+const FlightTable = ({ title, guestInfo, teeTimeInfo }) => {
+    const [selectedPlayer, setSelectedPlayer] = useState(null);
+    const [selectedBooking, setSelectedBooking] = useState(null);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+    const handlePlayerClick = (booking, playerIndex) => {
+        setSelectedBooking({
+            flight: booking.flight,
+            teeTime: booking.teeTime,
+            playerIndex,
+        });
+        setSelectedPlayer(booking.players[playerIndex]);
+        setIsPopupOpen(true);
     };
-  });
 
-  const [selectedPlayer, setSelectedPlayer] = useState(null);
-  const [selectedFlight, setSelectedFlight] = useState(null);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const handleSave = (newName) => {
+        console.log(`Cập nhật ${newName} cho:
+- Flight: ${selectedBooking.flight}
+- TeeTime: ${selectedBooking.teeTime}
+- Khách ${selectedBooking.playerIndex + 1}`);
+        setIsPopupOpen(false);
+    };
 
-  // Ở đây, bạn có thể truyền luôn giá trị teeTime thay cho flight id
-  const handleOpenPopup = (flightTeeTime, playerName, index) => {
-    setSelectedFlight(flightTeeTime);
-    setSelectedPlayer({ name: playerName, index });
-    setIsPopupOpen(true);
-  };
+    const formatTeeTime = (isoString) => {
+        const parts = isoString.split("T");
+        return parts.length > 1 ? parts[1].slice(0, 8) : isoString;
+    };
 
-  const handleSave = (newName) => {
-    console.log(
-      `Lưu thông tin mới: ${newName} cho khách ${selectedPlayer.index + 1} của teeTime ${selectedFlight}`
+    // Tạo một bản đồ để ánh xạ TeeTime với thông tin từ guestInfo
+    const guestInfoMap = guestInfo.reduce((map, booking) => {
+        map[booking.teeTime] = booking;
+        return map;
+    }, {});
+
+    // Tạo danh sách đầy đủ các Flight và TeeTime từ teeTimeInfo
+    const fullData = teeTimeInfo.map(teeTime => {
+        const guestBooking = guestInfoMap[teeTime.TeeTime] || {
+            flight: teeTime.Flight,
+            teeTime: teeTime.TeeTime,
+            players: [],
+        };
+        return {
+            ...guestBooking,
+            flight: teeTime.Flight,
+            teeTime: teeTime.TeeTime,
+        };
+    });
+
+    return (
+        <div className="bg-golf-green-50 p-4 rounded-lg shadow-md overflow-x-auto animation-show">
+            <h3 className="font-semibold text-golf-green-700 text-lg mb-4">{title}</h3>
+
+            <table className="min-w-full border">
+                <thead className="bg-gray-50 text-golf-green-800">
+                    <tr>
+                        <th className="border px-4 py-2">TeeTime</th>
+                        {[...Array(4)].map((_, i) => (
+                            <th key={i} className="border px-4 py-2">
+                                Khách {i + 1}
+                            </th>
+                        ))}
+                        <th className="border px-4 py-2"></th>
+                    </tr>
+                </thead>
+
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {fullData.map((booking, index) => (
+                        <tr key={index} className="hover:bg-gray-50">
+                            <td className="border px-4 py-2 text-golf-green-800">
+                                {formatTeeTime(booking.teeTime)}
+                            </td>
+
+                            {[...Array(4)].map((_, i) => (
+                                <td
+                                    key={i}
+                                    className={`border px-4 py-2 ${booking.players[i]
+                                        ? "cursor-pointer text-golf-green-600 hover:underline"
+                                        : ""
+                                        }`}
+                                    onClick={() =>
+                                        booking.players[i] && handlePlayerClick(booking, i)
+                                    }
+                                >
+                                    {booking.players[i] || ""}
+                                </td>
+                            ))}
+
+                            <td className="border px-4 py-2 text-center">
+                                <DropdownMenu onAction={(action) => console.log(action, booking)} />
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            <BookingPopup
+                isOpen={isPopupOpen}
+                onClose={() => setIsPopupOpen(false)}
+                playerName={selectedPlayer}
+                flightInfo={{
+                    flight: selectedBooking?.flight,
+                    teeTime: selectedBooking ? formatTeeTime(selectedBooking.teeTime) : "",
+                }}
+                onSave={handleSave}
+            />
+        </div>
     );
-    setIsPopupOpen(false);
-  };
-
-  return (
-    <div className="bg-golf-green-50 p-4 rounded-lg shadow-md overflow-x-auto animation-show">
-      <h3 className="font-semibold text-golf-green-700 text-lg mb-4">{title}</h3>
-      <table className="min-w-full border">
-        <thead className="bg-gray-50 text-golf-green-800">
-          <tr>
-            <th className="border px-4 py-2">TeeTime</th>
-            <th className="border px-4 py-2">Khách 1</th>
-            <th className="border px-4 py-2">Khách 2</th>
-            <th className="border px-4 py-2">Khách 3</th>
-            <th className="border px-4 py-2">Khách 4</th>
-            <th className="border px-4 py-2"></th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {flightsWithTeeTime.map((flight) => {
-            // Nếu flight.teeTime là chuỗi ISO, bạn có thể định dạng lại thành giờ bằng Date hoặc thư viện moment
-            const displayTeeTime =
-              flight.teeTime !== 'N/A'
-                ? new Date(flight.teeTime).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit"
-                  })
-                : flight.teeTime;
-
-            return (
-              <tr key={flight.id} className="hover:bg-gray-50">
-                <td className="border px-4 py-2 text-golf-green-800">
-                  {displayTeeTime}
-                </td>
-                {flight.players.map((player, index) => (
-                  <td
-                    key={index}
-                    className="border px-4 py-2 cursor-pointer text-golf-green-600 hover:underline"
-                    onClick={() => handleOpenPopup(displayTeeTime, player, index)}
-                  >
-                    {player}
-                  </td>
-                ))}
-                <td className="border px-4 py-2 text-center ">
-                  <DropdownMenu
-                    flightId={displayTeeTime}
-                    onAction={(action) => console.log(action)}
-                  />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-
-      {/* Popup được render ngoài DOM của bảng */}
-      <BookingPopup
-        isOpen={isPopupOpen}
-        onClose={() => setIsPopupOpen(false)}
-        playerName={selectedPlayer?.name}
-        onSave={handleSave}
-      />
-    </div>
-  );
 };
 
 export default FlightTable;

@@ -8,76 +8,91 @@ import { slugify } from "~/utils/formatter";
 const initialState = {
     selectedDate: new Date().toISOString().split('T')[0],
     selectedCourse: 'L - D',
-    selectedFreTemplateofDay: 'null',
-    selectedFreTemplateMaster: 'null',
-    status: 'idle', // Thêm trạng thái cho việc tải dữ liệu (idle, loading, succeeded, failed)
+    selectedFreTemplateofDay: null,
+    selectedFreTemplateMaster: null,
+    status: 'idle',
     error: null,
-    guestInfo: 'null',
-    teeTimeInfo: 'null',
-    templateMaster: 'null'
+    guestInfo: null,
+    teeTimeInfo: null,
+    templateMaster: null,
+    freFlightStatus: null,
+    comGuestType: null
 };
 
-// Các hành động gọi api (bất đồng bộ) và cập nhật dữ liệu vào Redux, dùng Middleware createAsyncThunk đi kèm với extraReducers
 export const getBookingListAPI = createAsyncThunk(
     'booking/getBookingListAPI',
-    async (data, thunkAPI) => {
-        const stateBooking = thunkAPI.getState().booking
-        const stateModule = thunkAPI.getState().module
-        const { selectedItem } = stateModule
-        const { selectedCourse, selectedDate } = stateBooking
+    async (_, thunkAPI) => {
+        const { booking, module } = thunkAPI.getState();
+        const { selectedItem } = module;
+
         try {
-            // Gọi API, lưu ý nếu API của cần query parameters, có thể truyền chúng qua option params
+            const params = {
+                CourseID: booking.selectedCourse,
+                selectedDate: booking.selectedDate
+            };
+
             const response = await authorizedAxiosInstance.get(
                 `${API_ROOT}/v1/module_items/${slugify(selectedItem.ItemName)}`,
-                {
-                    params: {
-                        CourseID: selectedCourse,
-                        selectedDate: selectedDate
-                    },
-                }
+                { params }
             );
+
             return response.data;
         } catch (error) {
-            // Xử lý lỗi, ví dụ như hiển thị toast thông báo lỗi
             toast.error('Lỗi khi lấy dữ liệu booking');
             return thunkAPI.rejectWithValue(error.response?.data || error.message);
         }
     }
-)
+);
 
 const bookingSlice = createSlice({
     name: 'booking',
     initialState,
     reducers: {
-        setSelectedDate: (state, action) => {
-            state.selectedDate = action.payload;
+        setSelectedDate: (state, { payload }) => {
+            state.selectedDate = payload;
         },
-        setSelectedCourse: (state, action) => {
-            state.selectedCourse = action.payload;
+        setSelectedCourse: (state, { payload }) => {
+            state.selectedCourse = payload;
         },
-        setSelectedFreTemplateofDay: (state, action) => {
-            state.selectedFreTemplateofDay = action.payload;
+        setSelectedFreTemplateofDay: (state, { payload }) => {
+            state.selectedFreTemplateofDay = payload;
         },
-        setSelectedFreTemplateMaster: (state, action) => {
-            state.selectedFreTemplateMaster = action.payload;
+        setSelectedFreTemplateMaster: (state, { payload }) => {
+            state.selectedFreTemplateMaster = payload;
+        },
+        setStatus: (state, { payload }) => {
+            state.status = payload;
         },
     },
     extraReducers: (builder) => {
         builder
             .addCase(getBookingListAPI.pending, (state) => {
-                state.status = 'loading'; // Đang tải dữ liệu
+                state.status = 'loading';
             })
-            .addCase(getBookingListAPI.fulfilled, (state, action) => {
-                state.status = 'succeeded'; // Đã tải dữ liệu thành công
-                state.selectedFreTemplateofDay = action.payload?.FreTemplateofDay
-                state.selectedFreTemplateMaster = action.payload?.FreTemplateMaster
-                state.guestInfo = action.payload?.guestInfo
-                state.teeTimeInfo = action.payload?.teeTimeInfo
-                state.templateMaster = action.payload?.templateMaster
+            .addCase(getBookingListAPI.fulfilled, (state, { payload }) => {
+                state.status = 'succeeded';
+                state.error = null;
+
+                state.selectedFreTemplateofDay = payload?.FreTemplateofDay ?? null;
+                state.selectedFreTemplateMaster = payload?.FreTemplateMaster ?? null;
+                state.guestInfo = payload?.guestInfo ?? null;
+                state.teeTimeInfo = payload?.teeTimeInfo ?? null;
+                state.templateMaster = payload?.templateMaster ?? null;
+                state.freFlightStatus = payload?.FreFlightStatus ?? null;
+                state.comGuestType = payload?.ComGuestType ?? null;
             })
-            .addCase(getBookingListAPI.rejected, (state, action) => {
-                state.status = 'failed'; // Đã gặp lỗi khi tải dữ liệu
-                state.error = action.payload; // Lưu thông tin lỗi
+            .addCase(getBookingListAPI.rejected, (state, { payload }) => {
+                state.status = 'failed';
+                state.error = payload;
+
+                // Reset các biến về null nếu fetch API lỗi
+                state.selectedFreTemplateofDay = null;
+                state.selectedFreTemplateMaster = null;
+                state.guestInfo = null;
+                state.teeTimeInfo = null;
+                state.templateMaster = null;
+                state.freFlightStatus = null;
+                state.comGuestType = null;
             });
     }
 });
@@ -87,12 +102,18 @@ export const {
     setSelectedCourse,
     setSelectedFreTemplateofDay,
     setSelectedFreTemplateMaster,
+    setStatus
 } = bookingSlice.actions;
-export const selectBookingStatus = (state) => state.booking.status; // Chọn trạng thái loading
-export const selectBookingError = (state) => state.booking.error; // Chọn lỗi nếu có
-export const selectSelectedDate = (state) => state.bookibf.selectedDate;
+
+export const selectBookingStatus = (state) => state.booking.status;
+export const selectBookingError = (state) => state.booking.error;
+export const selectSelectedDate = (state) => state.booking.selectedDate;
 export const selectGuestInfo = (state) => state.booking.guestInfo;
+export const selectSelectedCourse = (state) => state.booking.selectedCourse;
 export const selectTeeTimeInfo = (state) => state.booking.teeTimeInfo;
 export const selectTemplateMaster = (state) => state.booking.templateMaster;
 export const selectSelectedFreTemplateofDay = (state) => state.booking.selectedFreTemplateofDay;
+export const selectFreFlightStatus = (state) => state.booking.freFlightStatus;
+export const selectComGuestType = (state) => state.booking.comGuestType;
+
 export const bookingReducer = bookingSlice.reducer;
