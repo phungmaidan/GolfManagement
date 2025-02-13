@@ -6,7 +6,9 @@ const getModuleData = async (moduleId, userId, moduleType, itemName) => {
       return await moduleModel.findDailyOperationData()
     }
     return await moduleModel.findModuleOptionType(moduleId, userId, moduleType)
-  } catch (error) { next(error) }
+  } catch (error) {
+    throw error // Bắt lỗi và chuyển tiếp
+  }
 }
 
 export const moduleService = {

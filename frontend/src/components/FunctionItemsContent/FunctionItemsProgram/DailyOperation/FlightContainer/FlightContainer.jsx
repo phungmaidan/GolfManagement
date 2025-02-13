@@ -25,7 +25,7 @@ const FlightContainer = () => {
     if (status === 'failed' || error || !GuestInfo || !teeTimeInfo) {
         content = <div className="text-red-900 text-center font-bold animation-show">
             <p>Không thể tải dữ liệu, vui lòng thử lại sau:</p>
-            {error.message && <p>{error.message}</p>} {/* Hiển thị chi tiết lỗi nếu có */}
+            {error?.message && <p>{error?.message}</p>} {/* Hiển thị chi tiết lỗi nếu có */}
         </div>;
     } else {
         const processedGuestInfo = processGuestInfo(GuestInfo)
