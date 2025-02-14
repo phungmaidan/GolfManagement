@@ -217,6 +217,6 @@ const getTeeTimeTemplate = async (courseId, selectedDate) => {
 };
 
 
-export const moduleItemModel = {
+export const itemModel = {
   getTeeTimeTemplate
 }

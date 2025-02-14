@@ -33,7 +33,7 @@ export const getBookingListAPI = createAsyncThunk(
             };
 
             const response = await authorizedAxiosInstance.get(
-                `${API_ROOT}/v1/module_items/${slugify(selectedItem.ItemName)}`,
+                `${API_ROOT}/v1/items/${slugify(selectedItem.ItemName)}`,
                 { params }
             );
 

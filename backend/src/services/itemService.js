@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import ApiError from '~/utils/ApiError';
-import { moduleItemModel } from '~/models/moduleItemModel';
+import { itemModel } from '~/models/itemModel';
 
 const getTemplateSchedule = async (courseId, itemName, selectedDate) => {
   if (itemName !== 'daily-operation') {
@@ -8,7 +8,7 @@ const getTemplateSchedule = async (courseId, itemName, selectedDate) => {
   }
 
   try {
-    const result = await moduleItemModel.getTeeTimeTemplate(courseId, selectedDate);
+    const result = await itemModel.getTeeTimeTemplate(courseId, selectedDate);
     return result;
   } catch (error) {
     throw new ApiError(
@@ -18,6 +18,6 @@ const getTemplateSchedule = async (courseId, itemName, selectedDate) => {
   }
 };
 
-export const moduleItemService = {
+export const itemService = {
   getTemplateSchedule
 }

@@ -31,6 +31,6 @@ const getTemplateSchedule = async (req, res, next) => {
   }
 };
 
-export const moduleItemValidation = {
+export const itemValidation = {
   getTemplateSchedule
 };
