@@ -1,13 +1,14 @@
-import { queryBuilder } from '~/utils/dbUtils'
+import { sqlQueryUtils } from '~/utils/sqlQueryUtils'
 
 // Hàm tìm kiếm người dùng theo tài khoản
-const findOneByAccount = async (account) => {
-  const fields = ['*']
-  const where = 'ID = @ID'
-  const params = { ID: account }
-
+const findOneByAccount = async (account, fields = ['*']) => {
   try {
-    const result = await queryBuilder('sysOnUser', fields, where, params)
+    const result = await sqlQueryUtils.queryBuilder({
+      tableName: 'sysOnUser',
+      fields: fields,
+      where: 'ID = @ID',
+      params: { ID: account }
+    })
     return result[0] // Trả về bản ghi đầu tiên
   } catch (error) {
     throw new Error('Database query failed: ' + error.message)
@@ -15,16 +16,16 @@ const findOneByAccount = async (account) => {
 }
 
 // Hàm tìm kiếm module của người dùng
-const findUserModule = async (account) => {
-  const fields = ['ModuleID', 'ModuleName']
-  const where = `
-    ID = @ID 
-    AND ModuleActive = 1 and ModuleActive = 1 Group By ModuleID, ModuleName, PictureKey, ModuleSequence Order By ModuleSequence
-  `
-  const params = { ID: account }
-
+const findUserModule = async (account, fields = ['ModuleID', 'ModuleName', 'PictureKey', 'ModuleSequence']) => {
   try {
-    return await queryBuilder('sysOnUserMenuView', fields, where, params)
+    return await sqlQueryUtils.queryBuilder({
+      tableName: 'sysOnUserMenuView',
+      fields: fields,
+      where: `ID = @ID AND ModuleActive = 1 
+              GROUP BY ModuleID, ModuleName, PictureKey, ModuleSequence 
+              ORDER BY ModuleSequence`,
+      params: { ID: account }
+    })
   } catch (error) {
     throw new Error('Database query failed: ' + error.message)
   }

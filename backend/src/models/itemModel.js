@@ -1,4 +1,4 @@
-import { queryBuilder, execProcedure } from '~/utils/dbUtils';
+import { sqlQueryUtils } from '~/utils/sqlQueryUtils';
 import moment from 'moment';
 
 // Constants
@@ -18,60 +18,60 @@ const getDayOfWeek = (date) => formatDate(date).format('dddd');
 
 // Database query functions
 const fetchBookings = async (courseId, bookingDate) => {
-  return queryBuilder(
-    'FreBookingMaster',
-    ['*'],
-    'CourseID = @CourseID AND BookingDate = @BookingDate AND (RecordStatus IS NULL OR RecordStatus = @RecordStatus) Order By Session, TeeBox, TeeTime, BookingID',
-    {
+  return sqlQueryUtils.queryBuilder({
+    tableName: 'FreBookingMaster',
+    fields: ['*'],
+    where: 'CourseID = @CourseID AND BookingDate = @BookingDate AND (RecordStatus IS NULL OR RecordStatus = @RecordStatus) Order By Session, TeeBox, TeeTime, BookingID',
+    params: {
       CourseID: courseId,
       BookingDate: bookingDate,
       RecordStatus: RECORD_STATUS.REGISTERED
     }
-  );
+  });
 };
 
 const fetchBookingDetails = async (bookingIds) => {
   if (!bookingIds?.length) return [];
-  return queryBuilder(
-    'FreBookingDetails',
-    ['*'],
-    `BookingID IN (${bookingIds.map(id => `'${id}'`).join(',')})`,
-    {}
-  );
+  return sqlQueryUtils.queryBuilder({
+    tableName: 'FreBookingDetails',
+    fields: ['*'],
+    where: `BookingID IN (${bookingIds.map(id => `'${id}'`).join(',')})`,
+    params: {}
+  });
 };
 
 const fetchTeeTimeMaster = async (courseId, txnDate, templateId) => {
-  return queryBuilder(
-    'FreTeeTimeMaster',
-    ['*'],
-    'CourseID = @CourseID AND TxnDate = @TxnDate AND (TemplateID = @TemplateID OR TemplateID IS NULL)',
-    {
+  return sqlQueryUtils.queryBuilder({
+    tableName: 'FreTeeTimeMaster',
+    fields: ['*'],
+    where: 'CourseID = @CourseID AND TxnDate = @TxnDate AND (TemplateID = @TemplateID OR TemplateID IS NULL)',
+    params: {
       CourseID: courseId,
       TxnDate: txnDate,
       TemplateID: templateId
     }
-  );
+  });
 };
 
 const fetchTeeTimeDetails = async (courseId, txnDate) => {
-  return queryBuilder(
-    'FreTeeTimeDetails',
-    ['*'],
-    'CourseID = @CourseID AND TxnDate = @TxnDate Order By Len(TeeBox), TeeBox, TeeTime',
-    {
+  return sqlQueryUtils.queryBuilder({
+    tableName: 'FreTeeTimeDetails',
+    fields: ['*'],
+    where: 'CourseID = @CourseID AND TxnDate = @TxnDate Order By Len(TeeBox), TeeBox, TeeTime',
+    params: {
       CourseID: courseId,
       TxnDate: txnDate
     }
-  );
+  });
 };
 
 const fetchTemplateOfDay = async (courseId) => {
-  const result = await queryBuilder(
-    'FreTemplateofDay',
-    ['Top 1 *'],
-    'CourseID = @CourseID',
-    { CourseID: courseId }
-  );
+  const result = await sqlQueryUtils.queryBuilder({
+    tableName: 'FreTemplateofDay',
+    fields: ['Top 1 *'],
+    where: 'CourseID = @CourseID',
+    params: { CourseID: courseId }
+  });
 
   if (!result?.length) {
     throw new Error('Template not found in FreTemplateofDay');
@@ -81,12 +81,12 @@ const fetchTemplateOfDay = async (courseId) => {
 };
 
 const fetchTemplateMaster = async (templateId) => {
-  return queryBuilder(
-    'FreTemplateMaster',
-    ['*'],
-    'TemplateID = @TemplateID',
-    { TemplateID: templateId }
-  );
+  return sqlQueryUtils.queryBuilder({
+    tableName: 'FreTemplateMaster',
+    fields: ['*'],
+    where: 'TemplateID = @TemplateID',
+    params: { TemplateID: templateId }
+  });
 };
 
 const groupTeeTimesBySection = (teeTimeDetails) => {
@@ -149,15 +149,15 @@ const getGuestInfoTable = async (courseId, bookingDate) => {
 };
 
 const releaseTeeTime = async (courseId, txnDate, templateId) => {
-  await execProcedure(
-    'sp_FreReleaseTeeTime',
-    {
+  return sqlQueryUtils.execProcedure({
+    procedureName: 'sp_FreReleaseTeeTime',
+    params: {
       CourseID: courseId,
       TxnDate: txnDate,
       TemplateID: templateId
     },
-    { returnRecordset: true }
-  );
+    options: { returnRecordset: true }
+  });
 };
 
 const checkAndReleaseTeeTime = async (courseId, txnDate, templateId) => {
@@ -178,17 +178,15 @@ const checkAndReleaseTeeTime = async (courseId, txnDate, templateId) => {
 };
 
 const getFreBlockBookingByDate = async (date) => {
-  const fields = ['*']
-  const where = `
-    TransactionDate = @TransactionDate
-    AND RecordStatus IS NULL
-  `
-  const params = { TransactionDate: date }
-
   try {
-    return await queryBuilder('FreBlockBooking', fields, where, params)
+    return await sqlQueryUtils.queryBuilder({
+      tableName: 'FreBlockBooking',
+      fields: ['*'],
+      where: 'TransactionDate = @TransactionDate AND RecordStatus IS NULL',
+      params: { TransactionDate: date }
+    });
   } catch (error) {
-    throw new Error('Database query FreBlockBooking by date failed: ' + error.message)
+    throw new Error('Database query FreBlockBooking by date failed: ' + error.message);
   }
 }
 
