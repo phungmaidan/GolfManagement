@@ -1,180 +1,112 @@
-// Header.jsx
-import React, { useState } from 'react';
-import {
-  Box,
-  Toolbar,
-  IconButton,
-  Button,
-  Menu,
-  Container,
-  Avatar,
-  MenuItem,
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import React, { useState, useEffect } from 'react';
+import { Menu, Home, LogOut, Calendar } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '~/redux/user/userSlice';
+import { Link } from 'react-router-dom';
 
 const Header = ({ logo }) => {
-  const isMobile = window.innerWidth < 768;
-  const isAuthenticated = useSelector(selectCurrentUser).Active;
-  const [anchorEl, setAnchorEl] = useState(null);
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const isAuthenticated = useSelector(selectCurrentUser)?.Active;
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Menu items cho người dùng đã đăng nhập
-  const authMenuItems = [
-    { title: 'Đặt lịch', path: '/booking' },
-    { title: 'Lịch sử đặt', path: '/history' },
-    { title: 'Tài khoản', path: '/account' },
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const menuItems = [
+    { title: 'Trang chủ', path: 'https://songbegolf.com.vn/', icon: <Home size={20} />, external: true },
+    { title: 'Đặt lịch', path: '/booking', icon: <Calendar size={20} /> }
   ];
-
-  // Menu items cho người dùng chưa đăng nhập
-  const guestMenuItems = [
-    { title: 'Đặt lịch', path: '/booking' },
-  ];
-
-  const currentMenuItems = isAuthenticated ? authMenuItems : guestMenuItems;
 
   return (
-    <Box
-      elevation={0}
-      sx={{
-        backgroundColor: 'white',
-        borderBottom: '1px solid',
-        borderColor: 'rgba(0, 0, 0, 0.08)'
-      }}
-    >
-      <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ minHeight: '70px' }}>
-          {/* Logo */}
-          <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
-            <img
-              src={logo}
-              alt="Logo"
-              style={{
-                height: '40px',
-                objectFit: 'contain'
-              }}
-            />
-          </Box>
+    <header className="bg-golf-green-50 shadow-lg ">
+      <div className="flex mx-auto px-6">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo with Text */}
+          <Link to="/" className="flex items-center gap-4">
+            <img src={logo} alt="Logo" className="h-12 w-auto" />
+            <div className="hidden md:block">
+              <h1 className="font-['Playfair_Display'] text-xl font-semibold text-luxury-gold-600 tracking-wide">
+                SONG BE GOLF RESORT
+              </h1>
+            </div>
+          </Link>
 
           {/* Desktop Navigation */}
           {!isMobile && (
-            <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 4 }}>
-              {currentMenuItems.map((item) => (
-                <Button
-                  key={item.title}
-                  sx={{
-                    color: 'primary.main',
-                    '&:hover': {
-                      backgroundColor: 'transparent',
-                      color: 'primary.dark',
-                    }
-                  }}
-                >
-                  {item.title}
-                </Button>
+            <nav className="ml-20  flex gap-6">
+              {menuItems.map((item) => (
+                item.external ? (
+                  <a
+                    key={item.title}
+                    href={item.path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 text-golf-green-600"
+                  >
+                    {item.icon}
+                    <span>{item.title}</span>
+                  </a>
+                ) : (
+                  <Link
+                    key={item.title}
+                    to={item.path}
+                    className="flex items-center gap-2 px-4 py-2 text-golf-green-600"
+                  >
+                    {item.icon}
+                    <span>{item.title}</span>
+                  </Link>
+                )
               ))}
-            </Box>
+            </nav>
           )}
 
-          {/* User Section */}
-          <Box sx={{ flexGrow: 0, ml: 'auto', display: 'flex', alignItems: 'center', gap: 2 }}>
+          {/* Auth Section */}
+          <div className="flex items-center gap-4">
             {isMobile ? (
-              <IconButton
-                size="large"
-                onClick={handleMenu}
-                sx={{ color: 'primary.main' }}
+              <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                <Menu size={24} className="text-golf-green-600" />
+              </button>
+            ) : !isAuthenticated ? (
+              <Link
+                to="/login"
+                className="px-4 py-2 text-golf-green-600 border border-golf-green-600 rounded"
               >
-                <MenuIcon />
-              </IconButton>
-            ) : (
-              isAuthenticated ? (
-                // Hiển thị avatar nếu đã đăng nhập
-                <Avatar
-                  sx={{
-                    width: 35,
-                    height: 35,
-                    bgcolor: 'primary.main',
-                    cursor: 'pointer'
-                  }}
-                  onClick={handleMenu}
-                />
-              ) : (
-                // Hiển thị nút đăng nhập/đăng ký nếu chưa đăng nhập
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    sx={{
-                      borderRadius: '4px',
-                      textTransform: 'none',
-                      minWidth: '100px'
-                    }}
-                  >
-                    Đăng nhập
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{
-                      borderRadius: '4px',
-                      textTransform: 'none',
-                      minWidth: '100px'
-                    }}
-                  >
-                    Đăng ký
-                  </Button>
-                </Box>
-              )
-            )}
-          </Box>
+                Đăng nhập
+              </Link>
+            ) : null}
+          </div>
 
-          {/* Menu (Mobile & Desktop) */}
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            PaperProps={{
-              sx: {
-                mt: 1.5,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-              }
-            }}
-          >
-            
-            {isMobile && currentMenuItems.map((item) => (
-              <MenuItem
-                key={item.title}
-                onClick={handleClose}
-                sx={{ minWidth: 180 }}
-              >
-                {item.title}
-              </MenuItem>
-            ))}
-
-            {/* Logout Option (Only show if authenticated) */}
-            {isAuthenticated && (
-              <MenuItem onClick={handleClose}>Đăng xuất</MenuItem>
-            )}
-          </Menu>
-        </Toolbar>
-      </Container>
-    </Box>
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <div className="absolute top-16 right-4 w-48 py-2 bg-white shadow-lg rounded-lg">
+              {menuItems.map((item) => (
+                <Link
+                  key={item.title}
+                  to={item.path}
+                  className="flex items-center gap-2 px-4 py-2 text-golf-green-600"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.icon}
+                  <span>{item.title}</span>
+                </Link>
+              ))}
+              {isAuthenticated && (
+                <button 
+                  className="flex items-center gap-2 w-full px-4 py-2 text-red-500"
+                  onClick={() => {/* Add logout handler */}}
+                >
+                  <LogOut size={20} />
+                  <span>Đăng xuất</span>
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
   );
 };
 

@@ -14,6 +14,7 @@ const initialState = {
     error: null,
     guestInfo: null,
     teeTimeInfo: null,
+    blockBooking: null,
     templateMaster: null,
     freFlightStatus: null,
     comGuestType: null
@@ -77,6 +78,7 @@ const bookingSlice = createSlice({
                 state.selectedFreTemplateMaster = payload?.FreTemplateMaster ?? null;
                 state.guestInfo = payload?.guestInfo ?? null;
                 state.teeTimeInfo = payload?.teeTimeInfo ?? null;
+                state.blockBooking = payload?.blockBooking ?? null;
                 state.templateMaster = payload?.templateMaster ?? null;
                 state.freFlightStatus = payload?.FreFlightStatus ?? null;
                 state.comGuestType = payload?.ComGuestType ?? null;
@@ -90,6 +92,7 @@ const bookingSlice = createSlice({
                 state.selectedFreTemplateMaster = null;
                 state.guestInfo = null;
                 state.teeTimeInfo = null;
+                state.blockBooking = null;
                 state.templateMaster = null;
                 state.freFlightStatus = null;
                 state.comGuestType = null;
@@ -112,6 +115,7 @@ export const selectGuestInfo = (state) => state.booking.guestInfo;
 export const selectSelectedCourse = (state) => state.booking.selectedCourse;
 export const selectTeeTimeInfo = (state) => state.booking.teeTimeInfo;
 export const selectTemplateMaster = (state) => state.booking.templateMaster;
+export const selectBlockBooking = (state) => state.booking.blockBooking;
 export const selectSelectedFreTemplateofDay = (state) => state.booking.selectedFreTemplateofDay;
 export const selectFreFlightStatus = (state) => state.booking.freFlightStatus;
 export const selectComGuestType = (state) => state.booking.comGuestType;

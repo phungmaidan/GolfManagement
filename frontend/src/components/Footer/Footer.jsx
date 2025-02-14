@@ -1,157 +1,95 @@
-// Footer.jsx
 import React from 'react';
-import {
-  Box,
-  Container,
-  Grid,
-  Typography,
-  Link,
-  IconButton,
-  useTheme,
-  Divider,
-} from '@mui/material';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import TwitterIcon from '@mui/icons-material/Twitter';
-import InstagramIcon from '@mui/icons-material/Instagram';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import PhoneIcon from '@mui/icons-material/Phone';
-import EmailIcon from '@mui/icons-material/Email';
+import { MapPin, Phone, Mail } from 'lucide-react';
 
 const Footer = ({ logo }) => {
-  const theme = useTheme();
   const currentYear = new Date().getFullYear();
 
   return (
-    <Box
-      sx={{
-        bgcolor: theme.palette.primary.dark,
-        color: 'white',
-        pt: 6,
-        pb: 3,
-      }}
-    >
-      <Container maxWidth="lg">
-        <Grid container spacing={4}>
+    <footer className="bg-golf-green-800 text-luxury-gold-50 pb-6">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="grid grid-cols-1 pt-4 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo and Description */}
-          <Grid item xs={12} md={4}>
-            <Box sx={{ mb: 2 }}>
-              <img
-                src={logo}
-                alt="Logo"
-                style={{
-                  height: '60px',
-                  marginBottom: theme.spacing(2),
-                }}
-              />
-            </Box>
-            <Typography variant="body2" sx={{ mb: 2 }}>
+          <div>
+            <div className="mb-4">
+              <img src={logo} alt="Logo" className="h-15 mb-4" />
+            </div>
+            <p className="text-sm text-luxury-gold-100 mb-6">
               Trải nghiệm golf đẳng cấp với những sân golf tuyệt đẹp và dịch vụ chuyên nghiệp.
               Chúng tôi cam kết mang đến những giây phút thư giãn và niềm đam mê golf cho quý khách.
-            </Typography>
-            <Box sx={{ mt: 2 }}>
-              <IconButton color="inherit" aria-label="Facebook">
-                <FacebookIcon />
-              </IconButton>
-              <IconButton color="inherit" aria-label="Twitter">
-                <TwitterIcon />
-              </IconButton>
-              <IconButton color="inherit" aria-label="Instagram">
-                <InstagramIcon />
-              </IconButton>
-              <IconButton color="inherit" aria-label="LinkedIn">
-                <LinkedInIcon />
-              </IconButton>
-            </Box>
-          </Grid>
+            </p>
+          </div>
 
           {/* Quick Links */}
-          <Grid item xs={12} sm={6} md={2}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
+          <div>
+            <h6 className="text-luxury-gold-400 font-semibold text-lg mb-4">
               Liên kết nhanh
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              {['Trang chủ', 'Về chúng tôi', 'Dịch vụ', 'Đặt lịch', 'Tin tức'].map((text) => (
-                <Link
-                  key={text}
-                  href="#"
-                  color="inherit"
-                  sx={{
-                    mb: 1,
-                    textDecoration: 'none',
-                    '&:hover': {
-                      color: theme.palette.secondary.main,
-                    },
-                  }}
-                >
-                  {text}
-                </Link>
-              ))}
-            </Box>
-          </Grid>
+            </h6>
+            <FooterLinks links={['Trang chủ', 'Về chúng tôi', 'Dịch vụ', 'Đặt lịch', 'Tin tức']} />
+          </div>
 
           {/* Services */}
-          <Grid item xs={12} sm={6} md={2}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
+          <div>
+            <h6 className="text-luxury-gold-400 font-semibold text-lg mb-4">
               Dịch vụ
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              {['Sân tập Golf', 'Học Golf', 'Pro Shop', 'Nhà hàng', 'Sự kiện'].map((text) => (
-                <Link
-                  key={text}
-                  href="#"
-                  color="inherit"
-                  sx={{
-                    mb: 1,
-                    textDecoration: 'none',
-                    '&:hover': {
-                      color: theme.palette.secondary.main,
-                    },
-                  }}
-                >
-                  {text}
-                </Link>
-              ))}
-            </Box>
-          </Grid>
+            </h6>
+            <FooterLinks links={['Sân tập Golf', 'Học Golf', 'Pro Shop', 'Nhà hàng', 'Sự kiện']} />
+          </div>
 
           {/* Contact Info */}
-          <Grid item xs={12} md={4}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
+          <div>
+            <h6 className="text-luxury-gold-400 font-semibold text-lg mb-4">
               Liên hệ
-            </Typography>
-            <Box sx={{ mb: 2 }}>
-              <Box sx={{ display: 'flex', mb: 2 }}>
-                <LocationOnIcon sx={{ mr: 2 }} />
-                <Typography variant="body2">
-                  123 Đường Golf, Quận 2, TP. Hồ Chí Minh
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', mb: 2 }}>
-                <PhoneIcon sx={{ mr: 2 }} />
-                <Typography variant="body2">
-                  +84 123 456 789
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', mb: 2 }}>
-                <EmailIcon sx={{ mr: 2 }} />
-                <Typography variant="body2">
-                  info@golfclub.com
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-        </Grid>
+            </h6>
+            <div className="space-y-4">
+              <ContactInfo 
+                Icon={MapPin} 
+                text="123 Đường Golf, Quận 2, TP. Hồ Chí Minh" 
+              />
+              <ContactInfo 
+                Icon={Phone} 
+                text="+84 123 456 789" 
+              />
+              <ContactInfo 
+                Icon={Mail} 
+                text="info@golfclub.com" 
+              />
+            </div>
+          </div>
+        </div>
 
-        <Divider sx={{ my: 3, borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+        {/* Divider */}
+        <div className="border-t border-luxury-gold-800/30 my-8" />
 
         {/* Copyright */}
-        <Typography variant="body2" align="center" sx={{ pt: 2 }}>
+        <div className="text-center text-sm text-luxury-gold-200">
           © {currentYear} Golf Club. All rights reserved.
-        </Typography>
-      </Container>
-    </Box>
+        </div>
+      </div>
+    </footer>
   );
 };
+
+const FooterLinks = ({ links }) => (
+  <ul className="space-y-2">
+    {links.map((text) => (
+      <li key={text}>
+        <a 
+          href="#" 
+          className="text-luxury-gold-100 hover:text-luxury-gold-400 
+                     transition-colors duration-300"
+        >
+          {text}
+        </a>
+      </li>
+    ))}
+  </ul>
+);
+
+const ContactInfo = ({ Icon, text }) => (
+  <div className="flex items-start space-x-3">
+    <Icon size={20} className="text-luxury-gold-400 mt-1" />
+    <span className="text-luxury-gold-100">{text}</span>
+  </div>
+);
 
 export default Footer;

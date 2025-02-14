@@ -1,5 +1,5 @@
 // frontend/src/App.jsx
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import NotFound from './pages/404/NotFound'
 import DashBoards from './pages/DashBoards/DashBoards'
 import Auth from './pages/Auth/Auth'
@@ -7,8 +7,7 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import FunctionItems from './pages/DashBoards/FunctionItems/FunctionItems'
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
-
-
+import Layout from './components/Layout/Layout'
 
 function App() {
   const currentUser = useSelector(selectCurrentUser)
@@ -21,16 +20,19 @@ function App() {
         element={<Navigate to="/dashboards" replace={true} />} 
       />
 
-      {/* Protected Routes */}
+      {/* Protected Routes with Layout */}
       <Route element={<ProtectedRoute user={currentUser} />}>
-        <Route path='/dashboards' element={<DashBoards />} />
-        <Route path='/dashboards/:slug' element={<FunctionItems />} />
+        <Route element={<Layout />}>
+          <Route path='/dashboards' element={<DashBoards />} />
+          <Route path='/dashboards/:slug' element={<FunctionItems />} />
+        </Route>
       </Route>
 
-      {/* Authentication */}
-      <Route path='/login' element={<Auth />} />
-
-      {/* 404 Not Found */}
+      {/* Authentication - No Layout */}
+      <Route element={<Layout />}>
+        <Route path='/login' element={<Auth />} />
+      </Route>
+      {/* 404 Not Found - No Layout */}
       <Route path='*' element={<NotFound />} />
     </Routes>
   )

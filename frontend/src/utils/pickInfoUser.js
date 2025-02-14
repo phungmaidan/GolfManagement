@@ -1,3 +1,4 @@
+// src/utils/pickInfoUser.js
 /**
  * Utility function: pick
  * -------------------------

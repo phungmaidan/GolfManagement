@@ -1,13 +1,10 @@
 import React from 'react';
-import { useSelector } from "react-redux";
-import { selectSelectedItem } from "~/redux/module/moduleSlice";
 import FunctionItemsProgram from '~/components/FunctionItemsContent/FunctionItemsProgram/FunctionItemsProgram';
 import FunctionItemsTitle from '~/components/FunctionItemsContent/FunctionItemsTitle/FunctionItemsTitle';
 
 const FunctionItems = () => {
-    const selectedItem = useSelector(selectSelectedItem);
     return (
-        <div className="pt-[60px] pb-[30px] h-[1000px] flex flex-col bg-gradient-golf items-center justify-center">
+        <div className="flex gap-5 min-h-150 flex-col bg-gradient-luxury justify-center">
             <FunctionItemsTitle />
             <FunctionItemsProgram />
         </div>

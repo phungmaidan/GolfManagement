@@ -1,3 +1,4 @@
+// src/utils/authorizeAxios.js
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { interceptorLoadingElements } from '~/utils/formatter'

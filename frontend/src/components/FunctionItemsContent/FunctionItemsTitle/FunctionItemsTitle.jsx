@@ -8,7 +8,7 @@ const FunctionItemsTitle = () => {
   const selectedItem = useSelector(selectSelectedItem);
 
 return (
-    <div className="flex items-center gap-6 p-4 animation-show">
+    <div className="flex ml-10 items-center gap-6 mt-5 animation-show">
         <Link 
             to="/dashboards" 
             className="no-underline"
@@ -16,7 +16,7 @@ return (
             <button
                 className="
                     flex items-center justify-center cursor-pointer
-                    bg-gradient-gold hover:bg-golf-green-600 
+                    bg-luxury-gold-400
                     text-white font-medium
                     px-6 py-2.5 rounded-lg
                     transform hover:scale-105 hover:shadow-lg hover:shadow-luxury-gold-300

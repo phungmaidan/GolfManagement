@@ -1,4 +1,4 @@
-// flightUtils.js
+// src/utils/flightUtils.js
 import { pickInfoUser, splitByField } from '~/utils/pickInfoUser';
 
 export const processGuestInfo = (guestInfo) => {

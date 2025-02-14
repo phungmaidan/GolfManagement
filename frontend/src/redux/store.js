@@ -1,3 +1,4 @@
+// src/redux/store.js
 //Redux: State management tool
 import { configureStore } from '@reduxjs/toolkit'
 import { userReducer } from './user/userSlice'

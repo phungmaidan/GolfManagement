@@ -1,3 +1,4 @@
+// src/utils/constants.js
 let apiRoot = ''
 if (process.env.BUILD_MODE === 'dev') {
   apiRoot = 'http://localhost:5000'

@@ -47,8 +47,26 @@ const getComGuestType = async () => {
   }
 }
 
+const getCountTotalInfoCourse = async (BookingDate, CourseID) => {
+  const fields = ['ISNULL(COUNT(DISTINCT TeeTime), 0) AS TotalCount']
+  const where = `
+    BookingDate = @BookingDate
+    AND CourseID = @CourseID
+    AND (RecordStatus IS NULL OR RecordStatus = 'Registered')
+    AND Session IN ('Morning', 'Afternoon')
+  `
+  const params = { BookingDate: BookingDate, CourseID: CourseID }
+
+  try {
+    return await queryBuilder('BookingTable', fields, where, params)
+  } catch (error) {
+    throw new Error('Database query getCountTotalInfoCourse failed: ' + error.message)
+  }
+}
+
+
 export const dailyOperationModel = {
   getCourseByDate,
   getFreFlightStatus,
-  getComGuestType
+  getComGuestType,
 }

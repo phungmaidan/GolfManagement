@@ -1,0 +1,16 @@
+.authContainer {
+  --auth-overlay: rgba(10, 61, 32, 0.6);
+  background: linear-gradient(135deg, var(--golf-green-600), var(--golf-green-400));
+}
+
+.imageWrapper {
+  position: relative;
+  border-radius: 1rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.welcomeTitle {
+  font-family: 'Playfair Display', serif;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

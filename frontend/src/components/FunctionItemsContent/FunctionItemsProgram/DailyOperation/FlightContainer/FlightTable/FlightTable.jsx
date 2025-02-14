@@ -51,7 +51,7 @@ const FlightTable = ({ title, guestInfo, teeTimeInfo }) => {
     });
 
     return (
-        <div className="bg-golf-green-50 p-4 rounded-lg shadow-md overflow-x-auto animation-show">
+        <div className="bg-golf-green-50 p-4 rounded-lg shadow-golf overflow-x-auto animation-show">
             <h3 className="font-semibold text-golf-green-700 text-lg mb-4">{title}</h3>
 
             <table className="min-w-full border">

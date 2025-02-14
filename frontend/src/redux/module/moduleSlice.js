@@ -1,4 +1,4 @@
-// src/redux/slices/moduleSlice.js
+// src/redux/module/moduleSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify'
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
@@ -6,10 +6,14 @@ import { API_ROOT } from '~/utils/constants'
 
 const initialState = {
     selectedModule: null,
-    selectedFunction: 'Tasks',
+    selectedFunction: { id: 'task', label: 'Tasks' },
+    functionList: [
+        { id: 'tasks', label: 'Tasks' },
+        { id: 'reports', label: 'Reports' },
+        { id: 'setting', label: 'Setting' }
+    ],
     selectedItem: null,
     items: [], // Lưu danh sách các items từ API
-    
 };
 
 // Các hành động gọi api (bất đồng bộ) và cập nhật dữ liệu vào Redux, dùng Middleware createAsyncThunk đi kèm với extraReducers
@@ -25,7 +29,7 @@ export const getItemAPI = createAsyncThunk(
         try {
             // Gọi API, lưu ý nếu API của cần query parameters, có thể truyền chúng qua option params
             const response = await authorizedAxiosInstance.get(
-                `${API_ROOT}/v1/modules/${selectedModule.ModuleID}/${selectedFunction}`,
+                `${API_ROOT}/v1/modules/${selectedModule.ModuleID}/${selectedFunction.label}`,
                 data // hoặc cấu trúc data tùy theo yêu cầu của API
             );
             return response.data;
@@ -67,4 +71,7 @@ const moduleSlice = createSlice({
 export const { setSelectedFunction, setSelectedModule, setSelectedItem } = moduleSlice.actions;
 export const selectItems = (state) => state.module.items;
 export const selectSelectedItem = (state) => state.module.selectedItem;
+export const selectSelectedFunction = (state) => state.module.selectedFunction;
+export const selectSelectedModule = (state) => state.module.selectedModule
+export const selectFunctionList = (state) => state.module.functionList;
 export const moduleReducer = moduleSlice.reducer;

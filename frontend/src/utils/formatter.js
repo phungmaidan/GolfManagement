@@ -1,3 +1,4 @@
+// src/utils/formatter.js
 /**
  * Capitalize the first letter of a string
  */

@@ -1,0 +1,52 @@
+.loginContainer {
+  background-color: var(--golf-green-50);
+  border: 1px solid var(--luxury-gold-200);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: 0.625rem;
+  border: 1px solid var(--golf-green-200);
+  border-radius: 0.5rem;
+  background-color: white;
+  color: var(--golf-green-700);
+  transition: all 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--luxury-gold-400);
+  box-shadow: 0 0 0 2px var(--luxury-gold-100);
+}
+
+.submitButton {
+  width: 100%;
+  padding: 0.625rem;
+  cursor: pointer;
+  background-color: var(--golf-green-600);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  margin-top: 1rem;
+}
+
+.submitButton:hover {
+  background-color: var(--golf-green-700);
+}
+
+.link {
+  color: var(--luxury-gold-600);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: var(--luxury-gold-700);
+  text-decoration: underline;
+}

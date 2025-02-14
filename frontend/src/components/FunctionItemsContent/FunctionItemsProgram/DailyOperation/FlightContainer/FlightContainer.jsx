@@ -23,7 +23,7 @@ const FlightContainer = () => {
     let content;
 
     if (status === 'failed' || error || !GuestInfo || !teeTimeInfo) {
-        content = <div className="text-red-900 text-center font-bold animation-show">
+        content = <div className="py-2 text-luxury-gold-100 text-center font-sans ==" style={{ fontSize: '18px' }}>
             <p>Không thể tải dữ liệu, vui lòng thử lại sau:</p>
             {error?.message && <p>{error?.message}</p>} {/* Hiển thị chi tiết lỗi nếu có */}
         </div>;
@@ -39,7 +39,7 @@ const FlightContainer = () => {
                 ? processSessionData(processedGuestInfo.Afternoon, teeTimeInfo.teeTimeDetails.Afternoon)
                 : [];
         content = (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animation-show">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fadeIn">
                 <FlightTable title="Morning" teeTimeInfo={teeTimeInfo.teeTimeDetails?.Morning} guestInfo={processedDataMorning} />
                 <FlightTable title="Afternoon" teeTimeInfo={teeTimeInfo.teeTimeDetails?.Afternoon} guestInfo={processedDataAfternoon} />
             </div>
@@ -47,7 +47,7 @@ const FlightContainer = () => {
     }
 
     return (
-        <div className=" gap-6 min-w-[1200px] p-4 border border-gray-300 rounded-md backdrop-blur-lg">
+        <div className="rounded-md">
             {content}
         </div>
     );

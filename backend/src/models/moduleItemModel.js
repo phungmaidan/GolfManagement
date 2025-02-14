@@ -21,7 +21,7 @@ const fetchBookings = async (courseId, bookingDate) => {
   return queryBuilder(
     'FreBookingMaster',
     ['*'],
-    'CourseID = @CourseID AND BookingDate = @BookingDate AND (RecordStatus IS NULL OR RecordStatus = @RecordStatus)',
+    'CourseID = @CourseID AND BookingDate = @BookingDate AND (RecordStatus IS NULL OR RecordStatus = @RecordStatus) Order By Session, TeeBox, TeeTime, BookingID',
     {
       CourseID: courseId,
       BookingDate: bookingDate,
@@ -56,8 +56,8 @@ const fetchTeeTimeMaster = async (courseId, txnDate, templateId) => {
 const fetchTeeTimeDetails = async (courseId, txnDate) => {
   return queryBuilder(
     'FreTeeTimeDetails',
-    ['TeeTime', 'Session', 'Flight'],
-    'CourseID = @CourseID AND TxnDate = @TxnDate',
+    ['*'],
+    'CourseID = @CourseID AND TxnDate = @TxnDate Order By Len(TeeBox), TeeBox, TeeTime',
     {
       CourseID: courseId,
       TxnDate: txnDate
@@ -68,7 +68,7 @@ const fetchTeeTimeDetails = async (courseId, txnDate) => {
 const fetchTemplateOfDay = async (courseId) => {
   const result = await queryBuilder(
     'FreTemplateofDay',
-    ['*'],
+    ['Top 1 *'],
     'CourseID = @CourseID',
     { CourseID: courseId }
   );
@@ -156,19 +156,18 @@ const releaseTeeTime = async (courseId, txnDate, templateId) => {
       TxnDate: txnDate,
       TemplateID: templateId
     },
-    { returnRecordset: false }
+    { returnRecordset: true }
   );
 };
 
 const checkAndReleaseTeeTime = async (courseId, txnDate, templateId) => {
-  const [teeTimeMasterResult, teeTimeDetails] = await Promise.all([
-    fetchTeeTimeMaster(courseId, txnDate, templateId),
-    fetchTeeTimeDetails(courseId, txnDate)
-  ]);
+  const teeTimeMasterResult = await fetchTeeTimeMaster(courseId, txnDate, templateId)
 
   if (!teeTimeMasterResult.length) {
     await releaseTeeTime(courseId, txnDate, templateId);
   }
+
+  const teeTimeDetails = await fetchTeeTimeDetails(courseId, txnDate)
 
   const groupedTeeTimeDetails = groupTeeTimesBySection(teeTimeDetails);
 
@@ -177,6 +176,21 @@ const checkAndReleaseTeeTime = async (courseId, txnDate, templateId) => {
     teeTimeDetails: groupedTeeTimeDetails
   };
 };
+
+const getFreBlockBookingByDate = async (date) => {
+  const fields = ['*']
+  const where = `
+    TransactionDate = @TransactionDate
+    AND RecordStatus IS NULL
+  `
+  const params = { TransactionDate: date }
+
+  try {
+    return await queryBuilder('FreBlockBooking', fields, where, params)
+  } catch (error) {
+    throw new Error('Database query FreBlockBooking by date failed: ' + error.message)
+  }
+}
 
 const getTeeTimeTemplate = async (courseId, selectedDate) => {
   const dayOfWeek = getDayOfWeek(selectedDate);
@@ -187,18 +201,21 @@ const getTeeTimeTemplate = async (courseId, selectedDate) => {
     throw new Error(`No template found for course ${courseId} on ${dayOfWeek}`);
   }
 
-  const [teeTimeInfo, templateMasterResult, guestInfoResult] = await Promise.all([
+  const [teeTimeInfo, templateMasterResult, guestInfoResult, blockBooking] = await Promise.all([
     checkAndReleaseTeeTime(courseId, selectedDate, templateId),
     fetchTemplateMaster(templateId),
-    getGuestInfoTable(courseId, selectedDate)
+    getGuestInfoTable(courseId, selectedDate),
+    getFreBlockBookingByDate(selectedDate)
   ]);
 
   return {
     teeTimeInfo,
     templateMaster: templateMasterResult,
-    guestInfo: guestInfoResult.guestInfo
+    guestInfo: guestInfoResult.guestInfo,
+    blockBooking: blockBooking
   };
 };
+
 
 export const moduleItemModel = {
   getTeeTimeTemplate
