@@ -18,6 +18,19 @@ const getTemplateSchedule = async (courseId, itemName, selectedDate) => {
   }
 };
 
+const getCourse = async (date) => {
+  try {
+    const result = await itemModel.getCourseByDate(date);
+    return result;
+  } catch (error) {
+    throw new ApiError(
+      error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
+      error.message || 'Internal server error'
+    );
+  }
+};
+
 export const itemService = {
-  getTemplateSchedule
+  getTemplateSchedule,
+  getCourse
 }

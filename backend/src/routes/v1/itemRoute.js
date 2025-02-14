@@ -6,7 +6,8 @@ import { cacheMiddleware } from '~/middlewares/cacheMiddleware'
 
 const Router = express.Router()
 
-Router.route('/:itemName')
-  .get(authMiddleware.isAuthorized, cacheMiddleware.caching, itemValidation.getTemplateSchedule, itemController.getTemplateSchedule)
+Router.route('/get-course')
+  .get(authMiddleware.isAuthorized, itemValidation.getCourse, itemController.getCourse)
+
 
 export const itemRoute = Router

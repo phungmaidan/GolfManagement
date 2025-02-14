@@ -1,42 +1,32 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedCourse, getBookingListAPI, setSelectedDate } from '~/redux/booking/bookingSlice';
+import { setSelectedCourse, getCouseAPI, setSelectedDate, selectCourseList } from '~/redux/booking/bookingSlice';
 
 const HeaderSection = () => {
   const dispatch = useDispatch();
   const selectedDate = useSelector((state) => state.booking.selectedDate);
   const selectedCourse = useSelector((state) => state.booking.selectedCourse);
-
+  const courses = useSelector(selectCourseList);
   useEffect(() => {
-  }, [dispatch, selectedDate]);
+    if (courses.length === 0){
+      dispatch(getCouseAPI());
+    }
+  }, [dispatch]);
 
   const handleChangeDate = (event) => {
     const newSetDate = event.target.value;
     if (newSetDate !== selectedDate) {
       dispatch(setSelectedDate(newSetDate));
-      dispatch(getBookingListAPI({})); // Gọi API khi đổi sân
+      dispatch(getCouseAPI({})); // Gọi API khi đổi sân
     }
   };
 
   const handleChangeCourse = (event) => {
     const newCourseId = event.target.value;
-
-    // Nếu chọn sân khác với sân hiện tại thì mới dispatch và fetch API
     if (newCourseId !== selectedCourse) {
       dispatch(setSelectedCourse(newCourseId));
-      dispatch(getBookingListAPI({})); // Gọi API khi đổi sân
     }
   };
-
-  const courses = [
-    { id: 'L - D', name: 'LOTUS - DESERT' },
-    { id: 'D - L', name: 'DESERT - LOTUS' },
-    { id: 'L - P', name: 'LOTUS - PALM' },
-    { id: 'P - L', name: 'PALM - LOTUS' },
-    { id: 'P - D', name: 'PALM - DESERT' },
-    { id: 'D - P', name: 'DESERT - PALM' },
-    { id: 'WALK IN', name: 'WALK IN' },
-  ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -56,17 +46,23 @@ const HeaderSection = () => {
 
       <div className="bg-luxury-gold-50 p-4 rounded-lg shadow-gold animate-fadeIn flex flex-col">
         <h3 className="font-semibold text-lg mb-3 text-luxury-gold-700">Chọn sân golf</h3>
-        <select
-          className="border border-golf-green-700 rounded-md p-2"
-          value={selectedCourse}
-          onChange={handleChangeCourse}
-        >
-          {courses.map(course => (
-            <option key={course.id} value={course.id}>
-              {course.name}
-            </option>
-          ))}
-        </select>
+        {courses.length > 0 ? (
+          <select
+            className="border border-golf-green-700 rounded-md p-2"
+            value={selectedCourse}
+            onChange={handleChangeCourse}
+          >
+            {courses.map(course => (
+              <option key={course.CourseID} value={course.CourseID}>
+                {course.Name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <div className="p-2 text-gray-500 border cursor-default border-golf-green-700 rounded-md bg-white">
+            Không có sân golf nào
+          </div>
+        )}
       </div>
       {/* Stats Overview */}
       <div className="bg-gradient-golf p-4 rounded-lg shadow-golf animate-fadeIn text-white flex flex-col">

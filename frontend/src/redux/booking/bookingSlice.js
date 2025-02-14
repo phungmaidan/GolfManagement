@@ -1,5 +1,6 @@
 // src/redux/slices/bookingSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { add } from 'lodash';
 import { toast } from 'react-toastify'
 import authorizedAxiosInstance from '~/utils/authorizeAxios'
 import { API_ROOT } from '~/utils/constants'
@@ -7,6 +8,7 @@ import { slugify } from "~/utils/formatter";
 
 const initialState = {
     selectedDate: new Date().toISOString().split('T')[0],
+    courseList: [],
     selectedCourse: 'L - D',
     selectedFreTemplateofDay: null,
     selectedFreTemplateMaster: null,
@@ -19,6 +21,23 @@ const initialState = {
     freFlightStatus: null,
     comGuestType: null
 };
+
+export const getCouseAPI = createAsyncThunk(
+    'booking/getCouseAPI',
+    async (_, thunkAPI) => {
+        const { booking } = thunkAPI.getState();
+        const { selectedDate } = booking;
+        try {
+            const params = { date: selectedDate };
+            console.log('params', params);
+            const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/items/get-course`, { params });
+            return response.data;
+        } catch (error) {
+            toast.error('Lỗi khi lấy dữ liệu course');
+            return thunkAPI.rejectWithValue(error.response?.data || error.message);
+        }
+    }
+)
 
 export const getBookingListAPI = createAsyncThunk(
     'booking/getBookingListAPI',
@@ -96,6 +115,32 @@ const bookingSlice = createSlice({
                 state.templateMaster = null;
                 state.freFlightStatus = null;
                 state.comGuestType = null;
+            })
+            .addCase(getCouseAPI.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(getCouseAPI.fulfilled, (state, { payload }) => {
+                state.status = 'succeeded';
+                state.courseList = payload;
+                state.selectedCourse = state.courseList[0].CourseID;
+                state.error = null;
+            })
+            .addCase(getCouseAPI.rejected, (state, { payload }) => {
+                state.status = 'failed';
+                state.error = payload;
+
+                // Reset các biến về null nếu fetch API lỗi
+                state.selectedFreTemplateofDay = null;
+                state.selectedFreTemplateMaster = null;
+                state.guestInfo = null;
+                state.teeTimeInfo = null;
+                state.blockBooking = null;
+                state.templateMaster = null;
+                state.freFlightStatus = null;
+                state.comGuestType = null;
+                state.courseList = [];
+                state.selectedCourse = null;
+
             });
     }
 });
@@ -117,6 +162,7 @@ export const selectTeeTimeInfo = (state) => state.booking.teeTimeInfo;
 export const selectTemplateMaster = (state) => state.booking.templateMaster;
 export const selectBlockBooking = (state) => state.booking.blockBooking;
 export const selectSelectedFreTemplateofDay = (state) => state.booking.selectedFreTemplateofDay;
+export const selectCourseList = (state) => state.booking.courseList;
 export const selectFreFlightStatus = (state) => state.booking.freFlightStatus;
 export const selectComGuestType = (state) => state.booking.comGuestType;
 

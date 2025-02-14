@@ -1,12 +1,12 @@
-import { sqlQueryUtils } from '~/utils/sqlQueryUtils'
+import { sqlQueryUtils } from '~/utils/sqlQueryUtils';
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError'
 
-const getCourseByDate = async (date) => {
+const getCourseByDate = async (date, fields = ['CourseID', 'Name']) => {
   try {
     return await sqlQueryUtils.queryBuilder({
       tableName: 'ComCourseMaster',
-      fields: ['CourseID', 'Name'],
+      fields: fields,
       where: `
         (HomeCourse = 1 AND CourseID NOT IN 
           (SELECT CourseID FROM ComCourseMaintenance 
@@ -58,9 +58,9 @@ const getCountTotalInfoCourse = async (bookingDate, courseId) => {
         AND (RecordStatus IS NULL OR RecordStatus = 'Registered')
         AND Session IN ('Morning', 'Afternoon')
       `,
-      params: { 
-        BookingDate: bookingDate, 
-        CourseID: courseId 
+      params: {
+        BookingDate: bookingDate,
+        CourseID: courseId
       }
     })
   } catch (error) {
@@ -68,9 +68,16 @@ const getCountTotalInfoCourse = async (bookingDate, courseId) => {
   }
 }
 
-export const dailyOperationModel = {
-  getCourseByDate,
-  getFreFlightStatus,
-  getComGuestType,
-  getCountTotalInfoCourse
+const getBookingSchedule = async (date = new Date().toISOString().split('T')[0], courseID = 'L - D') => {
+  try {
+   
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const itemModel = {
+  getBookingSchedule
 }

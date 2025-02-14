@@ -15,6 +15,7 @@ const executeQuery = async (sql, params = {}, errorMessage = 'Database query fai
     try {
         const pool = GET_DB();
         const request = pool.request();
+
         // Thêm các parameter vào request
         Object.entries(params).forEach(([key, value]) => {
             request.input(key, value);

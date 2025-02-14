@@ -18,7 +18,7 @@ const FlightContainer = () => {
     const teeTimeInfo = useSelector(selectTeeTimeInfo);
 
     useEffect(() => {
-        dispatch(getBookingListAPI());
+        //dispatch(getBookingListAPI());
     }, [dispatch]);
     let content;
 

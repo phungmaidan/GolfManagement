@@ -26,7 +26,9 @@ const getModuleData = async (req, res, next) => {
     Object.assign(req, validatedData);
     next()
   } catch (error) {
-    const errorMessage = error.details.map(detail => detail.message).join(', ')
+    const errorMessage = error.details
+      ? error.details.map(detail => detail.message).join(', ')
+      : error.message;
     next(new ApiError(StatusCodes.BAD_REQUEST, errorMessage))
   }
 }

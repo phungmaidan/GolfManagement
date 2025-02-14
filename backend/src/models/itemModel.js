@@ -17,10 +17,10 @@ const formatDate = (date) => moment(date, DATE_FORMAT);
 const getDayOfWeek = (date) => formatDate(date).format('dddd');
 
 // Database query functions
-const fetchBookings = async (courseId, bookingDate) => {
+const fetchBookings = async (courseId, bookingDate, fields = ['*']) => {
   return sqlQueryUtils.queryBuilder({
     tableName: 'FreBookingMaster',
-    fields: ['*'],
+    fields: fields,
     where: 'CourseID = @CourseID AND BookingDate = @BookingDate AND (RecordStatus IS NULL OR RecordStatus = @RecordStatus) Order By Session, TeeBox, TeeTime, BookingID',
     params: {
       CourseID: courseId,
@@ -30,20 +30,20 @@ const fetchBookings = async (courseId, bookingDate) => {
   });
 };
 
-const fetchBookingDetails = async (bookingIds) => {
+const fetchBookingDetails = async (bookingIds, fields = ['*']) => {
   if (!bookingIds?.length) return [];
   return sqlQueryUtils.queryBuilder({
     tableName: 'FreBookingDetails',
-    fields: ['*'],
+    fields: fields,
     where: `BookingID IN (${bookingIds.map(id => `'${id}'`).join(',')})`,
     params: {}
   });
 };
 
-const fetchTeeTimeMaster = async (courseId, txnDate, templateId) => {
+const fetchTeeTimeMaster = async (courseId, txnDate, templateId, fields = ['*']) => {
   return sqlQueryUtils.queryBuilder({
     tableName: 'FreTeeTimeMaster',
-    fields: ['*'],
+    fields: fields,
     where: 'CourseID = @CourseID AND TxnDate = @TxnDate AND (TemplateID = @TemplateID OR TemplateID IS NULL)',
     params: {
       CourseID: courseId,
@@ -53,10 +53,10 @@ const fetchTeeTimeMaster = async (courseId, txnDate, templateId) => {
   });
 };
 
-const fetchTeeTimeDetails = async (courseId, txnDate) => {
+const fetchTeeTimeDetails = async (courseId, txnDate, fields = ['*']) => {
   return sqlQueryUtils.queryBuilder({
     tableName: 'FreTeeTimeDetails',
-    fields: ['*'],
+    fields: fields,
     where: 'CourseID = @CourseID AND TxnDate = @TxnDate Order By Len(TeeBox), TeeBox, TeeTime',
     params: {
       CourseID: courseId,
@@ -80,10 +80,10 @@ const fetchTemplateOfDay = async (courseId) => {
   return result[0];
 };
 
-const fetchTemplateMaster = async (templateId) => {
+const fetchTemplateMaster = async (templateId, fields = ['*']) => {
   return sqlQueryUtils.queryBuilder({
     tableName: 'FreTemplateMaster',
-    fields: ['*'],
+    fields: fields,
     where: 'TemplateID = @TemplateID',
     params: { TemplateID: templateId }
   });
@@ -177,11 +177,11 @@ const checkAndReleaseTeeTime = async (courseId, txnDate, templateId) => {
   };
 };
 
-const getFreBlockBookingByDate = async (date) => {
+const getFreBlockBookingByDate = async (date, fields = ['*']) => {
   try {
     return await sqlQueryUtils.queryBuilder({
       tableName: 'FreBlockBooking',
-      fields: ['*'],
+      fields: fields,
       where: 'TransactionDate = @TransactionDate AND RecordStatus IS NULL',
       params: { TransactionDate: date }
     });
@@ -214,7 +214,29 @@ const getTeeTimeTemplate = async (courseId, selectedDate) => {
   };
 };
 
+const getCourseByDate = async (date, fields = ['CourseID', 'Name']) => {
+  try {
+    return await sqlQueryUtils.queryBuilder({
+      tableName: 'ComCourseMaster',
+      fields: fields,
+      where: `
+        (HomeCourse = 1 AND CourseID NOT IN 
+          (SELECT CourseID FROM ComCourseMaintenance 
+           WHERE CONVERT(VARCHAR(10), TxnDate, 111) = @TxnDate AND ISNULL(Active, 0) = 0)) 
+        OR 
+        (HomeCourse = 0 AND CourseID IN 
+          (SELECT CourseID FROM ComCourseMaintenance 
+           WHERE CONVERT(VARCHAR(10), TxnDate, 111) = @TxnDate AND ISNULL(Active, 0) = 1))
+      `,
+      params: { TxnDate: date }
+    })
+  } catch (error) {
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Database query ComCourseMaster by date failed: ' + error.message)
+  }
+}
+
 
 export const itemModel = {
-  getTeeTimeTemplate
+  getTeeTimeTemplate,
+  getCourseByDate
 }
