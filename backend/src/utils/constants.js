@@ -10,3 +10,15 @@ export const WEBSITE_DOMAIN = (env.BUILD_MODE === 'production') ? env.WEBSITE_DO
 
 export const DEFAULT_PAGE = 1
 export const DEFAULT_ITEMS_PER_PAGE = 12
+
+export const SESSION = {
+  MORNING: 'Morning',
+  AFTERNOON: 'Afternoon'
+};
+
+export const BOOKING_ITEM_FIELDS = {
+  TEE_TIME_DETAILS: ['TeeBox', 'TeeTime', 'Flight', 'Status'],
+  BOOKING_INFO: ['BookingID', 'TeeBox', 'Flight', 'TeeTime', 'GuestType', 'Name'],
+  BLOCK_BOOKING: ['TeeTime', 'Remark', 'Color'],
+  PROCESSED_BOOKING: ['BookingID', 'Counter', 'GuestType', 'MemberNo', 'Name']
+};

@@ -2,23 +2,93 @@ import { StatusCodes } from 'http-status-codes';
 import ApiError from '~/utils/ApiError';
 import { itemModel } from '~/models/itemModel';
 import { getDayOfWeek, TeeTimeUtils } from '~/utils/formatters';
-import { SECTIONS, processBookingInfo } from '~/utils/itemService-bookingUtils';
+import { processBookingInfo, mergeBookingData } from '~/utils/itemService-bookingUtils';
 import { sqlQueryUtils } from '~/utils/sqlQueryUtils';
-const getCourse = async (date) => {
-  try {
-    const result = await itemModel.getCourseByDate({ 
-      date: date,
-      fields: ['CourseID', 'Name'],
-      execute: true 
-    });
-    return result;
-  } catch (error) {
-    throw new ApiError(
-      error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
-      error.message || 'Internal server error'
+import { SESSION, BOOKING_ITEM_FIELDS } from '~/utils/constants';
+
+// Helper functions {
+const prepareQueries = async (CourseID, date, sessions) => {
+  const queries = [];
+
+  // Prepare queries for all sessions
+  for (const session of sessions) {
+    queries.push(
+      ...[
+        await itemModel.fetchTeeTimeDetails({
+          CourseID,
+          txnDate: date,
+          Session: session,
+          fields: BOOKING_ITEM_FIELDS.TEE_TIME_DETAILS,
+          execute: false
+        }),
+        await itemModel.getBookingInfo({
+          CourseID,
+          bookingDate: date,
+          Session: session,
+          fields: BOOKING_ITEM_FIELDS.BOOKING_INFO,
+          execute: false
+        }),
+        await itemModel.getFreBlockBooking({
+          date,
+          CourseID,
+          Session: session,
+          fields: BOOKING_ITEM_FIELDS.BLOCK_BOOKING,
+          execute: false
+        })
+      ].map(sql => ({ sql }))
     );
   }
+
+  return queries;
 };
+
+const processResults = (results, sessions) => {
+  const sessionData = {};
+  let index = 0;
+  for (const session of sessions) {
+    // Extract results for current session (3 queries per session)
+    const [teeTimeDetails, bookingInfo, blockBooking] = results.slice(index, index + 3);
+
+    sessionData[session] = {
+      teeTimeDetails: TeeTimeUtils.formatTeeTimes(teeTimeDetails),
+      bookingInfo: TeeTimeUtils.formatTeeTimes(bookingInfo),
+      blockBooking: TeeTimeUtils.formatTeeTimes(blockBooking)
+    };
+
+    index += 3;
+  }
+
+  return sessionData;
+};
+
+const processAllSessions = async (CourseID, date, sessions) => {
+  // Prepare all queries for batch execution
+  const queries = await prepareQueries(CourseID, date, sessions);
+  // Execute all queries in one batch
+  const results = await sqlQueryUtils.executeBatch(queries);
+
+  // Process results for each session
+  const sessionData = processResults(results, sessions);
+
+  // Process booking info and merge data for each session
+  const processedSessionResults = await Promise.all(
+    Object.entries(sessionData).map(async ([session, data]) => {
+      const processedBooking = await processBookingInfo({
+        bookingInfo: data.bookingInfo,
+        itemModel,
+        fields: BOOKING_ITEM_FIELDS.PROCESSED_BOOKING
+      });
+
+      return {
+        sessionKey: `${session}TeeTimeDetail`,
+        data: mergeBookingData(data.teeTimeDetails, processedBooking, data.blockBooking)
+      };
+    })
+  );
+
+  return processedSessionResults;
+};
+// } Helper functions
 
 const getSchedule = async (CourseID, date) => {
   try {
@@ -30,80 +100,30 @@ const getSchedule = async (CourseID, date) => {
     });
     const TemplateID = fetchTemplate[dayOfWeek];
     if (!TemplateID) {
-      throw new Error(`No template found for course ${CourseID} on ${dayOfWeek}`);
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        `No template found for course ${CourseID} on ${dayOfWeek}`
+      );
     }
-    const AFTERNOONTeeTimeInfo = await itemModel.fetchTeeTimeMaster({
-      CourseID: CourseID,
-      txnDate: date,
-      TemplateID: TemplateID,
-      execute: true
-    })
-    // Get SQL queries without executing them
-    const queries = [
-      await itemModel.fetchTeeTimeDetails({
+
+    const [TeeTimeInfo, sessionResults] = await Promise.all([
+      itemModel.fetchTeeTimeMaster({
         CourseID: CourseID,
         txnDate: date,
-        Session: SECTIONS.AFTERNOON,
-        fields: ['TeeBox', 'TeeTime', 'Flight', 'Status'],
-        execute: false
+        TemplateID: TemplateID,
+        execute: true
       }),
-      await itemModel.getBookingInfo({
-        CourseID: CourseID,
-        bookingDate: date,
-        Session: SECTIONS.AFTERNOON,
-        fields: ['BookingID', 'TeeBox', 'Flight', 'TeeTime', 'GuestType', 'Name'],
-        execute: false
-      }),
-      await itemModel.getFreBlockBooking({ 
-        date: date,
-        CourseID: CourseID,
-        Session: SECTIONS.AFTERNOON,
-        fields: ['TeeTime', 'Remark', 'Color'],
-        execute: false 
-      })
-    ].map(sql => ({ sql })); // Convert each SQL string to required format for executeBatch
+      processAllSessions(CourseID, date, Object.values(SESSION))
+    ]);
 
-    // Execute all queries in batch
-    const [ 
-      AFTERNOONTeeTimeDetails, 
-      AFTERNOONBookingInfo, 
-      AFTERNOONBlockBooking
-    ] = await sqlQueryUtils.executeBatch(queries);
-
-    const teeTimeDetails = TeeTimeUtils.formatTeeTimes(AFTERNOONTeeTimeDetails);
-    const bookingInfo = TeeTimeUtils.formatTeeTimes(AFTERNOONBookingInfo);
-    const blockBooking = TeeTimeUtils.formatTeeTimes(AFTERNOONBlockBooking);
-    const processedBooking = await processBookingInfo({
-      bookingInfo: bookingInfo,
-      itemModel: itemModel,
-      fields: ['BookingID','Counter', 'GuestType', 'MemberNo', 'Name']
-    });
-
-    const mergedData = teeTimeDetails.map(detail => {
-      // Tìm các booking có cùng TeeTime và loại bỏ thuộc tính TeeTime ở các đối tượng con
-      const relatedBookings = processedBooking
-        .filter(item => item.TeeTime === detail.TeeTime)
-        .map(({ TeeTime, TeeBox, Flight, ...rest }) => rest);
-
-      // Tìm các block booking có cùng TeeTime và loại bỏ thuộc tính TeeTime ở các đối tượng con
-      const relatedBlocks = blockBooking
-        .filter(item => item.TeeTime === detail.TeeTime)
-        .map(({ TeeTime, ...rest }) => rest);
-
-      return {
-        ...detail,
-        children: [
-          ...relatedBlocks,
-          ...relatedBookings
-        ]
-      };
-    });
-
-
+    const mergedSessionData = sessionResults.reduce((acc, { sessionKey, data }) => {
+      acc[sessionKey] = data;
+      return acc;
+    }, {});
 
     return {
-      AFTERNOONTeeTimeInfo: AFTERNOONTeeTimeInfo,
-      TeeTimeDetail: mergedData
+      TeeTimeInfo: TeeTimeInfo,
+      ...mergedSessionData
     };
 
   } catch (error) {
@@ -114,7 +134,23 @@ const getSchedule = async (CourseID, date) => {
   }
 };
 
+const getCourse = async (date) => {
+  try {
+    const result = await itemModel.getCourseByDate({
+      date: date,
+      fields: ['CourseID', 'Name'],
+      execute: true
+    });
+    return result;
+  } catch (error) {
+    throw new ApiError(
+      error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
+      error.message || 'Internal server error'
+    );
+  }
+};
+
 export const itemService = {
+  getSchedule,
   getCourse,
-  getSchedule
 }
