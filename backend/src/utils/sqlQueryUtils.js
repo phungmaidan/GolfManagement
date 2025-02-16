@@ -30,7 +30,7 @@ const executeQuery = async (sql, params = {}, errorMessage = 'Database query fai
 
 /**
  * Hàm thực thi nhiều truy vấn trong một transaction
- * @param {Array<string>} queries - Danh sách các câu lệnh SQL
+ * @param {Array<{sql: string}>} queries - Danh sách các câu lệnh SQL
  * @returns {Promise<void>}
  */
 const executeTransaction = async (queries) => {
@@ -41,18 +41,21 @@ const executeTransaction = async (queries) => {
         await transaction.begin();
         const request = new sql.Request(transaction);
 
-        // Chuyển đổi các queries thành câu lệnh SQL và thực thi
-        for (const { sql, params } of queries) {
-            const query = convertToQuery(sql, params);
-            await request.query(query);
-        }
+        // Kết hợp các câu SQL với dấu chấm phẩy
+        const batch = `
+            SET NOCOUNT ON;
+            ${queries.map(({ sql }) => sql.trim()).join(';\n')}
+        `;
 
+        await request.query(batch);
         await transaction.commit();
-        console.log('Transaction committed successfully');
+        return { success: true };
     } catch (error) {
         await transaction.rollback();
-        console.error('Transaction rolled back due to error:', error);
-        throw error;
+        throw new ApiError(
+            StatusCodes.NOT_ACCEPTABLE,
+            `Transaction failed: ${error.message}`
+        );
     }
 };
 /**
@@ -74,12 +77,17 @@ const executeBatch = async (queries) => {
         const pool = GET_DB();
         const request = pool.request();
 
-        // Chuyển đổi các queries thành câu lệnh SQL
-        const batch = queries.map(({ sql, params }) => convertToQuery(sql, params)).join('; ');
+        // Kết hợp các câu SQL với dấu chấm phẩy và thêm SET NOCOUNT ON
+        const batch = `
+            SET NOCOUNT ON;
+            ${queries.map(({ sql }) => sql.trim()).join(';\n')}
+        `;
 
+        // Execute batch và lấy recordsets
         const result = await request.query(batch);
-
-        return result.recordset;
+        
+        // Trả về mảng các recordset
+        return result.recordsets;
     } catch (error) {
         throw new Error(`Batch query failed: ${error.message}`);
     }
@@ -147,6 +155,7 @@ const queryBuilder = async ({
     if (!execute) {
         return convertToQuery(sqlQuery, params);
     }
+
     try {
         return await executeQuery(sqlQuery, params, `Error querying ${tableName}`)
     } catch (error) {
@@ -332,14 +341,12 @@ const execProcedure = async ({
  */
 const convertToQuery = (sql, params = {}) => {
     let query = sql;
-    console.log('Original SQL:', query);
-    console.log('Parameters:', params);
     // Thay thế các tham số trong câu lệnh SQL
     Object.entries(params).forEach(([key, value]) => {
         const paramValue = typeof value === 'string' ? `'${value}'` : value;
         query = query.replace(new RegExp(`@${key}`, 'g'), paramValue);
     });
-    console.log('Converted SQL:', query);
+
     return query;
 };
 

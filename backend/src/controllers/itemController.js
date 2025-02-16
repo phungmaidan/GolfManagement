@@ -21,7 +21,19 @@ const getCourse = async (req, res, next) => {
     res.status(StatusCodes.OK).json(data);
   } catch (error) { next(error) }
 }
+
+const getSchedule = async (req, res, next) => {
+  try {
+    const { CourseID, date } = req.validatedData; // Lấy giá trị từ req.query
+    // Gọi service lấy dữ liệu
+    const data = await itemService.getSchedule(CourseID, date);
+
+    res.status(StatusCodes.OK).json(data);
+  } catch (error) { next(error) }
+}
+
 export const itemController = {
   getTemplateSchedule,
-  getCourse
+  getCourse,
+  getSchedule
 };

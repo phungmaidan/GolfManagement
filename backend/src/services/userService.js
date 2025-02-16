@@ -9,7 +9,11 @@ import { JwtProvider } from '~/providers/JwtProvider'
 
 const login = async (reqBody) => {
   try {
-    const existUser = await userModel.findOneByAccount(reqBody.account)
+    const existUser = await userModel.findOneByAccount({
+      account: reqBody.account,
+      fields: ['*'],
+      execute: true
+    })
 
     if (!existUser) throw new ApiError(StatusCodes.NOT_FOUND, 'Account not found!')
 
@@ -32,7 +36,12 @@ const login = async (reqBody) => {
       env.REFRESH_TOKEN_LIFE
     )
 
-    const userModule = await userModel.findUserModule(reqBody.account)
+    const userModule = await userModel.findUserModule({
+      account: reqBody.account,
+      fields: ['ModuleID', 'ModuleName', 'PictureKey', 'ModuleSequence'],
+      execute: true
+    })
+    
     return { accessToken, refreshToken, ...pickUser(existUser), userModule }
 
   } catch (error) { throw error }

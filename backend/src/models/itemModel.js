@@ -1,76 +1,81 @@
 import { sqlQueryUtils } from '~/utils/sqlQueryUtils';
-import moment from 'moment';
 
-// Constants
-const DATE_FORMAT = 'YYYY-MM-DD';
 const RECORD_STATUS = {
   REGISTERED: 'Registered'
 };
 
-const SECTIONS = {
-  MORNING: 'Morning',
-  AFTERNOON: 'Afternoon'
-};
-
-// Helper functions
-const formatDate = (date) => moment(date, DATE_FORMAT);
-const getDayOfWeek = (date) => formatDate(date).format('dddd');
-
 // Database query functions
-const fetchBookings = async (courseId, bookingDate, fields = ['*']) => {
-  return sqlQueryUtils.queryBuilder({
+const getBookingInfo = async ({ CourseID, bookingDate, Session, fields = ['*'], execute = true }) => {
+  return await sqlQueryUtils.queryBuilder({
     tableName: 'FreBookingMaster',
     fields: fields,
-    where: 'CourseID = @CourseID AND BookingDate = @BookingDate AND (RecordStatus IS NULL OR RecordStatus = @RecordStatus) Order By Session, TeeBox, TeeTime, BookingID',
+    where: 'CourseID = @CourseID AND BookingDate = @BookingDate AND Session = @Session AND (RecordStatus IS NULL OR RecordStatus = @RecordStatus) Order By Session, TeeBox, TeeTime, BookingID',
     params: {
-      CourseID: courseId,
+      CourseID: CourseID,
       BookingDate: bookingDate,
+      Session: Session,
       RecordStatus: RECORD_STATUS.REGISTERED
-    }
+    },
+    execute: execute
   });
 };
 
-const fetchBookingDetails = async (bookingIds, fields = ['*']) => {
-  if (!bookingIds?.length) return [];
-  return sqlQueryUtils.queryBuilder({
+const fetchBookingDetails = async ({ bookingIDs, fields = ['*'], execute = true }) => {
+  if (!bookingIDs?.length) return [];
+  return await sqlQueryUtils.queryBuilder({
     tableName: 'FreBookingDetails',
     fields: fields,
-    where: `BookingID IN (${bookingIds.map(id => `'${id}'`).join(',')})`,
-    params: {}
+    where: `BookingID IN (${bookingIDs.map(id => `'${id}'`).join(',')}) Order By BookingID, Counter`,
+    params: {},
+    execute: execute
   });
 };
 
-const fetchTeeTimeMaster = async (courseId, txnDate, templateId, fields = ['*']) => {
-  return sqlQueryUtils.queryBuilder({
+const fetchTeeTimeMaster = async ({ CourseID, txnDate, TemplateID, fields = ['*'], execute = true }) => {
+  const teeTimeMasterResult = await sqlQueryUtils.queryBuilder({
     tableName: 'FreTeeTimeMaster',
     fields: fields,
     where: 'CourseID = @CourseID AND TxnDate = @TxnDate AND (TemplateID = @TemplateID OR TemplateID IS NULL)',
     params: {
-      CourseID: courseId,
+      CourseID: CourseID,
       TxnDate: txnDate,
-      TemplateID: templateId
-    }
+      TemplateID: TemplateID
+    },
+    execute: execute
   });
+  
+  if (!Object.keys(teeTimeMasterResult).length) {
+    return await releaseTeeTime({
+      CourseID: CourseID,
+      txnDate: txnDate,
+      TemplateID: TemplateID,
+      execute: execute
+    });
+  }
+  return teeTimeMasterResult;
 };
 
-const fetchTeeTimeDetails = async (courseId, txnDate, fields = ['*']) => {
-  return sqlQueryUtils.queryBuilder({
+const fetchTeeTimeDetails = async ({CourseID, txnDate, Session, fields = ['*'], execute = true }) => {
+  return await sqlQueryUtils.queryBuilder({
     tableName: 'FreTeeTimeDetails',
     fields: fields,
-    where: 'CourseID = @CourseID AND TxnDate = @TxnDate Order By Len(TeeBox), TeeBox, TeeTime',
+    where: 'CourseID = @CourseID AND TxnDate = @TxnDate AND Session = @Session Order By Len(TeeBox), TeeBox, TeeTime',
     params: {
-      CourseID: courseId,
-      TxnDate: txnDate
-    }
+      CourseID: CourseID,
+      TxnDate: txnDate,
+      Session: Session
+    },
+    execute: execute
   });
 };
 
-const fetchTemplateOfDay = async (courseId) => {
+const fetchTemplateOfDay = async ({ CourseID, fields = ['Top 1 *'], execute = true }) => {
   const result = await sqlQueryUtils.queryBuilder({
     tableName: 'FreTemplateofDay',
-    fields: ['Top 1 *'],
+    fields: fields,
     where: 'CourseID = @CourseID',
-    params: { CourseID: courseId }
+    params: { CourseID: CourseID },
+    execute: execute
   });
 
   if (!result?.length) {
@@ -80,141 +85,45 @@ const fetchTemplateOfDay = async (courseId) => {
   return result[0];
 };
 
-const fetchTemplateMaster = async (templateId, fields = ['*']) => {
-  return sqlQueryUtils.queryBuilder({
+const fetchTemplateMaster = async ({ TemplateID, fields = ['*'], execute = true }) => {
+  return await sqlQueryUtils.queryBuilder({
     tableName: 'FreTemplateMaster',
     fields: fields,
     where: 'TemplateID = @TemplateID',
-    params: { TemplateID: templateId }
+    params: { TemplateID: TemplateID },
+    execute: execute
   });
 };
 
-const groupTeeTimesBySection = (teeTimeDetails) => {
-  if (!teeTimeDetails?.length) {
-    return {
-      [SECTIONS.MORNING]: [],
-      [SECTIONS.AFTERNOON]: []
-    };
-  }
-
-  return teeTimeDetails.reduce((grouped, teeTime) => {
-    const section = teeTime.Session?.toLowerCase() === 'morning'
-      ? SECTIONS.MORNING
-      : SECTIONS.AFTERNOON;
-
-    if (!grouped[section]) {
-      grouped[section] = [];
-    }
-
-    grouped[section].push(teeTime);
-    return grouped;
-  }, {
-    [SECTIONS.MORNING]: [],
-    [SECTIONS.AFTERNOON]: []
-  });
-};
-
-const groupBookingDetails = (details) => {
-  return details.reduce((grouped, detail) => {
-    if (!grouped[detail.BookingID]) {
-      grouped[detail.BookingID] = [];
-    }
-    grouped[detail.BookingID].push(detail);
-    return grouped;
-  }, {});
-};
-
-// Main business logic functions
-const getGuestInfoTable = async (courseId, bookingDate) => {
-  const bookings = await fetchBookings(courseId, bookingDate);
-
-  if (!bookings?.length) {
-    return {
-      bookings: [],
-      bookingDetails: [],
-      guestInfo: []
-    };
-  }
-
-  const bookingIds = bookings.map(booking => booking.BookingID);
-  const bookingDetails = await fetchBookingDetails(bookingIds);
-  const groupedDetails = groupBookingDetails(bookingDetails);
-
-  const guestInfo = bookings.map(booking => ({
-    ...booking,
-    details: groupedDetails[booking.BookingID] || []
-  }));
-
-  return { bookings, bookingDetails, guestInfo };
-};
-
-const releaseTeeTime = async (courseId, txnDate, templateId) => {
+const releaseTeeTime = async ({ CourseID, txnDate, TemplateID, execute = true }) => {
   return sqlQueryUtils.execProcedure({
     procedureName: 'sp_FreReleaseTeeTime',
     params: {
-      CourseID: courseId,
+      CourseID: CourseID,
       TxnDate: txnDate,
-      TemplateID: templateId
+      TemplateID: TemplateID
     },
-    options: { returnRecordset: true }
+    options: { returnRecordset: true },
+    execute: execute
   });
 };
 
-const checkAndReleaseTeeTime = async (courseId, txnDate, templateId) => {
-  const teeTimeMasterResult = await fetchTeeTimeMaster(courseId, txnDate, templateId)
 
-  if (!teeTimeMasterResult.length) {
-    await releaseTeeTime(courseId, txnDate, templateId);
-  }
-
-  const teeTimeDetails = await fetchTeeTimeDetails(courseId, txnDate)
-
-  const groupedTeeTimeDetails = groupTeeTimesBySection(teeTimeDetails);
-
-  return {
-    teeTimeMaster: teeTimeMasterResult,
-    teeTimeDetails: groupedTeeTimeDetails
-  };
-};
-
-const getFreBlockBookingByDate = async (date, fields = ['*']) => {
+const getFreBlockBooking = async ({ date, CourseID, Session, fields = ['*'], execute = true }) => {
   try {
     return await sqlQueryUtils.queryBuilder({
       tableName: 'FreBlockBooking',
       fields: fields,
-      where: 'TransactionDate = @TransactionDate AND RecordStatus IS NULL',
-      params: { TransactionDate: date }
+      where: 'TransactionDate = @TransactionDate AND Session = @Session AND CourseID = @CourseID AND RecordStatus IS NULL',
+      params: { TransactionDate: date, Session: Session, CourseID: CourseID },
+      execute: execute
     });
   } catch (error) {
     throw new Error('Database query FreBlockBooking by date failed: ' + error.message);
   }
 }
 
-const getTeeTimeTemplate = async (courseId, selectedDate) => {
-  const dayOfWeek = getDayOfWeek(selectedDate);
-  const template = await fetchTemplateOfDay(courseId);
-  const templateId = template[dayOfWeek];
-
-  if (!templateId) {
-    throw new Error(`No template found for course ${courseId} on ${dayOfWeek}`);
-  }
-
-  const [teeTimeInfo, templateMasterResult, guestInfoResult, blockBooking] = await Promise.all([
-    checkAndReleaseTeeTime(courseId, selectedDate, templateId),
-    fetchTemplateMaster(templateId),
-    getGuestInfoTable(courseId, selectedDate),
-    getFreBlockBookingByDate(selectedDate)
-  ]);
-
-  return {
-    teeTimeInfo,
-    templateMaster: templateMasterResult,
-    guestInfo: guestInfoResult.guestInfo,
-    blockBooking: blockBooking
-  };
-};
-
-const getCourseByDate = async (date, fields = ['CourseID', 'Name']) => {
+const getCourseByDate = async ({ date, fields = ['CourseID', 'Name'], execute = true }) => {
   try {
     return await sqlQueryUtils.queryBuilder({
       tableName: 'ComCourseMaster',
@@ -228,15 +137,72 @@ const getCourseByDate = async (date, fields = ['CourseID', 'Name']) => {
           (SELECT CourseID FROM ComCourseMaintenance 
            WHERE CONVERT(VARCHAR(10), TxnDate, 111) = @TxnDate AND ISNULL(Active, 0) = 1))
       `,
-      params: { TxnDate: date }
+      params: { TxnDate: date },
+      execute: execute
     })
   } catch (error) {
     throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Database query ComCourseMaster by date failed: ' + error.message)
   }
 }
 
+const getCountTotalInfoCourse = async ({ bookingDate, courseId, execute = true }) => {
+  try {
+    return await sqlQueryUtils.queryBuilder({
+      tableName: 'BookingTable',
+      fields: ['ISNULL(COUNT(DISTINCT TeeTime), 0) AS TotalCount'],
+      where: `
+        BookingDate = @BookingDate
+        AND CourseID = @CourseID
+        AND (RecordStatus IS NULL OR RecordStatus = 'Registered')
+        AND Session IN ('Morning', 'Afternoon')
+      `,
+      params: {
+        BookingDate: bookingDate,
+        CourseID: courseId
+      },
+      execute: execute
+    })
+  } catch (error) {
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Database query getCountTotalInfoCourse failed: ' + error.message)
+  }
+}
+
+const getComGuestType = async ({fields = ['*'], execute = true}) => {
+  try {
+    return await sqlQueryUtils.queryBuilder({
+      tableName: 'ComGuestType',
+      fields: fields,
+      execute: execute
+      // where and params are optional, omitted for all records
+    })
+  } catch (error) {
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Database query ComGuestType failed: ' + error.message)
+  }
+}
+
+const getFreFlightStatus = async ({fields = ['*'], execute = true}) => {
+  try {
+    return await sqlQueryUtils.queryBuilder({
+      tableName: 'FreFlightStatus',
+      fields: fields,
+      execute: execute 
+      // where and params are optional, omitted for all records
+    })
+  } catch (error) {
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Database query FreFlightStatus failed: ' + error.message)
+  }
+}
 
 export const itemModel = {
-  getTeeTimeTemplate,
-  getCourseByDate
+  getCourseByDate,
+  fetchTemplateOfDay,
+  fetchTeeTimeMaster,
+  fetchTeeTimeDetails,
+  fetchTemplateMaster,
+  getBookingInfo,
+  getFreBlockBooking,
+  fetchBookingDetails,
+  getCountTotalInfoCourse,
+  getComGuestType,
+  getFreFlightStatus
 }

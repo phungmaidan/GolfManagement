@@ -1,5 +1,10 @@
 import { pick } from 'lodash'
+import moment from 'moment';
 
+export const DATE_FORMAT = 'YYYY-MM-DD';
+
+export const formatDate = (date) => moment(date, DATE_FORMAT);
+export const getDayOfWeek = (date) => formatDate(date).format('dddd');
 /**
  * Simple method to Convert a String to Slug
  * Có thể tham khảo thêm kiến thức liên quan ở đây: https://byby.dev/js-slugify-string
@@ -27,3 +32,17 @@ export const pickUser = (user) => {
     'Active',
   ])
 }
+
+export const TeeTimeUtils = {
+  formatTime: (isoString) => {
+    const date = new Date(isoString);
+    return date.toISOString().split('T')[1].split('.')[0];
+  },
+  formatTeeTimes: (teeTimes) => {
+    return teeTimes.map(item => ({
+      ...item,
+      TeeTime: TeeTimeUtils.formatTime(item.TeeTime)
+    }));
+  }
+};
+

@@ -2,8 +2,7 @@ import { sqlQueryUtils } from '~/utils/sqlQueryUtils'
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError'
 
-// Hàm tìm kiếm module option type
-const findModuleOptionType = async (moduleId, userId, optionType, fields = ['ItemID', 'ItemName', 'OptionType', 'ModuleID']) => {
+const findModuleOptionType = async ({ moduleId, userId, optionType, fields = ['ItemID', 'ItemName', 'OptionType', 'ModuleID'], execute = true }) => {
   try {
     return await sqlQueryUtils.queryBuilder({
       tableName: 'sysOnUserMenuView',
@@ -20,24 +19,26 @@ const findModuleOptionType = async (moduleId, userId, optionType, fields = ['Ite
         ModuleID: moduleId, 
         ID: userId, 
         OptionType: optionType 
-      }
+      },
+      execute: execute
     })
   } catch (error) {
     throw new ApiError(StatusCodes.NOT_ACCEPTABLE, error.message)
   }
 }
 
-// Hàm tìm kiếm dữ liệu hoạt động hàng ngày
-const findDailyOperationData = async (flightStatusFields = ['*'], guestTypeFields = ['*']) => {
+const findDailyOperationData = async ({ flightStatusFields = ['*'], guestTypeFields = ['*'], execute = true }) => {
   try {
     const [flightStatuses, guestTypes] = await Promise.all([
       sqlQueryUtils.queryBuilder({
         tableName: 'FreFlightStatus',
-        fields: flightStatusFields
+        fields: flightStatusFields,
+        execute: execute
       }),
       sqlQueryUtils.queryBuilder({
         tableName: 'ComGuestType',
-        fields: guestTypeFields
+        fields: guestTypeFields,
+        execute: execute
       })
     ])
 
