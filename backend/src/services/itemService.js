@@ -69,7 +69,7 @@ const processAllSessions = async (CourseID, date, sessions) => {
 
   // Process results for each session
   const sessionData = processResults(results, sessions);
-
+  
   // Process booking info and merge data for each session
   const processedSessionResults = await Promise.all(
     Object.entries(sessionData).map(async ([session, data]) => {
@@ -80,7 +80,7 @@ const processAllSessions = async (CourseID, date, sessions) => {
       });
 
       return {
-        sessionKey: `${session}TeeTimeDetail`,
+        sessionKey: `${session}Detail`,
         data: mergeBookingData(data.teeTimeDetails, processedBooking, data.blockBooking)
       };
     })
@@ -106,15 +106,40 @@ const getSchedule = async (CourseID, date) => {
       );
     }
 
-    const [TeeTimeInfo, sessionResults] = await Promise.all([
-      itemModel.fetchTeeTimeMaster({
+    // First call to create/fetch tee time data
+    let TeeTimeInfo = await itemModel.fetchTeeTimeMaster({
+      CourseID: CourseID,
+      txnDate: date,
+      TemplateID: TemplateID,
+      execute: true
+    });
+
+    // Add retry logic with delay to ensure data is created
+    let retryCount = 0;
+    const maxRetries = 3;
+    const delayMs = 1000; // 1 second delay
+
+    while ((!TeeTimeInfo || TeeTimeInfo.length === 0) && retryCount < maxRetries) {
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+      
+      TeeTimeInfo = await itemModel.fetchTeeTimeMaster({
         CourseID: CourseID,
         txnDate: date,
         TemplateID: TemplateID,
         execute: true
-      }),
-      processAllSessions(CourseID, date, Object.values(SESSION))
-    ]);
+      });
+      
+      retryCount++;
+    }
+
+    if (!TeeTimeInfo || TeeTimeInfo.length === 0) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        `No tee time information found for course ${CourseID} on ${date} after ${maxRetries} attempts`
+      );
+    }
+
+    const sessionResults = await processAllSessions(CourseID, date, Object.values(SESSION));
 
     const mergedSessionData = sessionResults.reduce((acc, { sessionKey, data }) => {
       acc[sessionKey] = data;
@@ -125,7 +150,6 @@ const getSchedule = async (CourseID, date) => {
       TeeTimeInfo: TeeTimeInfo,
       ...mergedSessionData
     };
-
   } catch (error) {
     throw new ApiError(
       error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,

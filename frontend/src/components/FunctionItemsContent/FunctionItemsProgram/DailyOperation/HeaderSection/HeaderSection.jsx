@@ -1,11 +1,18 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedCourse, getCouseAPI, setSelectedDate, selectCourseList } from '~/redux/booking/bookingSlice';
+import { 
+  setSelectedCourse, 
+  getCouseAPI, 
+  setSelectedDate, 
+  selectCourseList, 
+  selectSelectedDate, 
+  selectSelectedCourse, 
+  getScheduleAPI} from '~/redux/booking/bookingSlice';
 
 const HeaderSection = () => {
   const dispatch = useDispatch();
-  const selectedDate = useSelector((state) => state.booking.selectedDate);
-  const selectedCourse = useSelector((state) => state.booking.selectedCourse);
+  const selectedDate = useSelector(selectSelectedDate);
+  const selectedCourse = useSelector(selectSelectedCourse);
   const courses = useSelector(selectCourseList);
   useEffect(() => {
     if (courses.length === 0){
@@ -17,7 +24,9 @@ const HeaderSection = () => {
     const newSetDate = event.target.value;
     if (newSetDate !== selectedDate) {
       dispatch(setSelectedDate(newSetDate));
-      dispatch(getCouseAPI({})); // Gọi API khi đổi sân
+      dispatch(getCouseAPI()); // Gọi API khi đổi sân
+      // Fix: Use newSetDate instead of selectedDate since state hasn't updated yet
+      dispatch(getScheduleAPI({ selectedCourse, selectedDate: newSetDate }))
     }
   };
 
@@ -25,6 +34,8 @@ const HeaderSection = () => {
     const newCourseId = event.target.value;
     if (newCourseId !== selectedCourse) {
       dispatch(setSelectedCourse(newCourseId));
+      // Fix: Pass both required parameters
+      dispatch(getScheduleAPI({ selectedCourse: newCourseId, selectedDate }))
     }
   };
 

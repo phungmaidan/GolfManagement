@@ -1,19 +1,18 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectCurrentUser } from '~/redux/user/userSlice';
+import { selectUserModule } from '~/redux/user/userSlice';
 import { setSelectedModule, selectSelectedModule } from '~/redux/module/moduleSlice';
 import { getItemAPI } from '~/redux/module/moduleSlice';
 function TopNavigation() {
     const dispatch = useDispatch();
-    const currentUser = useSelector(selectCurrentUser);
-    const userModules = currentUser?.userModule || [];
+    const userModule = useSelector(selectUserModule);
     const selectedModule = useSelector(selectSelectedModule);
 
     useEffect(() => {
-        if (!selectedModule && userModules.length > 0) {
-            dispatch(setSelectedModule(userModules[0]));
+        if (!selectedModule && userModule.length > 0) {
+            dispatch(setSelectedModule(userModule[0]));
         }
-    }, [selectedModule, userModules, dispatch]);
+    }, [selectedModule, userModule, dispatch]);
 
     const handleModuleClick = (item) => {
         if (selectedModule !== item) {
@@ -22,15 +21,16 @@ function TopNavigation() {
         }
     };
 
-    if (!currentUser || !userModules.length) {
-        return <div>Loading...</div>;
+    if (!userModule.length) {
+        return <div className="bg-golf-green-100 flex items-center justify-center bg-opacity-50 backdrop-blur-md h-16 shadow-lg">
+            <div className="text-lg font-semibold text-golf-green-500">No Module Found</div>
+        </div>;
     }
-
 
     return (
         <nav className="bg-golf-green-100 bg-opacity-50 backdrop-blur-md h-16 shadow-lg">
             <div className="px-6 h-full flex space-x-8 items-center">
-                {userModules.map((item) => (
+                {userModule.map((item) => (
                     <button
                         key={item.ModuleID}
                         className={`cursor-pointer px-4 text-lg font-semibold transition-all duration-300 relative

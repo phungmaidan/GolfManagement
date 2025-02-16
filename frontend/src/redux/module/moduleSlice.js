@@ -19,7 +19,7 @@ const initialState = {
 // Các hành động gọi api (bất đồng bộ) và cập nhật dữ liệu vào Redux, dùng Middleware createAsyncThunk đi kèm với extraReducers
 export const getItemAPI = createAsyncThunk(
     'module/getItemAPI',
-    async (data, thunkAPI) => {
+    async (_, thunkAPI) => {
         const state = thunkAPI.getState().module;
         const { selectedModule, selectedFunction } = state
         if (!selectedModule || !selectedFunction) {
@@ -30,7 +30,6 @@ export const getItemAPI = createAsyncThunk(
             // Gọi API, lưu ý nếu API của cần query parameters, có thể truyền chúng qua option params
             const response = await authorizedAxiosInstance.get(
                 `${API_ROOT}/v1/modules/${selectedModule.ModuleID}/${selectedFunction.label}`,
-                data // hoặc cấu trúc data tùy theo yêu cầu của API
             );
             return response.data;
         } catch (error) {

@@ -6,7 +6,7 @@ const getModuleData = async (moduleId, userId, moduleType) => {
       moduleId: moduleId,
       userId: userId,
       optionType: moduleType,
-      fields: ['ItemID', 'ItemName', 'OptionType', 'ModuleID'],
+      fields: ['ItemID', 'ItemName'],
       execute: true
     })
   } catch (error) {

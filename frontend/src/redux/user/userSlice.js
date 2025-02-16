@@ -6,7 +6,8 @@ import { API_ROOT } from '~/utils/constants'
 
 // Khởi tạo giá trị của một cái Slice trong Redux
 const initialState = {
-  currentUser: null
+  currentUser: null,
+  userModule: []
 }
 
 // Các hành động gọi api (bất đồng bộ) và cập nhật dữ liệu vào Redux, dùng Middleware createAsyncThunk đi kèm với extraReducers
@@ -48,8 +49,8 @@ export const userSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(loginUserAPI.fulfilled, (state, action) => {
       // action.payload ở đây chính là response.data trả về ở trên
-      const user = action.payload
-      state.currentUser = user
+      state.currentUser = action.payload?.ID
+      state.userModule = action.payload?.userModule
     })
     builder.addCase(logoutUserAPI.fulfilled, (state) => {
       /**
@@ -74,6 +75,9 @@ export const userSlice = createSlice({
 // Selectors: Là nơi dành cho các components bên dưới gọi bằng hook useSelector() để lấy dữ liệu từ trong kho redux store ra sử dụng
 export const selectCurrentUser = (state) => {
   return state.user.currentUser
+}
+export const selectUserModule = (state) => {
+  return state.user.userModule
 }
 
 export const userReducer = userSlice.reducer

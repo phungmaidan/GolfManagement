@@ -10,8 +10,8 @@ const Router = express.Router()
 Router.route('/:moduleId/:moduleType')
   .get(
     authMiddleware.isAuthorized, 
-    cacheMiddleware.caching, 
     moduleValidation.getModuleData, 
+    cacheMiddleware.caching, 
     moduleController.getModuleData
   )
 

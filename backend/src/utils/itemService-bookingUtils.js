@@ -47,9 +47,9 @@ export const mergeBookingData = (teeTimeDetails, processedBooking, blockBooking)
   return teeTimeDetails.map(({ TeeTime, ...detail }) => ({
     ...detail,
     TeeTime,
-    children: [
-      ...(blockMap[TeeTime] || []).map(({ TeeTime, ...rest }) => rest),
-      ...(processedMap[TeeTime] || []).map(({ TeeTime, TeeBox, Flight, ...rest }) => rest)
-    ]
+    children: {
+      blockMap: (blockMap[TeeTime] || []).map(({ TeeTime, ...rest }) => rest),
+      bookMap: (processedMap[TeeTime] || []).map(({ TeeTime, TeeBox, Flight, ...rest }) => rest)
+    }
   }));
 };
