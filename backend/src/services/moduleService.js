@@ -1,15 +1,8 @@
 import { moduleModel } from '~/models/moduleModel'
 
-const getModuleData = async (moduleId, userId, moduleType, itemName) => {
+const getModuleData = async (moduleId, userId, moduleType) => {
   try {
-    if (moduleType === 'Tasks' && itemName === 'Daily Operation') {
-      return await moduleModel.findDailyOperationData({
-        flightStatusFields: ['*'],
-        guestTypeFields: ['*'],
-        execute: true
-      })
-    }
-    return await moduleModel.findModuleOptionType({
+    return await moduleModel.findModuleDetails({
       moduleId: moduleId,
       userId: userId,
       optionType: moduleType,

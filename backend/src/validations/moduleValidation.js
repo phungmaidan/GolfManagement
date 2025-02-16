@@ -12,14 +12,11 @@ const getModuleData = async (req, res, next) => {
       'any.required': 'Module type is required',
       'any.only': 'Module type must be one of [Tasks, Reports, Setting]'
     }),
-    itemName: Joi.string().optional().messages({
-      'any.base': 'Item name must be a string'
-    })
   })
   try {
-    // Gộp cả req.params và req.query thành một object để validate
+    // Gộp cả req.params thành một object để validate
     const validatedData = await moduleSchema.validateAsync(
-      { ...req.params, ...req.query },
+      { ...req.params },
       { abortEarly: false }
     );
     // Gán dữ liệu đã validate vào req để sử dụng trong middleware tiếp theo
