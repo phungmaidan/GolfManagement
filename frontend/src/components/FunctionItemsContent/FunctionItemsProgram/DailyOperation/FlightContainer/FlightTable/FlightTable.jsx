@@ -12,7 +12,9 @@ const FlightTable = ({ title, schedule }) => {
     const handlePlayerClick = (booking, playerIndex) => {
         setSelectedBooking({
             flight: booking.Flight,
+            TeeBox: booking.TeeBox,
             teeTime: booking.TeeTime,
+            bookMap: booking.children.bookMap,
             playerIndex,
         });
         setSelectedPlayer(booking.players[playerIndex]);
@@ -51,6 +53,8 @@ const FlightTable = ({ title, schedule }) => {
                 playerName={selectedPlayer}
                 flightInfo={{
                     flight: selectedBooking?.flight,
+                    TeeBox: selectedBooking?.TeeBox,
+                    bookMap: selectedBooking?.bookMap || "",
                     teeTime: selectedBooking?.teeTime || "",
                 }}
                 onSave={handleSave}

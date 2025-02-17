@@ -1,10 +1,10 @@
-import BookingInfo from "./BookingPopupProps/BookingInfo";
-import CourseInfo from "./BookingPopupProps/CourseInfo";
-import IDInfo from "./BookingPopupProps/IDInfo";
-import GuestList from "./BookingPopupProps/GuestList";
-import ChargeInfo from "./BookingPopupProps/ChargeInfo";
-import TotalInfo from "./BookingPopupProps/TotalInfo";
-import OtherInfo from "./BookingPopupProps/OtherInfo";
+import BookingInfo from "./BookingInfo";
+import CourseInfo from "./CourseInfo";
+import IDInfo from "./IDInfo";
+import GuestList from "./GuestList";
+import ChargeInfo from "./ChargeInfo";
+import TotalInfo from "./TotalInfo";
+import OtherInfo from "./OtherInfo";
 
 export const BookingPopupProps = {
     BookingInfo,

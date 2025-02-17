@@ -18,7 +18,7 @@ export const SESSION = {
 
 export const BOOKING_ITEM_FIELDS = {
   TEE_TIME_DETAILS: ['TeeBox', 'TeeTime', 'Flight', 'Status'],
-  BOOKING_INFO: ['BookingID', 'TeeBox', 'Flight', 'TeeTime', 'GuestType', 'Name'],
+  BOOKING_INFO: ['BookingID', 'TeeBox', 'Hole', 'Flight', 'TeeTime', 'GuestType', 'MemberNo', 'Name', 'ContactNo', 'Remark', 'RecordStatus', 'UserID', 'ContactPerson', 'Fax', 'Email', 'CreditCardNumber', 'CreditCardExpiry', 'GroupID', 'GroupName', 'SalesPerson', 'ReferenceID'],
   BLOCK_BOOKING: ['TeeTime', 'Remark', 'Color'],
-  PROCESSED_BOOKING: ['BookingID', 'Counter', 'GuestType', 'MemberNo', 'Name']
+  PROCESSED_BOOKING: ['BookingID', 'Counter', 'GuestType', 'MemberNo', 'Name', 'ContactNo', 'GuestID', 'BagTag', 'CaddyNo', 'FolioID', 'LockerNo', 'BuggyNo']
 };

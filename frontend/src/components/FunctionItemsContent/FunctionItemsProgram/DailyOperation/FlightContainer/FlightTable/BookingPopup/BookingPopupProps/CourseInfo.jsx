@@ -1,14 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    selectSelectedDate,
+    selectSelectedCourse,
+    selectHoleDescriptions
+} from '~/redux/booking/bookingSlice';
 
-const CourseInfo = () => {
+const CourseInfo = ({flightInfo}) => {
+    const selectedCourse = useSelector(selectSelectedCourse);
+    const selectedDate = useSelector(selectSelectedDate);
+    const HoleDescriptions = useSelector(selectHoleDescriptions);
+    const [selectedHole, setSelectedHole] = useState(flightInfo?.bookMap[0]?.Hole || HoleDescriptions[0]);
+
     const fields = [
-        { label: 'Course ID', type: 'text' },
-        { label: 'Tee Box', type: 'text' },
-        { label: 'Tee Time', type: 'time' },
-        { label: 'Play Date', type: 'date' },
-        { label: 'Group', type: 'text' },
-        { label: 'Hole', type: 'number' }
+        { label: 'Course ID', type: 'text', value: selectedCourse, readOnly: true },
+        { label: 'Tee Box', type: 'text', value: flightInfo?.TeeBox || '', readOnly: true },
+        { label: 'Tee Time', type: 'time', value: flightInfo?.teeTime || '', readOnly: true },
+        { label: 'Play Date', type: 'date', value: selectedDate, readOnly: true },
+        { label: 'Group', type: 'text', value: flightInfo?.bookMap?.[0]?.GroupName || '', readOnly: false },
     ];
+
+    const handleHoleChange = (e) => {
+        setSelectedHole(e.target.value);
+        // You can add additional logic here to update flightInfo.Hole if needed
+    };
 
     return (
         <div>
@@ -20,9 +35,25 @@ const CourseInfo = () => {
                         <input
                             type={field.type}
                             className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
+                            defaultValue={field.value}
+                            readOnly={field.readOnly}
                         />
                     </div>
                 ))}
+                <div>
+                    <label className="block text-xs text-gray-600">Hole</label>
+                    <select 
+                        className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
+                        value={selectedHole}
+                        onChange={handleHoleChange}
+                    >
+                        {HoleDescriptions.map((hole) => (
+                            <option key={hole} value={hole}>
+                                {hole}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
         </div>
     );

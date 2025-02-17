@@ -1,16 +1,18 @@
 import React from 'react';
 
-const OtherInfo = () => {
+const OtherInfo = ({flightInfo}) => {
+    const otherInfo = flightInfo?.bookMap?.[0] || {};
+
     const fields = [
-        { label: 'Contact Person', type: 'text' },
-        { label: 'Email', type: 'email' },
-        { label: 'Contact No', type: 'tel' },
-        { label: 'Fax', type: 'text' },
-        { label: 'Credit Card', type: 'text' },
-        { label: 'Expiry Date', type: 'date' },
-        { label: 'Sales Person', type: 'text' },
-        { label: 'Reference Id', type: 'text' },
-        { label: 'Remark', type: 'textarea' }
+        { label: 'Contact Person', type: 'text', value: otherInfo.ContactPerson || '' },
+        { label: 'Email', type: 'email', value: otherInfo.Email || '' },
+        { label: 'Contact No', type: 'tel', value: otherInfo.ContactNo || '' },
+        { label: 'Fax', type: 'text', value: otherInfo.Fax || '' },
+        { label: 'Credit Card', type: 'text', value: otherInfo.CreditCardNumber || '' },
+        { label: 'Expiry Date', type: 'text', value: otherInfo.CreditCardExpiry || '' },
+        { label: 'Sales Person', type: 'text', value: otherInfo.SalesPerson || '' },
+        { label: 'Reference Id', type: 'text', value: otherInfo.ReferenceID || '' },
+        { label: 'Remark', type: 'textarea', value: otherInfo.Remark || '' }
     ];
 
     return (
@@ -24,11 +26,13 @@ const OtherInfo = () => {
                             <textarea
                                 className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
                                 rows="3"
+                                defaultValue={field.value}
                             />
                         ) : (
                             <input
                                 type={field.type}
                                 className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
+                                defaultValue={field.value}
                             />
                         )}
                     </div>

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { BookingPopupProps } from "./BookingPopupProps";
 
-const BookingPopup = ({ isOpen, onClose, playerName, onSave }) => {
+const BookingPopup = ({ isOpen, onClose, playerName, flightInfo, onSave }) => {
     useEffect(() => {
         if (isOpen) document.body.style.overflow = "hidden";
         else document.body.style.overflow = "auto";
@@ -22,19 +22,19 @@ const BookingPopup = ({ isOpen, onClose, playerName, onSave }) => {
                     <div className="grid grid-cols-7 grid-rows-7 gap-4 h-full">
                         {/* Block 1 - Booking Info */}
                         <div className="row-start-1 row-end-2 col-start-1 col-end-2 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf hover:bg-golf-green-50 transition-colors">
-                            <BookingPopupProps.BookingInfo />
+                            <BookingPopupProps.BookingInfo flightInfo={flightInfo}/>
                         </div>
                         {/* Block 2 - Course Info */}
                         <div className="row-start-1 row-end-2 col-start-2 col-end-6 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf hover:bg-golf-green-50 transition-colors">
-                            <BookingPopupProps.CourseInfo />
+                            <BookingPopupProps.CourseInfo flightInfo={flightInfo}/>
                         </div>
                         {/* Block 3 - ID Info */}
                         <div className="row-start-1 row-end-2 col-start-6 col-end-8 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf hover:bg-golf-green-50 transition-colors">
-                            <BookingPopupProps.IDInfo />
+                            <BookingPopupProps.IDInfo flightInfo={flightInfo} />
                         </div>
                         {/* Block 4 - Guest List */}
                         <div className="row-start-2 row-end-4 col-start-1 col-end-6 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf hover:bg-golf-green-50 transition-colors overflow-auto">
-                            <BookingPopupProps.GuestList />
+                            <BookingPopupProps.GuestList flightInfo={flightInfo} />
                         </div>
                         {/* Block 5 - Charge Info */}
                         <div className="row-start-4 row-end-6 col-start-1 col-end-4 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf hover:bg-golf-green-50 transition-colors">
@@ -46,7 +46,7 @@ const BookingPopup = ({ isOpen, onClose, playerName, onSave }) => {
                         </div>
                         {/* Block 7 - Other Info */}
                         <div className="row-start-2 row-end-6 col-start-6 col-end-8 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf hover:bg-golf-green-50 transition-colors">
-                            <BookingPopupProps.OtherInfo />
+                            <BookingPopupProps.OtherInfo flightInfo={flightInfo} />
                         </div>
                         {/* Block 8 - Action Buttons */}
                         <div className="row-start-6 row-end-8 col-start-1 col-end-8 bg-golf-green-50 border border-golf-green-200 rounded-lg p-3 shadow-golf">

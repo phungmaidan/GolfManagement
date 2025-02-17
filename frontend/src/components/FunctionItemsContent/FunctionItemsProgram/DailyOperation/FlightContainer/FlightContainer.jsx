@@ -8,7 +8,8 @@ import {
     selectMorningDetail,
     selectAfternoonDetail,
     selectTeeTimeInfo,
-
+    selectSelectedDate,
+    selectSelectedCourse,
 } from '~/redux/booking/bookingSlice';
 
 const FlightContainer = () => {
@@ -18,16 +19,26 @@ const FlightContainer = () => {
     const teeTimeInfo = useSelector(selectTeeTimeInfo);
     const MorningDetail = useSelector(selectMorningDetail);
     const AfternoonDetail = useSelector(selectAfternoonDetail);
+    const selectedDate = useSelector(selectSelectedDate);
+    const selectedCourse = useSelector(selectSelectedCourse);
 
     useEffect(() => {
-        dispatch(getScheduleAPI());
-    }, [dispatch]);
+        // Chỉ gọi API khi đã có đủ selectedDate và selectedCourse
+        if (selectedDate && selectedCourse) {
+            dispatch(getScheduleAPI({ selectedDate, selectedCourse }));
+        }
+    }, [dispatch, selectedDate, selectedCourse]);
+
     let content;
 
-    if (status === 'failed' || error || !teeTimeInfo) {
-        content = <div className="py-2 text-luxury-gold-100 text-center font-sans ==" style={{ fontSize: '18px' }}>
+    if (!selectedDate || !selectedCourse) {
+        content = <div className="py-2 text-luxury-gold-100 text-center font-sans">
+            <p>Đang tải thông tin sân...</p>
+        </div>;
+    } else if (status === 'failed' || error || !teeTimeInfo) {
+        content = <div className="py-2 text-luxury-gold-100 text-center font-sans" style={{ fontSize: '18px' }}>
             <p>Không thể tải dữ liệu, vui lòng thử lại sau:</p>
-            {error?.message && <p>{error?.message}</p>} {/* Hiển thị chi tiết lỗi nếu có */}
+            {error?.message && <p>{error?.message}</p>}
         </div>;
     } else {
         content = (

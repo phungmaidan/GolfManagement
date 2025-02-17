@@ -193,6 +193,20 @@ const getFreFlightStatus = async ({fields = ['*'], execute = true}) => {
   }
 }
 
+const getHoleDescriptions = async ({ fields = ['Description'], execute = true }) => {
+  try {
+    return await sqlQueryUtils.queryBuilder({
+      tableName: 'mrmCommonCode',
+      fields: fields,
+      where: "ID = 'Hole' Order By Convert(int, Description)",
+      params: {},
+      execute: execute
+    });
+  } catch (error) {
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Database query mrmCommonCode by ID failed: ' + error.message);
+  }
+};
+
 export const itemModel = {
   getCourseByDate,
   fetchTemplateOfDay,
@@ -204,5 +218,6 @@ export const itemModel = {
   fetchBookingDetails,
   getCountTotalInfoCourse,
   getComGuestType,
-  getFreFlightStatus
+  getFreFlightStatus,
+  getHoleDescriptions
 }

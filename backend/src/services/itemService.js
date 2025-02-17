@@ -145,9 +145,16 @@ const getSchedule = async (CourseID, date) => {
       acc[sessionKey] = data;
       return acc;
     }, {});
+    
+    const HoleDescriptions = await itemModel.getHoleDescriptions({
+      fields: ['Description'],
+      execute: true
+    });
+    const holeDescriptionsArray = HoleDescriptions.map(hole => hole.Description);
 
     return {
       TeeTimeInfo: TeeTimeInfo,
+      HoleDescriptions: holeDescriptionsArray,
       ...mergedSessionData
     };
   } catch (error) {
