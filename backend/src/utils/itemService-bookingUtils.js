@@ -41,15 +41,16 @@ export const processBookingInfo = async ({ bookingInfo, itemModel, fields = ['*'
  * @returns {Array} Mảng dữ liệu đã được hợp nhất.
  */
 export const mergeBookingData = (teeTimeDetails, processedBooking, blockBooking) => {
-  const processedMap = groupByTeeTime(processedBooking);
-  const blockMap = groupByTeeTime(blockBooking);
+  const processedMap = groupBy('TeeTime')(processedBooking);
+  const blockMap = groupBy('TeeTime')(blockBooking);
 
-  return teeTimeDetails.map(({ TeeTime, ...detail }) => ({
+  return teeTimeDetails.map(({ TeeTime, TeeBox, ...detail }) => ({
     ...detail,
     TeeTime,
+    TeeBox,
     children: {
-      blockMap: (blockMap[TeeTime] || []).map(({ TeeTime, ...rest }) => rest),
-      bookMap: (processedMap[TeeTime] || []).map(({ TeeTime, TeeBox, Flight, ...rest }) => rest)
+      blockMap: (blockMap[TeeTime] || []).filter(item => item.TeeBox === TeeBox).map(({ TeeTime, TeeBox, ...rest }) => rest),
+      bookMap: (processedMap[TeeTime] || []).filter(item => item.TeeBox === TeeBox).map(({ TeeTime, TeeBox, Flight, ...rest }) => rest)
     }
   }));
 };

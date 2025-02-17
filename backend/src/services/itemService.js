@@ -38,7 +38,6 @@ const prepareQueries = async (CourseID, date, sessions) => {
       ].map(sql => ({ sql }))
     );
   }
-
   return queries;
 };
 
@@ -93,12 +92,19 @@ const processAllSessions = async (CourseID, date, sessions) => {
 const getSchedule = async (CourseID, date) => {
   try {
     const dayOfWeek = getDayOfWeek(date);
-    const fetchTemplate = await itemModel.fetchTemplateOfDay({ 
-      CourseID: CourseID,
-      fields: [dayOfWeek],
-      execute: true 
-    });
-    const TemplateID = fetchTemplate[dayOfWeek];
+    let TemplateID
+    if (CourseID !== 'TOUR')
+    {
+      const fetchTemplate = await itemModel.fetchTemplateOfDay({
+        CourseID: CourseID,
+        fields: [dayOfWeek],
+        execute: true
+      });
+      TemplateID = fetchTemplate[dayOfWeek];
+    }
+    else {
+      TemplateID = 'TEE TIME 15'
+    }
     if (!TemplateID) {
       throw new ApiError(
         StatusCodes.NOT_FOUND,

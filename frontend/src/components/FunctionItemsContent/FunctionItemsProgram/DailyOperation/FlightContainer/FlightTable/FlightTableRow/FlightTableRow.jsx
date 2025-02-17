@@ -36,6 +36,7 @@ const processItem = (item) => {
 };
 
 const FlightTableRow = ({ item, onPlayerClick }) => {
+
     const processedItem = processItem(item);
 
     return (

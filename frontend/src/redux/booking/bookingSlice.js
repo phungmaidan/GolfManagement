@@ -47,7 +47,6 @@ export const getScheduleAPI = createAsyncThunk(
                 date: selectedDate
             };
             
-            console.log('Calling API with params:', params); // Thêm log để debug
 
             const response = await authorizedAxiosInstance.get(
                 `${API_ROOT}/v1/items/get-schedule`,

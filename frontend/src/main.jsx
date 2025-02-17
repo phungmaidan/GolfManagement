@@ -25,7 +25,6 @@ import { BrowserRouter } from 'react-router-dom'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
-    <React.StrictMode>
         <BrowserRouter basename='/'>
             <Provider store={store}>
                 <PersistGate persistor={persistor}>
@@ -35,5 +34,19 @@ root.render(
                 </PersistGate>
             </Provider>
         </BrowserRouter>
-    </React.StrictMode>
 )
+
+// const root = ReactDOM.createRoot(document.getElementById('root'))
+// root.render(
+//     <React.StrictMode>
+//         <BrowserRouter basename='/'>
+//             <Provider store={store}>
+//                 <PersistGate persistor={persistor}>
+//                     {/* Thay thế MUI GlobalStyles bằng CSS của Tailwind trong index.css */}
+//                     <App />
+//                     {/* <ToastContainer position="bottom-left" theme="colored" /> */}
+//                 </PersistGate>
+//             </Provider>
+//         </BrowserRouter>
+//     </React.StrictMode>
+// )
