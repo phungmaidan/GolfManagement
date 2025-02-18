@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   setSelectedCourse,
   getCouseAPI,
@@ -13,67 +13,67 @@ import {
   selectMorningDetail,
   selectAfternoonDetail,
   selectTeeTimeInfo
-} from '~/redux/booking/bookingSlice';
-import FlightTable from './FlightTable/FlightTable';
+} from '~/redux/booking/bookingSlice'
+import FlightTable from './FlightTable/FlightTable'
 
 const DailyOperation = () => {
-  const dispatch = useDispatch();
-  const selectedDate = useSelector(selectSelectedDate);
-  const selectedCourse = useSelector(selectSelectedCourse);
-  const courses = useSelector(selectCourseList);
-  const status = useSelector(selectBookingStatus);
-  const error = useSelector(selectBookingError);
-  const teeTimeInfo = useSelector(selectTeeTimeInfo);
-  const MorningDetail = useSelector(selectMorningDetail);
-  const AfternoonDetail = useSelector(selectAfternoonDetail);
+  const dispatch = useDispatch()
+  const selectedDate = useSelector(selectSelectedDate)
+  const selectedCourse = useSelector(selectSelectedCourse)
+  const courses = useSelector(selectCourseList)
+  const status = useSelector(selectBookingStatus)
+  const error = useSelector(selectBookingError)
+  const teeTimeInfo = useSelector(selectTeeTimeInfo)
+  const MorningDetail = useSelector(selectMorningDetail)
+  const AfternoonDetail = useSelector(selectAfternoonDetail)
 
   useEffect(() => {
     if (courses.length === 0) {
-      dispatch(getCouseAPI());
+      dispatch(getCouseAPI())
     }
-  }, [dispatch]);
+  }, [dispatch])
 
   useEffect(() => {
     if (selectedDate && selectedCourse) {
-      dispatch(getScheduleAPI({ selectedDate, selectedCourse }));
+      dispatch(getScheduleAPI({ selectedDate, selectedCourse }))
     }
-  }, [dispatch, selectedDate, selectedCourse]);
+  }, [dispatch, selectedDate, selectedCourse])
 
   const handleChangeDate = (event) => {
-    const newSetDate = event.target.value;
+    const newSetDate = event.target.value
     if (newSetDate !== selectedDate) {
-      dispatch(setSelectedDate(newSetDate));
-      dispatch(getCouseAPI());
-      dispatch(getScheduleAPI({ selectedCourse, selectedDate: newSetDate }));
+      dispatch(setSelectedDate(newSetDate))
+      dispatch(getCouseAPI())
+      dispatch(getScheduleAPI({ selectedCourse, selectedDate: newSetDate }))
     }
-  };
+  }
 
   const handleChangeCourse = (event) => {
-    const newCourseId = event.target.value;
+    const newCourseId = event.target.value
     if (newCourseId !== selectedCourse) {
-      dispatch(setSelectedCourse(newCourseId));
-      dispatch(getScheduleAPI({ selectedCourse: newCourseId, selectedDate }));
+      dispatch(setSelectedCourse(newCourseId))
+      dispatch(getScheduleAPI({ selectedCourse: newCourseId, selectedDate }))
     }
-  };
+  }
 
-  let content;
+  let content
 
   if (!selectedDate || !selectedCourse) {
     content = <div className="py-2 text-luxury-gold-100 text-center font-sans">
       <p>Đang tải thông tin sân...</p>
-    </div>;
+    </div>
   } else if (status === 'failed' || error || !teeTimeInfo) {
     content = <div className="py-2 text-luxury-gold-100 text-center font-sans" style={{ fontSize: '18px' }}>
       <p>Không thể tải dữ liệu, vui lòng thử lại sau:</p>
       {error?.message && <p>{error?.message}</p>}
-    </div>;
+    </div>
   } else {
     content = (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fadeIn">
         <FlightTable title="Morning" schedule={MorningDetail} />
         <FlightTable title="Afternoon" schedule={AfternoonDetail} />
       </div>
-    );
+    )
   }
 
   return (
@@ -140,7 +140,7 @@ const DailyOperation = () => {
         {content}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default DailyOperation;
+export default DailyOperation

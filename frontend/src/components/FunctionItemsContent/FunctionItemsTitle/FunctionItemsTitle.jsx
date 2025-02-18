@@ -1,20 +1,20 @@
-import React from 'react';
-import { useSelector } from "react-redux";
-import { selectSelectedItem } from "~/redux/module/moduleSlice";
-import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import React from 'react'
+import { useSelector } from 'react-redux'
+import { selectSelectedItem } from '~/redux/module/moduleSlice'
+import { Link } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
 
 const FunctionItemsTitle = () => {
-  const selectedItem = useSelector(selectSelectedItem);
+  const selectedItem = useSelector(selectSelectedItem)
 
-return (
+  return (
     <div className="flex ml-10 items-center gap-6 mt-5 animation-show">
-        <Link 
-            to="/dashboards" 
-            className="no-underline"
-        >
-            <button
-                className="
+      <Link
+        to="/dashboards"
+        className="no-underline"
+      >
+        <button
+          className="
                     flex items-center justify-center cursor-pointer
                     bg-luxury-gold-400
                     text-white font-medium
@@ -22,19 +22,19 @@ return (
                     transform hover:scale-105 hover:shadow-lg hover:shadow-luxury-gold-300
                     transition-all duration-200 ease-in-out
                 "
-            >
-                <ArrowLeft className="h-5 w-5 mr-2" />
+        >
+          <ArrowLeft className="h-5 w-5 mr-2" />
                 Back
-            </button>
-        </Link>
-        
-        <div className="flex items-start">
-            <h4 className="text-3xl font-semibold text-golf-green-50 m-0">
-                {selectedItem?.ItemName || "No Item Selected"}
-            </h4>
-        </div>
-    </div>
-);
-};
+        </button>
+      </Link>
 
-export default FunctionItemsTitle;
+      <div className="flex items-start">
+        <h4 className="text-3xl font-semibold text-golf-green-50 m-0">
+          {selectedItem?.ItemName || 'No Item Selected'}
+        </h4>
+      </div>
+    </div>
+  )
+}
+
+export default FunctionItemsTitle

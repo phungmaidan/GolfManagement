@@ -1,62 +1,62 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import {
-    selectSelectedDate,
-    selectSelectedCourse,
-    selectHoleDescriptions
-} from '~/redux/booking/bookingSlice';
+  selectSelectedDate,
+  selectSelectedCourse,
+  selectHoleDescriptions
+} from '~/redux/booking/bookingSlice'
 
-const CourseInfo = ({flightInfo}) => {
-    const selectedCourse = useSelector(selectSelectedCourse);
-    const selectedDate = useSelector(selectSelectedDate);
-    const HoleDescriptions = useSelector(selectHoleDescriptions);
-    const [selectedHole, setSelectedHole] = useState(flightInfo?.bookMap[flightInfo?.bookingIndex]?.Hole || HoleDescriptions[0]);
+const CourseInfo = ({ flightInfo }) => {
+  const selectedCourse = useSelector(selectSelectedCourse)
+  const selectedDate = useSelector(selectSelectedDate)
+  const HoleDescriptions = useSelector(selectHoleDescriptions)
+  const [selectedHole, setSelectedHole] = useState(flightInfo?.bookMap[flightInfo?.bookingIndex]?.Hole || HoleDescriptions[0])
 
-    const fields = [
-        { label: 'Course ID', type: 'text', value: selectedCourse, readOnly: true },
-        { label: 'Tee Box', type: 'text', value: flightInfo?.TeeBox || '', readOnly: true },
-        { label: 'Tee Time', type: 'time', value: flightInfo?.teeTime || '', readOnly: true },
-        { label: 'Play Date', type: 'date', value: selectedDate, readOnly: true },
-        { label: 'Group', type: 'text', value: flightInfo?.bookMap?.[0]?.GroupName || '', readOnly: false },
-    ];
+  const fields = [
+    { label: 'Course ID', type: 'text', value: selectedCourse, readOnly: true },
+    { label: 'Tee Box', type: 'text', value: flightInfo?.TeeBox || '', readOnly: true },
+    { label: 'Tee Time', type: 'time', value: flightInfo?.teeTime || '', readOnly: true },
+    { label: 'Play Date', type: 'date', value: selectedDate, readOnly: true },
+    { label: 'Group', type: 'text', value: flightInfo?.bookMap?.[0]?.GroupName || '', readOnly: false }
+  ]
 
-    const handleHoleChange = (e) => {
-        setSelectedHole(e.target.value);
-        // You can add additional logic here to update flightInfo.Hole if needed
-    };
+  const handleHoleChange = (e) => {
+    setSelectedHole(e.target.value)
+    // You can add additional logic here to update flightInfo.Hole if needed
+  }
 
-    return (
+  return (
+    <div>
+      <h3 className="text-sm font-semibold text-golf-green-600 mb-2">Course Information</h3>
+      <div className="grid grid-cols-3 gap-2 animation-show">
+        {fields.map((field) => (
+          <div key={field.label}>
+            <label className="block text-xs text-gray-600">{field.label}</label>
+            <input
+              type={field.type}
+              className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
+              defaultValue={field.value}
+              readOnly={field.readOnly}
+            />
+          </div>
+        ))}
         <div>
-            <h3 className="text-sm font-semibold text-golf-green-600 mb-2">Course Information</h3>
-            <div className="grid grid-cols-3 gap-2 animation-show">
-                {fields.map((field) => (
-                    <div key={field.label}>
-                        <label className="block text-xs text-gray-600">{field.label}</label>
-                        <input
-                            type={field.type}
-                            className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
-                            defaultValue={field.value}
-                            readOnly={field.readOnly}
-                        />
-                    </div>
-                ))}
-                <div>
-                    <label className="block text-xs text-gray-600">Hole</label>
-                    <select 
-                        className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
-                        value={selectedHole}
-                        onChange={handleHoleChange}
-                    >
-                        {HoleDescriptions.map((hole) => (
-                            <option key={hole} value={hole}>
-                                {hole}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
+          <label className="block text-xs text-gray-600">Hole</label>
+          <select
+            className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
+            value={selectedHole}
+            onChange={handleHoleChange}
+          >
+            {HoleDescriptions.map((hole) => (
+              <option key={hole} value={hole}>
+                {hole}
+              </option>
+            ))}
+          </select>
         </div>
-    );
-};
+      </div>
+    </div>
+  )
+}
 
-export default CourseInfo;
+export default CourseInfo
