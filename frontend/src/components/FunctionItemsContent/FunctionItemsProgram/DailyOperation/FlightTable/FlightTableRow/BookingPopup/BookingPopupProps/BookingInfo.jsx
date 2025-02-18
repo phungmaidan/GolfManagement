@@ -4,9 +4,8 @@ import { selectTodayDate } from '~/redux/booking/bookingSlice';
 
 const BookingInfo = ({flightInfo}) => {
     const bookingDate = useSelector(selectTodayDate);
-
     // Tạo một đối tượng placeholder khi không có dữ liệu
-    const bookingData = flightInfo?.bookMap?.[0] || {
+    const bookingData = flightInfo?.bookMap[flightInfo?.bookingIndex] || {
         BookingID: '-',
     };
 

@@ -1,5 +1,5 @@
 // FlightTable.jsx
-import React, { useState } from "react";
+import React from "react";
 import FlightTableHeader from "./FlightTableHeader/FlightTableHeader";
 import FlightTableRow from "./FlightTableRow/FlightTableRow";
 

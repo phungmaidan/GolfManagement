@@ -11,42 +11,45 @@ const processItem = (item) => {
     const isBlock = blockMap?.length > 0;
     const isBook = bookMap?.length > 0;
 
-    let players = [];
+    let players = Array(4).fill(null);
     let isBlockRow = false;
+    let bookingIndices = Array(4).fill(null);
+    let currentIndex = 0;
 
     if (isBlock) {
         isBlockRow = true;
         players = Array(4).fill(blockMap[0].Remark);
     } else if (isBook) {
-        const details = bookMap[0].details || [];
-        players = Array(4).fill(null);
-        details.forEach((detail) => {
-            const index = detail.Counter - 1;
-            if (index >= 0 && index < 4) {
-                players[index] = `${detail?.MemberNo} ${detail.Name}`;
-            }
+        bookMap.forEach((booking, bookingIndex) => {
+            const details = booking.details || [];
+            details.forEach((detail) => {
+                if (currentIndex < 4) {
+                    players[currentIndex] = `${detail?.MemberNo} ${detail.Name}`;
+                    bookingIndices[currentIndex] = bookingIndex;
+                    currentIndex++;
+                }
+            });
         });
-    } else {
-        players = Array(4).fill(null);
     }
 
     return {
         ...item,
         players,
         isBlockRow,
+        bookingIndices,
     };
 };
 
 const FlightTableRow = ({ item }) => {
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const handlePlayerClick = (booking, playerIndex) => {
+    const handlePlayerClick = (booking, bookingIndex) => {
         setSelectedBooking({
             flight: booking.Flight,
             TeeBox: booking.TeeBox,
             teeTime: booking.TeeTime,
             bookMap: booking.children.bookMap,
-            playerIndex,
+            bookingIndex: bookingIndex,
         });
         setIsPopupOpen(true);
     };
@@ -54,18 +57,17 @@ const FlightTableRow = ({ item }) => {
 
     return (
         <>
-            <tr className="hover:bg-gray-50">
+            <tr className={`hover:bg-gray-50 ${isPopupOpen ? 'outline outline-2 outline-blue-500' : ''}`}>
                 <TeeTimeCell teeTime={processedItem.TeeTime} />
-
                 {processedItem.players.map((player, i) => (
                     <PlayerCell
                         key={i}
                         player={player}
                         isBlockRow={processedItem.isBlockRow}
-                        onClick={() => handlePlayerClick(processedItem, i)}
+                        bookingIndex={processedItem.bookingIndices[i]}
+                        onClick={() => handlePlayerClick(processedItem, processedItem.bookingIndices[i])}
                     />
                 ))}
-
                 <td className="border px-4 py-2 text-center text-sm">
                     <DropdownMenu
                         onAction={(action) => console.log(action, processedItem)}
@@ -80,6 +82,7 @@ const FlightTableRow = ({ item }) => {
                     TeeBox: selectedBooking?.TeeBox,
                     bookMap: selectedBooking?.bookMap || "",
                     teeTime: selectedBooking?.teeTime || "",
+                    bookingIndex: selectedBooking?.bookingIndex || "0",
                 }}
             />
         </>

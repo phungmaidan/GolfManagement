@@ -1,7 +1,7 @@
 import React from 'react';
 
 const GuestList = ({flightInfo}) => {
-    const bookingInfo = flightInfo?.bookMap[0]?.details;
+    const bookingInfo = flightInfo?.bookMap[flightInfo?.bookingIndex]?.details;
 
     // Column width configurations
     const columnWidths = {

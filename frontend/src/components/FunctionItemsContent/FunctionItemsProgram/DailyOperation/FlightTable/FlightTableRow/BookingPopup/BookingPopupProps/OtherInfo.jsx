@@ -1,7 +1,7 @@
 import React from 'react';
 
 const OtherInfo = ({flightInfo}) => {
-    const otherInfo = flightInfo?.bookMap?.[0] || {};
+    const otherInfo = flightInfo?.bookMap[flightInfo?.bookingIndex] || {};
 
     const fields = [
         { label: 'Contact Person', type: 'text', value: otherInfo.ContactPerson || '' },

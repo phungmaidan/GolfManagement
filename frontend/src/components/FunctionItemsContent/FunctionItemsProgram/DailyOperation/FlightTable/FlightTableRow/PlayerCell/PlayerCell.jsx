@@ -1,5 +1,17 @@
 // PlayerCell.jsx
-const PlayerCell = ({ player, isBlockRow, onClick }) => {
+const PlayerCell = ({ player, isBlockRow, bookingIndex, onClick }) => {
+    const getBackgroundColor = () => {
+        if (isBlockRow) return 'bg-gray-200';
+        if (bookingIndex === null) return '';
+        const colors = [
+            'bg-blue-50',
+            'bg-green-50',
+            'bg-yellow-50',
+            'bg-pink-50'
+        ];
+        return colors[bookingIndex % colors.length];
+    };
+
     const displayText = player
         ? player.length > 7
             ? `${player.substring(0, 7)}...`
@@ -8,10 +20,7 @@ const PlayerCell = ({ player, isBlockRow, onClick }) => {
 
     return (
         <td
-            className={`border px-4 py-2 text-sm ${!isBlockRow
-                    ? "cursor-pointer text-golf-green-600 hover:underline"
-                    : ""
-                }`}
+            className={`border px-4 py-2 text-sm cursor-pointer hover:underline ${getBackgroundColor()}`}
             onClick={!isBlockRow ? onClick : undefined}
             title={player || "-"}
         >

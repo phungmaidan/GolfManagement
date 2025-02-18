@@ -1,6 +1,6 @@
 // TeeTimeCell.jsx
 const TeeTimeCell = ({ teeTime }) => (
-    <td className="border px-4 py-2 text-golf-green-800 text-sm w-24 whitespace-nowrap">
+    <td className="border px-1 text-center py-1 text-golf-green-800 text-sm w-20 whitespace-nowrap">
         {teeTime}
     </td>
 );

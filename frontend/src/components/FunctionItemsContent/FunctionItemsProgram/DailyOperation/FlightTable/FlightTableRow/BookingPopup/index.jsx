@@ -8,6 +8,7 @@ const BookingPopup = ({ isOpen, onClose, flightInfo }) => {
     }, [isOpen]);
 
     if (!isOpen) return null;
+
     const handleSave = (flightInfo) => {
 //         console.log(`Cập nhật ${newName} cho:
 // - Flight: ${selectedBooking.flight}

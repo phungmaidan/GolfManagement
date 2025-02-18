@@ -83,13 +83,13 @@ const DailyOperation = () => {
           <h3 className="font-semibold text-lg mb-3 text-golf-green-700">Chọn thời gian</h3>
           <input
             type="date"
-            className="p-2 border border-golf-green-700 rounded-md"
+            className="p-2 border outline-0 border-golf-green-700 rounded-md"
             value={selectedDate !== 'null' ? selectedDate : today}
             onChange={handleChangeDate}
           />
           <input
             type="time"
-            className="p-2 border border-golf-green-700 rounded-md mt-2"
+            className="p-2 border outline-0 border-golf-green-700 rounded-md mt-2"
           />
         </div>
 
@@ -97,7 +97,7 @@ const DailyOperation = () => {
           <h3 className="font-semibold text-lg mb-3 text-luxury-gold-700">Chọn sân golf</h3>
           {courses.length > 0 ? (
             <select
-              className="border border-golf-green-700 rounded-md p-2"
+              className="border outline-0 border-golf-green-700 rounded-md p-2"
               value={selectedCourse}
               onChange={handleChangeCourse}
             >
