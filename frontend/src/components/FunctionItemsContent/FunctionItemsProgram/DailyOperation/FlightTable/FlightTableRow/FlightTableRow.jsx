@@ -1,48 +1,16 @@
 // FlightTableRow.jsx
 import React, { useState } from "react";
-import BookingPopup from "./BookingPopup/BookingPopup";
+import BookingPopup from "./BookingPopup";
 import DropdownMenu from "./DropdownMenu/DropdownMenu";
 import PlayerCell from "./PlayerCell/PlayerCell";
 import TeeTimeCell from "./TeeTimeCell/TeeTimeCell";
+import { processItemUtils } from "~/utils/processItemUtils";
 
-const processItem = (item) => {
-    const blockMap = item.children.blockMap;
-    const bookMap = item.children.bookMap;
-    const isBlock = blockMap?.length > 0;
-    const isBook = bookMap?.length > 0;
-
-    let players = Array(4).fill(null);
-    let isBlockRow = false;
-    let bookingIndices = Array(4).fill(null);
-    let currentIndex = 0;
-
-    if (isBlock) {
-        isBlockRow = true;
-        players = Array(4).fill(blockMap[0].Remark);
-    } else if (isBook) {
-        bookMap.forEach((booking, bookingIndex) => {
-            const details = booking.details || [];
-            details.forEach((detail) => {
-                if (currentIndex < 4) {
-                    players[currentIndex] = `${detail?.MemberNo} ${detail.Name}`;
-                    bookingIndices[currentIndex] = bookingIndex;
-                    currentIndex++;
-                }
-            });
-        });
-    }
-
-    return {
-        ...item,
-        players,
-        isBlockRow,
-        bookingIndices,
-    };
-};
 
 const FlightTableRow = ({ item }) => {
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const processedItem = processItemUtils.processItem(item);
     const handlePlayerClick = (booking, bookingIndex) => {
         setSelectedBooking({
             flight: booking.Flight,
@@ -53,11 +21,10 @@ const FlightTableRow = ({ item }) => {
         });
         setIsPopupOpen(true);
     };
-    const processedItem = processItem(item);
 
     return (
         <>
-            <tr className={`hover:bg-gray-50 ${isPopupOpen ? 'outline outline-2 outline-blue-500' : ''}`}>
+            <tr className={`hover:bg-gray-50 ${isPopupOpen ? 'outline-2 outline-blue-500' : ''}`}>
                 <TeeTimeCell teeTime={processedItem.TeeTime} />
                 {processedItem.players.map((player, i) => (
                     <PlayerCell

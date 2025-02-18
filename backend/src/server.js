@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 import express from 'express'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
 import exitHook from 'async-exit-hook'
 import { CONNECT_DB, CLOSE_DB } from '~/config/sqldb'
 import { env } from '~/config/environment'
@@ -8,9 +10,26 @@ import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware'
 import cors from 'cors'
 import { corsOptions } from './config/cors'
 import cookieParser from 'cookie-parser'
+import { socketService } from './sockets/socketService'
 
 const START_SERVER = () => {
   const app = express()
+  
+  // Create HTTP server
+  const httpServer = createServer(app)
+  
+  // Initialize Socket.IO
+  // const io = new Server(httpServer, {
+  //   cors: corsOptions
+  // })
+
+  const io = new Server(httpServer, {
+    cors: corsOptions,
+  })
+  global._io = io
+  global._io.on('connection', socketService.connectSocket)
+  // Make io accessible to our router
+  app.set('io', io)
 
   // Fix cái vụ Cache from disk của ExpressJS
   // https://stackoverflow.com/a/53240717/8324172
@@ -34,14 +53,13 @@ const START_SERVER = () => {
   // Middleware xử lý lỗi tập trung
   app.use(errorHandlingMiddleware)
 
+  // Use httpServer instead of app.listen
   if (env.BUILD_MODE === 'production') {
-    // Môi trường Production (cụ thể hiện tại là đang support Render.com)
-    app.listen(process.env.PORT, () => {
+    httpServer.listen(process.env.PORT, () => {
       console.log(`3. Server is running at Port: ${process.env.PORT}/`)
     })
   } else {
-    // Môi trường Local Dev
-    app.listen(env.LOCAL_DEV_APP_PORT, env.LOCAL_DEV_APP_HOST, () => {
+    httpServer.listen(env.LOCAL_DEV_APP_PORT, env.LOCAL_DEV_APP_HOST, () => {
       console.log(`3. Server is running at http://${env.LOCAL_DEV_APP_HOST}:${env.LOCAL_DEV_APP_PORT}/`)
     })
   }
@@ -49,6 +67,8 @@ const START_SERVER = () => {
   // Thực hiện cleanup trước khi dừng server
   exitHook(() => {
     console.log('4. Server is shutting down...')
+    // Dọn dẹp socket listeners
+    io.close()
     CLOSE_DB()
     console.log('5. Disconnected from SQL Server')
   })

@@ -37,6 +37,7 @@
     "mssql": "^11.0.1",
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.1.9",
+    "socket.io": "^4.8.1",
     "streamifier": "^0.1.1",
     "uuid": "^11.0.5",
     "ws": "^8.18.0"

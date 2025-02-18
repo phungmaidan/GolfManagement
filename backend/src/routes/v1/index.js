@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import { userRoute } from './userRoute'
 import { moduleRoute } from './moduleRoute'
 import { itemRoute } from './itemRoute'
+
 const Router = express.Router()
 
 /** Check APIs v1/status */
@@ -18,5 +19,6 @@ Router.use('/modules', moduleRoute)
 
 /** Item APIs */
 Router.use('/items', itemRoute)
+
 
 export const APIs_V1 = Router

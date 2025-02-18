@@ -8,8 +8,8 @@ import { selectCurrentUser } from '~/redux/user/userSlice'
 import FunctionItems from './pages/DashBoards/FunctionItems/FunctionItems'
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 import Layout from './components/Layout/Layout'
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 function App() {
   const currentUser = useSelector(selectCurrentUser)
@@ -18,9 +18,9 @@ function App() {
     <>
       <Routes>
         {/* Redirect Route */}
-        <Route 
-          path='/' 
-          element={<Navigate to="/dashboards" replace={true} />} 
+        <Route
+          path='/'
+          element={<Navigate to="/dashboards" replace={true} />}
         />
 
         {/* Protected Routes with Layout */}
@@ -38,7 +38,7 @@ function App() {
         {/* 404 Not Found - No Layout */}
         <Route path='*' element={<NotFound />} />
       </Routes>
-      <ToastContainer 
+      <ToastContainer
         position="bottom-left"
         autoClose={3000}
         hideProgressBar={false}
