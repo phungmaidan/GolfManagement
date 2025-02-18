@@ -1,4 +1,6 @@
 // FlightTableRow.jsx
+import React, { useState } from "react";
+import BookingPopup from "./BookingPopup/BookingPopup";
 import DropdownMenu from "./DropdownMenu/DropdownMenu";
 import PlayerCell from "./PlayerCell/PlayerCell";
 import TeeTimeCell from "./TeeTimeCell/TeeTimeCell";
@@ -35,29 +37,52 @@ const processItem = (item) => {
     };
 };
 
-const FlightTableRow = ({ item, onPlayerClick }) => {
-
+const FlightTableRow = ({ item }) => {
+    const [selectedBooking, setSelectedBooking] = useState(null);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const handlePlayerClick = (booking, playerIndex) => {
+        setSelectedBooking({
+            flight: booking.Flight,
+            TeeBox: booking.TeeBox,
+            teeTime: booking.TeeTime,
+            bookMap: booking.children.bookMap,
+            playerIndex,
+        });
+        setIsPopupOpen(true);
+    };
     const processedItem = processItem(item);
 
     return (
-        <tr className="hover:bg-gray-50">
-            <TeeTimeCell teeTime={processedItem.TeeTime} />
+        <>
+            <tr className="hover:bg-gray-50">
+                <TeeTimeCell teeTime={processedItem.TeeTime} />
 
-            {processedItem.players.map((player, i) => (
-                <PlayerCell
-                    key={i}
-                    player={player}
-                    isBlockRow={processedItem.isBlockRow}
-                    onClick={() => onPlayerClick(processedItem, i)}
-                />
-            ))}
+                {processedItem.players.map((player, i) => (
+                    <PlayerCell
+                        key={i}
+                        player={player}
+                        isBlockRow={processedItem.isBlockRow}
+                        onClick={() => handlePlayerClick(processedItem, i)}
+                    />
+                ))}
 
-            <td className="border px-4 py-2 text-center text-sm">
-                <DropdownMenu
-                    onAction={(action) => console.log(action, processedItem)}
-                />
-            </td>
-        </tr>
+                <td className="border px-4 py-2 text-center text-sm">
+                    <DropdownMenu
+                        onAction={(action) => console.log(action, processedItem)}
+                    />
+                </td>
+            </tr>
+            <BookingPopup
+                isOpen={isPopupOpen}
+                onClose={() => setIsPopupOpen(false)}
+                flightInfo={{
+                    flight: selectedBooking?.flight,
+                    TeeBox: selectedBooking?.TeeBox,
+                    bookMap: selectedBooking?.bookMap || "",
+                    teeTime: selectedBooking?.teeTime || "",
+                }}
+            />
+        </>
     );
 };
 

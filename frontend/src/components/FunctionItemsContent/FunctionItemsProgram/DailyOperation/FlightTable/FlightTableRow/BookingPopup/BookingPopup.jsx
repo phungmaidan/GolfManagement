@@ -1,15 +1,21 @@
 import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { BookingPopupProps } from "./BookingPopupProps";
-
-const BookingPopup = ({ isOpen, onClose, playerName, flightInfo, onSave }) => {
+const BookingPopup = ({ isOpen, onClose, flightInfo }) => {
     useEffect(() => {
         if (isOpen) document.body.style.overflow = "hidden";
         else document.body.style.overflow = "auto";
     }, [isOpen]);
 
     if (!isOpen) return null;
-
+    const handleSave = (flightInfo) => {
+//         console.log(`Cập nhật ${newName} cho:
+// - Flight: ${selectedBooking.flight}
+// - TeeTime: ${selectedBooking.teeTime}
+// - Khách ${selectedBooking.playerIndex + 1}`);
+        console.log(flightInfo);
+        onClose();
+    };
     return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <div className="relative p-6 bg-white  shadow-golf w-[95vw] h-[90vh] overflow-auto">
@@ -61,7 +67,7 @@ const BookingPopup = ({ isOpen, onClose, playerName, flightInfo, onSave }) => {
                         Hủy
                     </button>
                     <button
-                        onClick={() => onSave(playerName)}
+                        onClick={() => handleSave(flightInfo)}
                         className="px-4 py-2 text-white rounded bg-golf-green-500 hover:bg-golf-green-600 transition-colors shadow-golf">
                         Lưu
                     </button>
