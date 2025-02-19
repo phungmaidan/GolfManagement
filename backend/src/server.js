@@ -1,7 +1,5 @@
 /* eslint-disable no-console */
-import express from 'express'
-import { createServer } from 'http'
-import { Server } from 'socket.io'
+// src/server.js
 import exitHook from 'async-exit-hook'
 import { CONNECT_DB, CLOSE_DB } from '~/config/sqldb'
 import { env } from '~/config/environment'
@@ -10,42 +8,24 @@ import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware'
 import cors from 'cors'
 import { corsOptions } from './config/cors'
 import cookieParser from 'cookie-parser'
-import { socketService } from './sockets/socketService'
+import { app, httpServer, io } from './sockets/socketService'
+import express from 'express'
 
 const START_SERVER = () => {
-  const app = express()
-
-  // Create HTTP server
-  const httpServer = createServer(app)
-
-  // Initialize Socket.IO
-  // const io = new Server(httpServer, {
-  //   cors: corsOptions
-  // })
-
-  const io = new Server(httpServer, {
-    cors: corsOptions
-  })
-  global._io = io
-  global._io.on('connection', socketService.connectSocket)
-  // Make io accessible to our router
-  app.set('io', io)
-
   // Fix cái vụ Cache from disk của ExpressJS
   // https://stackoverflow.com/a/53240717/8324172
   app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store')
     next()
   })
-
-  // Cấu hình Cookie Parser
-  app.use(cookieParser())
-
-  // Xử lý CORS
-  app.use(cors(corsOptions))
-
   // Enable req.body json data
   app.use(express.json())
+  // Cấu hình Cookie Parser
+  app.use(cookieParser())
+  // Xử lý CORS
+  app.use(
+    cors(corsOptions)
+  )
 
   // Use APIs V1
   app.use('/v1', APIs_V1)
@@ -69,8 +49,9 @@ const START_SERVER = () => {
     console.log('4. Server is shutting down...')
     // Dọn dẹp socket listeners
     io.close()
+    console.log('5. Disconnected from Socket.IO server')
     CLOSE_DB()
-    console.log('5. Disconnected from SQL Server')
+    console.log('6. Disconnected from SQL Server')
   })
 }
 
