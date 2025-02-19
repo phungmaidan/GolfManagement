@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // FlightTableRow.jsx
 import React, { useState } from 'react'
 import BookingPopup from './BookingPopup'

@@ -1,27 +1,27 @@
-import { StatusCodes } from 'http-status-codes';
-import { itemService } from '~/services/itemService';
+import { StatusCodes } from 'http-status-codes'
+import { itemService } from '~/services/itemService'
 
 const getCourse = async (req, res, next) => {
   try {
-    const { date } = req.validatedData; // Lấy giá trị từ req.query
+    const { date } = req.validatedData // Lấy giá trị từ req.query
     // Gọi service lấy dữ liệu
-    const data = await itemService.getCourse(date);
+    const data = await itemService.getCourse(date)
 
-    res.status(StatusCodes.OK).json(data);
+    res.status(StatusCodes.OK).json(data)
   } catch (error) { next(error) }
 }
 
 const getSchedule = async (req, res, next) => {
   try {
-    const { CourseID, date } = req.validatedData; // Lấy giá trị từ req.query
+    const { CourseID, date } = req.validatedData // Lấy giá trị từ req.query
     // Gọi service lấy dữ liệu
-    const data = await itemService.getSchedule(CourseID, date);
+    const data = await itemService.getSchedule(CourseID, date)
 
-    res.status(StatusCodes.OK).json(data);
+    res.status(StatusCodes.OK).json(data)
   } catch (error) { next(error) }
 }
 
 export const itemController = {
   getCourse,
   getSchedule
-};
+}

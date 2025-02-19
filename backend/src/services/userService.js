@@ -41,7 +41,7 @@ const login = async (reqBody) => {
       fields: ['ModuleID', 'ModuleName', 'PictureKey', 'ModuleSequence'],
       execute: true
     })
-    
+
     return { accessToken, refreshToken, ...pickUser(existUser), userModule }
 
   } catch (error) { throw error }

@@ -1,8 +1,9 @@
-import { sqlQueryUtils } from '~/utils/sqlQueryUtils';
-
+import { sqlQueryUtils } from '~/utils/sqlQueryUtils'
+import ApiError from '~/utils/ApiError'
+import { StatusCodes } from 'http-status-codes'
 const RECORD_STATUS = {
   REGISTERED: 'Registered'
-};
+}
 
 // Database query functions
 const getBookingInfo = async ({ CourseID, bookingDate, Session, fields = ['*'], execute = true }) => {
@@ -17,19 +18,19 @@ const getBookingInfo = async ({ CourseID, bookingDate, Session, fields = ['*'], 
       RecordStatus: RECORD_STATUS.REGISTERED
     },
     execute: execute
-  });
-};
+  })
+}
 
 const fetchBookingDetails = async ({ bookingIDs, fields = ['*'], execute = true }) => {
-  if (!bookingIDs?.length) return [];
+  if (!bookingIDs?.length) return []
   return await sqlQueryUtils.queryBuilder({
     tableName: 'FreBookingDetails',
     fields: fields,
     where: `BookingID IN (${bookingIDs.map(id => `'${id}'`).join(',')}) Order By BookingID, Counter`,
     params: {},
     execute: execute
-  });
-};
+  })
+}
 
 const fetchTeeTimeMaster = async ({ CourseID, txnDate, TemplateID, fields = ['*'], execute = true }) => {
   const teeTimeMasterResult = await sqlQueryUtils.queryBuilder({
@@ -42,20 +43,20 @@ const fetchTeeTimeMaster = async ({ CourseID, txnDate, TemplateID, fields = ['*'
       TemplateID: TemplateID
     },
     execute: execute
-  });
-  
+  })
+
   if (!Object.keys(teeTimeMasterResult).length) {
     return await releaseTeeTime({
       CourseID: CourseID,
       txnDate: txnDate,
       TemplateID: TemplateID,
       execute: execute
-    });
+    })
   }
-  return teeTimeMasterResult;
-};
+  return teeTimeMasterResult
+}
 
-const fetchTeeTimeDetails = async ({CourseID, txnDate, Session, fields = ['*'], execute = true }) => {
+const fetchTeeTimeDetails = async ({ CourseID, txnDate, Session, fields = ['*'], execute = true }) => {
   return await sqlQueryUtils.queryBuilder({
     tableName: 'FreTeeTimeDetails',
     fields: fields,
@@ -66,8 +67,8 @@ const fetchTeeTimeDetails = async ({CourseID, txnDate, Session, fields = ['*'], 
       Session: Session
     },
     execute: execute
-  });
-};
+  })
+}
 
 const fetchTemplateOfDay = async ({ CourseID, fields = ['Top 1 *'], execute = true }) => {
   const result = await sqlQueryUtils.queryBuilder({
@@ -76,14 +77,14 @@ const fetchTemplateOfDay = async ({ CourseID, fields = ['Top 1 *'], execute = tr
     where: 'CourseID = @CourseID',
     params: { CourseID: CourseID },
     execute: execute
-  });
+  })
 
   if (!result?.length) {
-    throw new Error('Template not found in FreTemplateofDay');
+    throw new Error('Template not found in FreTemplateofDay')
   }
 
-  return result[0];
-};
+  return result[0]
+}
 
 const fetchTemplateMaster = async ({ TemplateID, fields = ['*'], execute = true }) => {
   return await sqlQueryUtils.queryBuilder({
@@ -92,8 +93,8 @@ const fetchTemplateMaster = async ({ TemplateID, fields = ['*'], execute = true 
     where: 'TemplateID = @TemplateID',
     params: { TemplateID: TemplateID },
     execute: execute
-  });
-};
+  })
+}
 
 const releaseTeeTime = async ({ CourseID, txnDate, TemplateID, execute = true }) => {
   return sqlQueryUtils.execProcedure({
@@ -105,8 +106,8 @@ const releaseTeeTime = async ({ CourseID, txnDate, TemplateID, execute = true })
     },
     options: { returnRecordset: true },
     execute: execute
-  });
-};
+  })
+}
 
 
 const getFreBlockBooking = async ({ date, CourseID, Session, fields = ['*'], execute = true }) => {
@@ -117,9 +118,9 @@ const getFreBlockBooking = async ({ date, CourseID, Session, fields = ['*'], exe
       where: 'TransactionDate = @TransactionDate AND Session = @Session AND CourseID = @CourseID AND RecordStatus IS NULL',
       params: { TransactionDate: date, Session: Session, CourseID: CourseID },
       execute: execute
-    });
+    })
   } catch (error) {
-    throw new Error('Database query FreBlockBooking by date failed: ' + error.message);
+    throw new Error('Database query FreBlockBooking by date failed: ' + error.message)
   }
 }
 
@@ -167,7 +168,7 @@ const getCountTotalInfoCourse = async ({ bookingDate, courseId, execute = true }
   }
 }
 
-const getComGuestType = async ({fields = ['*'], execute = true}) => {
+const getComGuestType = async ({ fields = ['*'], execute = true }) => {
   try {
     return await sqlQueryUtils.queryBuilder({
       tableName: 'ComGuestType',
@@ -180,12 +181,12 @@ const getComGuestType = async ({fields = ['*'], execute = true}) => {
   }
 }
 
-const getFreFlightStatus = async ({fields = ['*'], execute = true}) => {
+const getFreFlightStatus = async ({ fields = ['*'], execute = true }) => {
   try {
     return await sqlQueryUtils.queryBuilder({
       tableName: 'FreFlightStatus',
       fields: fields,
-      execute: execute 
+      execute: execute
       // where and params are optional, omitted for all records
     })
   } catch (error) {
@@ -198,14 +199,14 @@ const getHoleDescriptions = async ({ fields = ['Description'], execute = true })
     return await sqlQueryUtils.queryBuilder({
       tableName: 'mrmCommonCode',
       fields: fields,
-      where: "ID = 'Hole' Order By Convert(int, Description)",
+      where: 'ID = \'Hole\' Order By Convert(int, Description)',
       params: {},
       execute: execute
-    });
+    })
   } catch (error) {
-    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Database query mrmCommonCode by ID failed: ' + error.message);
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Database query mrmCommonCode by ID failed: ' + error.message)
   }
-};
+}
 
 export const itemModel = {
   getCourseByDate,

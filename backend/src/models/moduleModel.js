@@ -15,10 +15,10 @@ const findModuleDetails = async ({ moduleId, userId, optionType, fields = ['*'],
         AND Active = 1
         ORDER BY ItemSequence
       `,
-      params: { 
-        ModuleID: moduleId, 
-        ID: userId, 
-        OptionType: optionType 
+      params: {
+        ModuleID: moduleId,
+        ID: userId,
+        OptionType: optionType
       },
       execute: execute
     })

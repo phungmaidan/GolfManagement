@@ -230,10 +230,10 @@
     json5 "^2.2.3"
     semver "^6.3.1"
 
-"@babel/eslint-parser@^7.26.5":
-  version "7.26.5"
-  resolved "https://registry.yarnpkg.com/@babel/eslint-parser/-/eslint-parser-7.26.5.tgz#aa669f4d873f9cd617050cf3c40c19cd96307efb"
-  integrity sha512-Kkm8C8uxI842AwQADxl0GbcG1rupELYLShazYEZO/2DYjhyWXJIOUVOE3tBYm6JXzUCNJOZEzqc4rCW/jsEQYQ==
+"@babel/eslint-parser@^7.26.8":
+  version "7.26.8"
+  resolved "https://registry.yarnpkg.com/@babel/eslint-parser/-/eslint-parser-7.26.8.tgz#55c4f4aae4970ae127f7a12369182ed6250e6f09"
+  integrity sha512-3tBctaHRW6xSub26z7n8uyOTwwUsCdvIug/oxBH9n6yCO5hMj2vwDJAo7RbBMKrM7P+W2j61zLKviJQFGOYKMg==
   dependencies:
     "@nicolo-ribaudo/eslint-scope-5-internals" "5.1.1-v1"
     eslint-visitor-keys "^2.1.0"
@@ -1059,6 +1059,11 @@
   version "9.19.0"
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-9.19.0.tgz#51dbb140ed6b49d05adc0b171c41e1a8713b7789"
   integrity sha512-rbq9/g38qjfqFLOVPvwjIvFFdNziEC5S65jmjPw5r6A//QH+W91akh9irMwjDN8zKUTak6W9EsAv4m/7Wnw0UQ==
+
+"@eslint/js@^9.20.0":
+  version "9.20.0"
+  resolved "https://registry.yarnpkg.com/@eslint/js/-/js-9.20.0.tgz#7421bcbe74889fcd65d1be59f00130c289856eb4"
+  integrity sha512-iZA07H9io9Wn836aVTytRaNqh00Sad+EamwOVJT12GTLw1VGMFV/4JaME+JjLtr9fiGaoWgYnS54wrfWsSs4oQ==
 
 "@eslint/object-schema@^2.1.6":
   version "2.1.6"
@@ -2425,6 +2430,11 @@ globals@^14.0.0:
   version "14.0.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-14.0.0.tgz#898d7413c29babcf6bafe56fcadded858ada724e"
   integrity sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==
+
+globals@^15.15.0:
+  version "15.15.0"
+  resolved "https://registry.yarnpkg.com/globals/-/globals-15.15.0.tgz#7c4761299d41c32b075715a4ce1ede7897ff72a8"
+  integrity sha512-7ACyT3wmyp3I61S4fG682L0VA2RGD9otkqGJIwNUMF1SWUombIIk+af1unuDYgMm082aHYwD+mzJvv9Iu8dsgg==
 
 globalthis@^1.0.4:
   version "1.0.4"

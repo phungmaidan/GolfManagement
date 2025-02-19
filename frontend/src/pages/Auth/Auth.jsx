@@ -1,16 +1,16 @@
-import { Navigate, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { selectCurrentUser } from '~/redux/user/userSlice';
-import Login from './Login';
-import styles from './Auth.module.css';
+import { Navigate, useLocation } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '~/redux/user/userSlice'
+import Login from './Login'
+import styles from './Auth.module.css'
 
 function Auth() {
-  const location = useLocation();
-  const isLogin = location.pathname === '/login';
-  const currentUser = useSelector(selectCurrentUser);
+  const location = useLocation()
+  const isLogin = location.pathname === '/login'
+  const currentUser = useSelector(selectCurrentUser)
 
   if (currentUser) {
-    return <Navigate to='/' replace={true} />;
+    return <Navigate to='/' replace={true} />
   }
 
   return (
@@ -20,7 +20,7 @@ function Auth() {
         <div className="w-full max-w-sm mx-auto">
           {isLogin && <Login />}
         </div>
-        
+
         {/* Right side - Image and text */}
         <div className="flex-1 hidden lg:block">
           <div className={styles.imageWrapper}>
@@ -41,7 +41,7 @@ function Auth() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default Auth;
+export default Auth

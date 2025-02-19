@@ -94,7 +94,7 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
     }
 
     // Cần return trường hợp refreshTokenPromise chạy thành công và xử lý thêm ở đây:
-    // eslint-disable-next-line no-unused-vars
+
     return refreshTokenPromise.then(accessToken => {
       /**
       * Bước 1: Đối với Trường hợp nếu dự án cần lưu accessToken vào localstorage hoặc đâu đó thì sẽ viết thêm code xử lý ở đây.

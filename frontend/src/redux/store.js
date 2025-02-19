@@ -3,8 +3,8 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { userReducer } from './user/userSlice'
 import { moduleReducer } from './module/moduleSlice'
-import  { bookingReducer } from './booking/bookingSlice'
-import { bookingPopupReducer } from './bookingPopup/bookingPopupSlice';
+import { bookingReducer } from './booking/bookingSlice'
+import { bookingPopupReducer } from './bookingPopup/bookingPopupSlice'
 /**
  * Cấu hình redux-persist
  * https://www.npmjs.com/package/redux-persist

@@ -1,13 +1,13 @@
+/* eslint-disable no-unused-vars */
 // Helper functions
 const groupBy = (key) => (array) =>
   array.reduce((acc, item) => {
-    const groupKey = item[key];
-    acc[groupKey] = acc[groupKey] || [];
-    acc[groupKey].push(item);
-    return acc;
-  }, {});
+    const groupKey = item[key]
+    acc[groupKey] = acc[groupKey] || []
+    acc[groupKey].push(item)
+    return acc
+  }, {})
 
-const groupByTeeTime = groupBy('TeeTime');
 /**
  * Xử lý thông tin booking: Lấy các chi tiết booking dựa trên bookingInfo và ghép nhóm.
  *
@@ -18,18 +18,18 @@ const groupByTeeTime = groupBy('TeeTime');
  * @returns {Array} Mảng bookingInfo đã được bổ sung chi tiết.
  */
 export const processBookingInfo = async ({ bookingInfo, itemModel, fields = ['*'] }) => {
-  if (!bookingInfo?.length) return [];
+  if (!bookingInfo?.length) return []
   const bookingDetails = await itemModel.fetchBookingDetails({
     bookingIDs: bookingInfo.map(({ BookingID }) => BookingID),
     fields: fields,
-    execute: true,
-  });
-  const groupedDetails = groupBy('BookingID')(bookingDetails);
+    execute: true
+  })
+  const groupedDetails = groupBy('BookingID')(bookingDetails)
   return bookingInfo.map(booking => ({
     ...booking,
     details: (groupedDetails[booking.BookingID] || []).map(({ BookingID, ...rest }) => rest)
-  }));
-};
+  }))
+}
 
 /**
  * Hợp nhất thông tin teeTime với các booking và block booking tương ứng.
@@ -41,8 +41,8 @@ export const processBookingInfo = async ({ bookingInfo, itemModel, fields = ['*'
  * @returns {Array} Mảng dữ liệu đã được hợp nhất.
  */
 export const mergeBookingData = (teeTimeDetails, processedBooking, blockBooking) => {
-  const processedMap = groupBy('TeeTime')(processedBooking);
-  const blockMap = groupBy('TeeTime')(blockBooking);
+  const processedMap = groupBy('TeeTime')(processedBooking)
+  const blockMap = groupBy('TeeTime')(blockBooking)
 
   return teeTimeDetails.map(({ TeeTime, TeeBox, ...detail }) => ({
     ...detail,
@@ -52,5 +52,5 @@ export const mergeBookingData = (teeTimeDetails, processedBooking, blockBooking)
       blockMap: (blockMap[TeeTime] || []).filter(item => item.TeeBox === TeeBox).map(({ TeeTime, TeeBox, ...rest }) => rest),
       bookMap: (processedMap[TeeTime] || []).filter(item => item.TeeBox === TeeBox).map(({ TeeTime, TeeBox, Flight, ...rest }) => rest)
     }
-  }));
-};
+  }))
+}

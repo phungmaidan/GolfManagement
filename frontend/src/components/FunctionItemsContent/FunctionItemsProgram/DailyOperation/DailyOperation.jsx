@@ -31,6 +31,7 @@ const DailyOperation = () => {
     if (courses.length === 0) {
       dispatch(getCouseAPI())
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch])
 
   useEffect(() => {

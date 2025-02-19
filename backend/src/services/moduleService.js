@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import { moduleModel } from '~/models/moduleModel'
 
 const getModuleData = async (moduleId, userId, moduleType) => {

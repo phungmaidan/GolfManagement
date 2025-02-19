@@ -15,7 +15,7 @@ function Login() {
 
   return (
     <div className={styles.loginContainer}>
-      <h2 className={`text-golf-green-600 text-xl font-bold mb-6 text-center`}>
+      <h2 className={'text-golf-green-600 text-xl font-bold mb-6 text-center'}>
         Login to GolfOne
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">

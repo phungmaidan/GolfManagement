@@ -9,9 +9,9 @@ const Router = express.Router()
 // Route để lấy dữ liệu của module theo loại moduleType
 Router.route('/:moduleId/:moduleType')
   .get(
-    authMiddleware.isAuthorized, 
-    moduleValidation.getModuleData, 
-    cacheMiddleware.caching, 
+    authMiddleware.isAuthorized,
+    moduleValidation.getModuleData,
+    cacheMiddleware.caching,
     moduleController.getModuleData
   )
 

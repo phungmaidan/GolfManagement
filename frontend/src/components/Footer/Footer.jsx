@@ -1,8 +1,8 @@
-import React from 'react';
-import { MapPin, Phone, Mail } from 'lucide-react';
+import React from 'react'
+import { MapPin, Phone, Mail } from 'lucide-react'
 
 const Footer = ({ logo }) => {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear()
 
   return (
     <footer className="bg-golf-green-800 text-luxury-gold-50 pb-6">
@@ -41,17 +41,17 @@ const Footer = ({ logo }) => {
               Liên hệ
             </h6>
             <div className="space-y-4">
-              <ContactInfo 
-                Icon={MapPin} 
-                text="123 Đường Golf, Quận 2, TP. Hồ Chí Minh" 
+              <ContactInfo
+                Icon={MapPin}
+                text="123 Đường Golf, Quận 2, TP. Hồ Chí Minh"
               />
-              <ContactInfo 
-                Icon={Phone} 
-                text="+84 123 456 789" 
+              <ContactInfo
+                Icon={Phone}
+                text="+84 123 456 789"
               />
-              <ContactInfo 
-                Icon={Mail} 
-                text="info@golfclub.com" 
+              <ContactInfo
+                Icon={Mail}
+                text="info@golfclub.com"
               />
             </div>
           </div>
@@ -66,16 +66,16 @@ const Footer = ({ logo }) => {
         </div>
       </div>
     </footer>
-  );
-};
+  )
+}
 
 const FooterLinks = ({ links }) => (
   <ul className="space-y-2">
     {links.map((text) => (
       <li key={text}>
-        <a 
-          href="#" 
-          className="text-luxury-gold-100 hover:text-luxury-gold-400 
+        <a
+          href="#"
+          className="text-luxury-gold-100 hover:text-luxury-gold-400
                      transition-colors duration-300"
         >
           {text}
@@ -83,13 +83,13 @@ const FooterLinks = ({ links }) => (
       </li>
     ))}
   </ul>
-);
+)
 
 const ContactInfo = ({ Icon, text }) => (
   <div className="flex items-start space-x-3">
     <Icon size={20} className="text-luxury-gold-400 mt-1" />
     <span className="text-luxury-gold-100">{text}</span>
   </div>
-);
+)
 
-export default Footer;
+export default Footer

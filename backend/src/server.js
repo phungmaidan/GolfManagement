@@ -14,17 +14,17 @@ import { socketService } from './sockets/socketService'
 
 const START_SERVER = () => {
   const app = express()
-  
+
   // Create HTTP server
   const httpServer = createServer(app)
-  
+
   // Initialize Socket.IO
   // const io = new Server(httpServer, {
   //   cors: corsOptions
   // })
 
   const io = new Server(httpServer, {
-    cors: corsOptions,
+    cors: corsOptions
   })
   global._io = io
   global._io.on('connection', socketService.connectSocket)

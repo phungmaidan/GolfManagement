@@ -14,6 +14,7 @@ const BookingPopup = ({ isOpen, onClose, flightInfo }) => {
     // - Flight: ${selectedBooking.flight}
     // - TeeTime: ${selectedBooking.teeTime}
     // - Khách ${selectedBooking.playerIndex + 1}`);
+    // eslint-disable-next-line no-console
     console.log(flightInfo)
     onClose()
   }

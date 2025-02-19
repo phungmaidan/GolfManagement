@@ -1,7 +1,7 @@
 // ~/utils/dbUtils.js
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError'
-import { GET_DB } from '~/config/sqldb';
+import { GET_DB } from '~/config/sqldb'
 
 
 /**
@@ -11,53 +11,83 @@ import { GET_DB } from '~/config/sqldb';
  * @param {string} errorMessage - Thông báo lỗi tùy chỉnh
  * @returns {Promise<Array>} - Kết quả truy vấn
  */
-const executeQuery = async (sql, params = {}, errorMessage = 'Database query failed') => {
-    try {
-        const pool = GET_DB();
-        const request = pool.request();
+const executeQuery = async (sql, params, errorMessage = 'Database query failed') => {
+  try {
+    const pool = GET_DB()
+    const request = pool.request()
 
-        // Thêm các parameter vào request
-        Object.entries(params).forEach(([key, value]) => {
-            request.input(key, value);
-        });
+    // Thêm các parameter vào request
+    Object.entries(params).forEach(([key, value]) => {
+      request.input(key, value)
+    })
 
-        const result = await request.query(sql);
-        return result.recordset;
-    } catch (error) {
-        throw new Error(`${errorMessage}: ${error.message}`);
-    }
-};
+    const result = await request.query(sql)
+    return result.recordset
+  } catch (error) {
+    throw new Error(`${errorMessage}: ${error.message}`)
+  }
+}
 
 /**
- * Hàm thực thi nhiều truy vấn trong một transaction
- * @param {Array<{sql: string}>} queries - Danh sách các câu lệnh SQL
- * @returns {Promise<void>}
+ * Execute multiple queries within a single transaction
+ * @param {Array<{sql: string, params?: Object}>} queries - Array of query objects
+ * @returns {Promise<Object>} Transaction result with recordsets
+ *
+ * @example
+ * const queries = [
+ *   {
+ *     sql: 'INSERT INTO Orders (userId, totalAmount) VALUES (@userId, @totalAmount)',
+ *     params: { userId: 1, totalAmount: 100 }
+ *   },
+ *   {
+ *     sql: 'UPDATE Users SET balance = balance - @amount WHERE id = @userId',
+ *     params: { amount: 100, userId: 1 }
+ *   }
+ * ];
+ * const result = await executeTransaction(queries);
  */
 const executeTransaction = async (queries) => {
-    const pool = GET_DB();
-    const transaction = new sql.Transaction(pool);
+  const pool = GET_DB()
+  const transaction = new pool.Transaction(pool)
 
-    try {
-        await transaction.begin();
-        const request = new sql.Request(transaction);
+  try {
+    await transaction.begin()
+    const request = new pool.Request(transaction)
+    const results = []
 
-        // Kết hợp các câu SQL với dấu chấm phẩy
-        const batch = `
-            SET NOCOUNT ON;
-            ${queries.map(({ sql }) => sql.trim()).join(';\n')}
-        `;
+    for (const query of queries) {
+      // Reset request parameters for each query
+      request.parameters = {}
 
-        await request.query(batch);
-        await transaction.commit();
-        return { success: true };
-    } catch (error) {
-        await transaction.rollback();
-        throw new ApiError(
-            StatusCodes.NOT_ACCEPTABLE,
-            `Transaction failed: ${error.message}`
-        );
+      // Add parameters if provided
+      if (query.params) {
+        Object.entries(query.params).forEach(([key, value]) => {
+          request.input(key, value)
+        })
+      }
+
+      // Execute query with SET NOCOUNT ON for consistent results
+      const sql = `
+        SET NOCOUNT ON;
+        ${query.sql.trim()}
+      `
+      const result = await request.query(sql)
+      results.push(result.recordset || result.rowsAffected)
     }
-};
+
+    await transaction.commit()
+    return {
+      success: true,
+      recordsets: results
+    }
+  } catch (error) {
+    await transaction.rollback()
+    throw new ApiError(
+      StatusCodes.NOT_ACCEPTABLE,
+      `Transaction failed: ${error.message}`
+    )
+  }
+}
 /**
   const queries = [
   { sql: 'INSERT INTO Orders (userId, totalAmount) VALUES (@userId, @totalAmount)', params: { userId: 1, totalAmount: 100 } },
@@ -73,25 +103,25 @@ const executeTransaction = async (queries) => {
  * @returns {Promise<Array>} - Kết quả của các truy vấn
  */
 const executeBatch = async (queries) => {
-    try {
-        const pool = GET_DB();
-        const request = pool.request();
+  try {
+    const pool = GET_DB()
+    const request = pool.request()
 
-        // Kết hợp các câu SQL với dấu chấm phẩy và thêm SET NOCOUNT ON
-        const batch = `
+    // Kết hợp các câu SQL với dấu chấm phẩy và thêm SET NOCOUNT ON
+    const batch = `
             SET NOCOUNT ON;
             ${queries.map(({ sql }) => sql.trim()).join(';\n')}
-        `;
+        `
 
-        // Execute batch và lấy recordsets
-        const result = await request.query(batch);
-        
-        // Trả về mảng các recordset
-        return result.recordsets;
-    } catch (error) {
-        throw new Error(`Batch query failed: ${error.message}`);
-    }
-};
+    // Execute batch và lấy recordsets
+    const result = await request.query(batch)
+
+    // Trả về mảng các recordset
+    return result.recordsets
+  } catch (error) {
+    throw new Error(`Batch query failed: ${error.message}`)
+  }
+}
 /** Ví dụ 1:
     const queries = [
   { sql: 'INSERT INTO Users (name, email) VALUES (@name, @email)', params: { name: 'John Doe', email: 'john@example.com' } },
@@ -121,7 +151,7 @@ const executeBatch = async (queries) => {
  * @param {Object} [options.params={}] - Query parameters
  * @param {boolean} [options.execute=true] - Whether to execute the query or return SQL string
  * @returns {Promise<Array>} Query results
- * 
+ *
  * @example
  * // Select all active users
  * const users = await queryBuilder({
@@ -130,7 +160,7 @@ const executeBatch = async (queries) => {
  *   where: 'isActive = @active',
  *   params: { active: true }
  * });
- * 
+ *
  * // Get SQL string without executing
  * const sql = await queryBuilder({
  *   tableName: 'Users',
@@ -139,28 +169,28 @@ const executeBatch = async (queries) => {
  *   execute: false
  * });
  */
-const queryBuilder = async ({ 
-    tableName, 
-    fields = [], 
-    where = '', 
-    params = {}, 
-    execute = true 
+const queryBuilder = async ({
+  tableName,
+  fields = [],
+  where = '',
+  params = {},
+  execute = true
 }) => {
-    const selectedFields = fields.length > 0 ? fields.join(', ') : '*'
-    const sqlQuery = `
+  const selectedFields = fields.length > 0 ? fields.join(', ') : '*'
+  const sqlQuery = `
     SELECT ${selectedFields}
     FROM ${tableName}
     ${where ? `WHERE ${where}` : ''}
   `
-    if (!execute) {
-        return convertToQuery(sqlQuery, params);
-    }
+  if (!execute) {
+    return convertToQuery(sqlQuery, params)
+  }
 
-    try {
-        return await executeQuery(sqlQuery, params, `Error querying ${tableName}`)
-    } catch (error) {
-        throw new ApiError(StatusCodes.NOT_ACCEPTABLE, error.message)
-    }
+  try {
+    return await executeQuery(sqlQuery, params, `Error querying ${tableName}`)
+  } catch (error) {
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, error.message)
+  }
 }
 
 /**
@@ -173,7 +203,7 @@ const queryBuilder = async ({
  * @param {boolean} [options.returnUpdated=false] - Whether to return updated records
  * @param {boolean} [options.execute=true] - Whether to execute the query or return SQL string
  * @returns {Promise<Object>} Update result or updated records
- * 
+ *
  * @example
  * // Update user status
  * const result = await updateRecord({
@@ -185,39 +215,39 @@ const queryBuilder = async ({
  * });
  */
 const updateRecord = async ({
-    tableName,
-    updateFields = {},
-    where = '',
-    params = {},
-    returnUpdated = false,
-    execute = true
+  tableName,
+  updateFields = {},
+  where = '',
+  params = {},
+  returnUpdated = false,
+  execute = true
 }) => {
-    try {
-        const updateSetClause = Object.keys(updateFields)
-            .map(field => `${field} = @${field}`)
-            .join(', ')
+  try {
+    const updateSetClause = Object.keys(updateFields)
+      .map(field => `${field} = @${field}`)
+      .join(', ')
 
-        const sqlQuery = `
+    const sqlQuery = `
             UPDATE ${tableName}
             SET ${updateSetClause}
             ${where ? `WHERE ${where}` : ''}
             ${returnUpdated ? 'OUTPUT Inserted.*' : ''}
         `
 
-        const combinedParams = { ...params, ...updateFields }
-        if (!execute) {
-            return convertToQuery(sqlQuery, params);
-        }
-        const result = await executeQuery(
-            sqlQuery,
-            combinedParams,
-            `Error updating record in ${tableName}`
-        )
-
-        return returnUpdated ? result : { success: true, affectedRows: result?.length || 0 }
-    } catch (error) {
-        throw new ApiError(StatusCodes.NOT_ACCEPTABLE, error.message)
+    const combinedParams = { ...params, ...updateFields }
+    if (!execute) {
+      return convertToQuery(sqlQuery, params)
     }
+    const result = await executeQuery(
+      sqlQuery,
+      combinedParams,
+      `Error updating record in ${tableName}`
+    )
+
+    return returnUpdated ? result : { success: true, affectedRows: result?.length || 0 }
+  } catch (error) {
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, error.message)
+  }
 }
 
 /**
@@ -228,7 +258,7 @@ const updateRecord = async ({
  * @param {boolean} [options.returnInserted=false] - Whether to return inserted record
  * @param {boolean} [options.execute=true] - Whether to execute the query or return SQL string
  * @returns {Promise<Object>} Insert result or inserted record
- * 
+ *
  * @example
  * // Insert new user
  * const newUser = await insertRecord({
@@ -242,34 +272,35 @@ const updateRecord = async ({
  * });
  */
 const insertRecord = async ({
-    tableName,
-    data = {},
-    returnInserted = false,
-    execute = true
+  tableName,
+  data = {},
+  returnInserted = false,
+  execute = true
 }) => {
-    try {
-        const fields = Object.keys(data)
-        const values = fields.map(field => `@${field}`).join(', ')
+  try {
+    const fields = Object.keys(data)
+    const values = fields.map(field => `@${field}`).join(', ')
 
-        const sqlQuery = `
+    const sqlQuery = `
             INSERT INTO ${tableName} 
             (${fields.join(', ')})
             VALUES (${values})
             ${returnInserted ? 'OUTPUT Inserted.*' : ''}
         `
-        if (!execute) {
-            return convertToQuery(sqlQuery, params);
-        }
-        const result = await executeQuery(
-            sqlQuery,
-            data,
-            `Error inserting record into ${tableName}`
-        )
-
-        return returnInserted ? result : { success: true, affectedRows: result?.length || 0 }
-    } catch (error) {
-        throw new ApiError(StatusCodes.NOT_ACCEPTABLE, error.message)
+    if (!execute) {
+      // Fix: Use 'data' instead of undefined 'params'
+      return convertToQuery(sqlQuery, data)
     }
+    const result = await executeQuery(
+      sqlQuery,
+      data,
+      `Error inserting record into ${tableName}`
+    )
+
+    return returnInserted ? result : { success: true, affectedRows: result?.length || 0 }
+  } catch (error) {
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, error.message)
+  }
 }
 
 /**
@@ -280,7 +311,7 @@ const insertRecord = async ({
  * @param {Object} [options.options={ returnRecordset: true }] - Additional options
  * @param {boolean} [options.execute=true] - Whether to execute or return SQL string
  * @returns {Promise<Array|Object>} Procedure results
- * 
+ *
  * @example
  * // Execute procedure with parameters
  * const result = await execProcedure({
@@ -290,7 +321,7 @@ const insertRecord = async ({
  *     startDate: '2024-01-01'
  *   }
  * });
- * 
+ *
  * // Get procedure SQL without executing
  * const sql = await execProcedure({
  *   procedureName: 'sp_UpdateUserStatus',
@@ -299,33 +330,33 @@ const insertRecord = async ({
  * });
  */
 const execProcedure = async ({
-    procedureName,
-    params = {},
-    options = { returnRecordset: true },
-    execute = true
+  procedureName,
+  params = {},
+  options = { returnRecordset: true },
+  execute = true
 }) => {
-    try {
-        const paramString = Object.keys(params)
-            .map(param => `@${param}`)
-            .join(', ')
+  try {
+    const paramString = Object.keys(params)
+      .map(param => `@${param}`)
+      .join(', ')
 
-        const sqlQuery = `
+    const sqlQuery = `
             EXEC ${procedureName}
             ${paramString ? paramString : ''}
         `
-        if (!execute) {
-            return convertToQuery(sqlQuery, params);
-        }
-        const result = await executeQuery(
-            sqlQuery,
-            params,
-            `Error executing procedure ${procedureName}`
-        )
-
-        return options.returnRecordset ? result : { success: true }
-    } catch (error) {
-        throw new ApiError(StatusCodes.NOT_ACCEPTABLE, error.message)
+    if (!execute) {
+      return convertToQuery(sqlQuery, params)
     }
+    const result = await executeQuery(
+      sqlQuery,
+      params,
+      `Error executing procedure ${procedureName}`
+    )
+
+    return options.returnRecordset ? result : { success: true }
+  } catch (error) {
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, error.message)
+  }
 }
 
 /**
@@ -333,31 +364,30 @@ const execProcedure = async ({
  * @param {string} sql - SQL query with parameters (@param format)
  * @param {Object} params - Parameter values
  * @returns {string} Raw SQL query
- * 
+ *
  * @example
  * const sql = 'SELECT * FROM Users WHERE status = @status';
  * const rawSql = convertToQuery(sql, { status: 'active' });
  * // Results in: SELECT * FROM Users WHERE status = 'active'
  */
 const convertToQuery = (sql, params = {}) => {
-    let query = sql;
-    // Thay thế các tham số trong câu lệnh SQL
-    Object.entries(params).forEach(([key, value]) => {
-        const paramValue = typeof value === 'string' ? `'${value}'` : value;
-        query = query.replace(new RegExp(`@${key}`, 'g'), paramValue);
-    });
+  let query = sql
+  // Thay thế các tham số trong câu lệnh SQL
+  Object.entries(params).forEach(([key, value]) => {
+    const paramValue = typeof value === 'string' ? `'${value}'` : value
+    query = query.replace(new RegExp(`@${key}`, 'g'), paramValue)
+  })
 
-    return query;
-};
-
+  return query
+}
 
 
 export const sqlQueryUtils = {
-    queryBuilder,
-    updateRecord,
-    insertRecord,
-    execProcedure,
-    convertToQuery,
-    executeTransaction,
-    executeBatch
+  queryBuilder,
+  updateRecord,
+  insertRecord,
+  execProcedure,
+  convertToQuery,
+  executeTransaction,
+  executeBatch
 }

@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, Home, LogOut, Calendar } from 'lucide-react';
-import { useSelector } from 'react-redux';
-import { selectCurrentUser } from '~/redux/user/userSlice';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'
+import { Menu, Home, LogOut, Calendar } from 'lucide-react'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '~/redux/user/userSlice'
+import { Link } from 'react-router-dom'
 
 const Header = ({ logo }) => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const isAuthenticated = useSelector(selectCurrentUser)?.Active;
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  const isAuthenticated = useSelector(selectCurrentUser)?.Active
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const menuItems = [
     { title: 'Trang chủ', path: 'https://songbegolf.com.vn/', icon: <Home size={20} />, external: true },
     { title: 'Đặt lịch', path: '/booking', icon: <Calendar size={20} /> }
-  ];
+  ]
 
   return (
     <header className="bg-golf-green-50 shadow-lg ">
@@ -94,7 +94,7 @@ const Header = ({ logo }) => {
                 </Link>
               ))}
               {isAuthenticated && (
-                <button 
+                <button
                   className="flex items-center gap-2 w-full px-4 py-2 text-red-500"
                   onClick={() => {/* Add logout handler */}}
                 >
@@ -107,7 +107,7 @@ const Header = ({ logo }) => {
         </div>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

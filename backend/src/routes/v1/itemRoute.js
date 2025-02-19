@@ -8,18 +8,18 @@ const Router = express.Router()
 
 Router.route('/get-course')
   .get(
-    authMiddleware.isAuthorized, 
-    itemValidation.getCourse, 
-    cacheMiddleware.caching, 
-    itemController.getCourse 
+    authMiddleware.isAuthorized,
+    itemValidation.getCourse,
+    cacheMiddleware.caching,
+    itemController.getCourse
   )
 
 Router.route('/get-schedule')
   .get(
-    authMiddleware.isAuthorized, 
-    itemValidation.getSchedule, 
-    cacheMiddleware.caching, 
-    itemController.getSchedule 
+    authMiddleware.isAuthorized,
+    itemValidation.getSchedule,
+    cacheMiddleware.caching,
+    itemController.getSchedule
   )
-  
+
 export const itemRoute = Router

@@ -19,7 +19,7 @@ const login = async (req, res, next) => {
   } catch (error) {
     const errorMessage = error.details
       ? error.details.map(detail => detail.message).join(', ')
-      : error.message;
+      : error.message
     next(new ApiError(StatusCodes.BAD_REQUEST, errorMessage))
   }
 }

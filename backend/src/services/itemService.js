@@ -1,14 +1,14 @@
-import { StatusCodes } from 'http-status-codes';
-import ApiError from '~/utils/ApiError';
-import { itemModel } from '~/models/itemModel';
-import { getDayOfWeek, TeeTimeUtils } from '~/utils/formatters';
-import { processBookingInfo, mergeBookingData } from '~/utils/itemService-bookingUtils';
-import { sqlQueryUtils } from '~/utils/sqlQueryUtils';
-import { SESSION, BOOKING_ITEM_FIELDS } from '~/utils/constants';
+import { StatusCodes } from 'http-status-codes'
+import ApiError from '~/utils/ApiError'
+import { itemModel } from '~/models/itemModel'
+import { getDayOfWeek, TeeTimeUtils } from '~/utils/formatters'
+import { processBookingInfo, mergeBookingData } from '~/utils/itemService-bookingUtils'
+import { sqlQueryUtils } from '~/utils/sqlQueryUtils'
+import { SESSION, BOOKING_ITEM_FIELDS } from '~/utils/constants'
 
 // Helper functions {
 const prepareQueries = async (CourseID, date, sessions) => {
-  const queries = [];
+  const queries = []
 
   // Prepare queries for all sessions
   for (const session of sessions) {
@@ -36,39 +36,39 @@ const prepareQueries = async (CourseID, date, sessions) => {
           execute: false
         })
       ].map(sql => ({ sql }))
-    );
+    )
   }
-  return queries;
-};
+  return queries
+}
 
 const processResults = (results, sessions) => {
-  const sessionData = {};
-  let index = 0;
+  const sessionData = {}
+  let index = 0
   for (const session of sessions) {
     // Extract results for current session (3 queries per session)
-    const [teeTimeDetails, bookingInfo, blockBooking] = results.slice(index, index + 3);
+    const [teeTimeDetails, bookingInfo, blockBooking] = results.slice(index, index + 3)
 
     sessionData[session] = {
       teeTimeDetails: TeeTimeUtils.formatTeeTimes(teeTimeDetails),
       bookingInfo: TeeTimeUtils.formatTeeTimes(bookingInfo),
       blockBooking: TeeTimeUtils.formatTeeTimes(blockBooking)
-    };
+    }
 
-    index += 3;
+    index += 3
   }
 
-  return sessionData;
-};
+  return sessionData
+}
 
 const processAllSessions = async (CourseID, date, sessions) => {
   // Prepare all queries for batch execution
-  const queries = await prepareQueries(CourseID, date, sessions);
+  const queries = await prepareQueries(CourseID, date, sessions)
   // Execute all queries in one batch
-  const results = await sqlQueryUtils.executeBatch(queries);
+  const results = await sqlQueryUtils.executeBatch(queries)
 
   // Process results for each session
-  const sessionData = processResults(results, sessions);
-  
+  const sessionData = processResults(results, sessions)
+
   // Process booking info and merge data for each session
   const processedSessionResults = await Promise.all(
     Object.entries(sessionData).map(async ([session, data]) => {
@@ -76,22 +76,22 @@ const processAllSessions = async (CourseID, date, sessions) => {
         bookingInfo: data.bookingInfo,
         itemModel,
         fields: BOOKING_ITEM_FIELDS.PROCESSED_BOOKING
-      });
+      })
 
       return {
         sessionKey: `${session}Detail`,
         data: mergeBookingData(data.teeTimeDetails, processedBooking, data.blockBooking)
-      };
+      }
     })
-  );
+  )
 
-  return processedSessionResults;
-};
+  return processedSessionResults
+}
 // } Helper functions
 
 const getSchedule = async (CourseID, date) => {
   try {
-    const dayOfWeek = getDayOfWeek(date);
+    const dayOfWeek = getDayOfWeek(date)
     let TemplateID
     if (CourseID !== 'TOUR')
     {
@@ -99,8 +99,8 @@ const getSchedule = async (CourseID, date) => {
         CourseID: CourseID,
         fields: [dayOfWeek],
         execute: true
-      });
-      TemplateID = fetchTemplate[dayOfWeek];
+      })
+      TemplateID = fetchTemplate[dayOfWeek]
     }
     else {
       TemplateID = 'TEE TIME 15'
@@ -109,7 +109,7 @@ const getSchedule = async (CourseID, date) => {
       throw new ApiError(
         StatusCodes.NOT_FOUND,
         `No template found for course ${CourseID} on ${dayOfWeek}`
-      );
+      )
     }
 
     // First call to create/fetch tee time data
@@ -118,58 +118,58 @@ const getSchedule = async (CourseID, date) => {
       txnDate: date,
       TemplateID: TemplateID,
       execute: true
-    });
+    })
 
     // Add retry logic with delay to ensure data is created
-    let retryCount = 0;
-    const maxRetries = 3;
-    const delayMs = 1000; // 1 second delay
+    let retryCount = 0
+    const maxRetries = 3
+    const delayMs = 1000 // 1 second delay
 
     while ((!TeeTimeInfo || TeeTimeInfo.length === 0) && retryCount < maxRetries) {
-      await new Promise(resolve => setTimeout(resolve, delayMs));
-      
+      await new Promise(resolve => setTimeout(resolve, delayMs))
+
       TeeTimeInfo = await itemModel.fetchTeeTimeMaster({
         CourseID: CourseID,
         txnDate: date,
         TemplateID: TemplateID,
         execute: true
-      });
-      
-      retryCount++;
+      })
+
+      retryCount++
     }
 
     if (!TeeTimeInfo || TeeTimeInfo.length === 0) {
       throw new ApiError(
         StatusCodes.NOT_FOUND,
         `No tee time information found for course ${CourseID} on ${date} after ${maxRetries} attempts`
-      );
+      )
     }
 
-    const sessionResults = await processAllSessions(CourseID, date, Object.values(SESSION));
+    const sessionResults = await processAllSessions(CourseID, date, Object.values(SESSION))
 
     const mergedSessionData = sessionResults.reduce((acc, { sessionKey, data }) => {
-      acc[sessionKey] = data;
-      return acc;
-    }, {});
-    
+      acc[sessionKey] = data
+      return acc
+    }, {})
+
     const HoleDescriptions = await itemModel.getHoleDescriptions({
       fields: ['Description'],
       execute: true
-    });
-    const holeDescriptionsArray = HoleDescriptions.map(hole => hole.Description);
+    })
+    const holeDescriptionsArray = HoleDescriptions.map(hole => hole.Description)
 
     return {
       TeeTimeInfo: TeeTimeInfo,
       HoleDescriptions: holeDescriptionsArray,
       ...mergedSessionData
-    };
+    }
   } catch (error) {
     throw new ApiError(
       error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
       error.message || 'Internal server error'
-    );
+    )
   }
-};
+}
 
 const getCourse = async (date) => {
   try {
@@ -177,17 +177,17 @@ const getCourse = async (date) => {
       date: date,
       fields: ['CourseID', 'Name'],
       execute: true
-    });
-    return result;
+    })
+    return result
   } catch (error) {
     throw new ApiError(
       error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
       error.message || 'Internal server error'
-    );
+    )
   }
-};
+}
 
 export const itemService = {
   getSchedule,
-  getCourse,
+  getCourse
 }
