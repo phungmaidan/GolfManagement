@@ -7,25 +7,32 @@ import PlayerCell from './PlayerCell/PlayerCell'
 import TeeTimeCell from './TeeTimeCell/TeeTimeCell'
 import { processItemUtils } from '~/utils/processItemUtils'
 
-
-const FlightTableRow = ({ item }) => {
+const FlightTableRow = ({ item, updateSelectedRow, isBlock }) => {
   const [selectedBooking, setSelectedBooking] = useState(null)
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const processedItem = processItemUtils.processItem(item)
+
   const handlePlayerClick = (booking, bookingIndex) => {
     setSelectedBooking({
       flight: booking.Flight,
       TeeBox: booking.TeeBox,
       teeTime: booking.TeeTime,
-      bookMap: booking.children.bookMap,
+      bookMap: booking.children?.bookMap,
       bookingIndex: bookingIndex
     })
+    updateSelectedRow(booking)
     setIsPopupOpen(true)
   }
-
+  const handlePopupClose = () => {
+    setIsPopupOpen(false)
+    updateSelectedRow(null)
+  }
   return (
     <>
-      <tr className={`hover:bg-gray-50 ${isPopupOpen ? 'outline-2 outline-blue-500' : ''}`}>
+      <tr className={`
+        bg-white hover:bg-gray-50
+        ${isBlock ? 'border-4 border-luxury-gold-500 shadow-lg' : ''}
+      `}>
         <TeeTimeCell teeTime={processedItem.TeeTime} />
         {processedItem.players.map((player, i) => (
           <PlayerCell
@@ -33,7 +40,7 @@ const FlightTableRow = ({ item }) => {
             player={player}
             isBlockRow={processedItem.isBlockRow}
             bookingIndex={processedItem.bookingIndices[i]}
-            onClick={() => handlePlayerClick(processedItem, processedItem.bookingIndices[i])}
+            onClick={() => {!isBlock?handlePlayerClick(processedItem, processedItem.bookingIndices[i]):''}}
           />
         ))}
         <td className="border px-4 py-2 text-center text-sm">
@@ -42,17 +49,19 @@ const FlightTableRow = ({ item }) => {
           />
         </td>
       </tr>
-      <BookingPopup
-        isOpen={isPopupOpen}
-        onClose={() => setIsPopupOpen(false)}
-        flightInfo={{
-          flight: selectedBooking?.flight,
-          TeeBox: selectedBooking?.TeeBox,
-          bookMap: selectedBooking?.bookMap || '',
-          teeTime: selectedBooking?.teeTime || '',
-          bookingIndex: selectedBooking?.bookingIndex || '0'
-        }}
-      />
+      {isPopupOpen && (
+        <BookingPopup
+          isOpen={isPopupOpen}
+          onClose={handlePopupClose}
+          flightInfo={{
+            flight: selectedBooking?.flight,
+            TeeBox: selectedBooking?.TeeBox,
+            bookMap: selectedBooking?.bookMap || '',
+            teeTime: selectedBooking?.teeTime || '',
+            bookingIndex: selectedBooking?.bookingIndex || '0'
+          }}
+        />
+      )}
     </>
   )
 }

@@ -23,5 +23,9 @@ export default defineConfig({
     alias: [
       { find: '~', replacement: '/src' }
     ]
+  },
+  server: {
+    host: '0.0.0.0', // Change true to '0.0.0.0' to expose to all network interfaces
+    port: 5173 // Có thể thay đổi port nếu muốn
   }
 })

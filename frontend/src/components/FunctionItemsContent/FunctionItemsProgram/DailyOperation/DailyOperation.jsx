@@ -16,7 +16,7 @@ import {
 } from '~/redux/booking/bookingSlice'
 import FlightTable from './FlightTable/FlightTable'
 
-const DailyOperation = () => {
+const DailyOperation = ({ updateSelectedRow, highlightedFlights }) => {
   const dispatch = useDispatch()
   const selectedDate = useSelector(selectSelectedDate)
   const selectedCourse = useSelector(selectSelectedCourse)
@@ -71,8 +71,18 @@ const DailyOperation = () => {
   } else {
     content = (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fadeIn">
-        <FlightTable title="Morning" schedule={MorningDetail} />
-        <FlightTable title="Afternoon" schedule={AfternoonDetail} />
+        <FlightTable
+          title="Morning"
+          schedule={MorningDetail}
+          updateSelectedRow={updateSelectedRow}
+          highlightedFlights={highlightedFlights}
+        />
+        <FlightTable
+          title="Afternoon"
+          schedule={AfternoonDetail}
+          updateSelectedRow={updateSelectedRow}
+          highlightedFlights={highlightedFlights}
+        />
       </div>
     )
   }

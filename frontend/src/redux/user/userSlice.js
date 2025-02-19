@@ -7,6 +7,7 @@ import { API_ROOT } from '~/utils/constants'
 // Khởi tạo giá trị của một cái Slice trong Redux
 const initialState = {
   currentUser: null,
+  accessToken: null,
   userModule: []
 }
 
@@ -50,6 +51,7 @@ export const userSlice = createSlice({
     builder.addCase(loginUserAPI.fulfilled, (state, action) => {
       // action.payload ở đây chính là response.data trả về ở trên
       state.currentUser = action.payload?.ID
+      state.accessToken = action.payload?.accessToken
       state.userModule = action.payload?.userModule
     })
     builder.addCase(logoutUserAPI.fulfilled, (state) => {
@@ -57,10 +59,14 @@ export const userSlice = createSlice({
              * API logout sau khi gọi thành công thì sẽ clear thông tin currentUser về null ở đây
              * Kết hợp ProtectedRoute đã làm ở App.js => code sẽ điều hướng chuẩn về trang Login
              */
+      state.accessToken = null
+      state.userModule = []
       state.currentUser = null
     })
     builder.addCase(updateUserAPI.fulfilled, (state, action) => {
       const user = action.payload
+      state.userModule = user.accessToken
+      state.accessToken = user.accessToken
       state.currentUser = user
     })
 
@@ -78,6 +84,9 @@ export const selectCurrentUser = (state) => {
 }
 export const selectUserModule = (state) => {
   return state.user.userModule
+}
+export const selectAccessToken = (state) => {
+  return state.user.accessToken
 }
 
 export const userReducer = userSlice.reducer

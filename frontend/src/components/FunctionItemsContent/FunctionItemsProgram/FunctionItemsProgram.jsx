@@ -1,87 +1,50 @@
+import React, { useState, useEffect } from 'react'
 import DailyOperation from './DailyOperation/DailyOperation'
-import React, { useState, useEffect, useRef } from 'react'
-import socketIOClient from 'socket.io-client'
-import './App.css'
-
-const host = 'http://localhost:5000/'
+import { useSocket } from '~/hooks/useSocket'
+import { selectAccessToken } from '~/redux/user/userSlice'
+import { useSelector } from 'react-redux'
 
 const FunctionItemsProgram = () => {
-  const [mess, setMess] = useState([])
-  const [message, setMessage] = useState('')
+  const [highlightedFlights, setHighlightedFlights] = useState(new Map())
   const [id, setId] = useState()
-
-  const socketRef = useRef()
-  const messagesEnd = useRef()
+  const accessToken = useSelector(selectAccessToken)
+  const { socket, initSocket, updateSelectedRow } = useSocket(accessToken)
 
   useEffect(() => {
-    socketRef.current = socketIOClient.connect(host)
+    const socket = initSocket()
 
-    socketRef.current.on('getId', data => {
+    socket.on('getId', data => {
       setId(data)
     })
 
-    socketRef.current.on('sendDataServer', dataGot => {
-      setMess(oldMsgs => [...oldMsgs, dataGot.data])
-      scrollToBottom()
+    socket.on('sendDataServer', dataArray => {
+      console.log('Data got:', dataArray)
+      setHighlightedFlights(prev => {
+        const newMap = new Map()
+        dataArray.forEach(({ userId, data }) => {
+          if (data) {
+            newMap.set(userId, {
+              flight: data.flight,
+              teeTime: data.teeTime,
+              TeeBox: data.TeeBox
+            })
+          }
+        })
+        return newMap
+      })
     })
 
-    // Emit joinBooking event to initialize socket connection for /booking route
-    socketRef.current.emit('joinBooking')
-
     return () => {
-      socketRef.current.disconnect()
+      socket.disconnect()
     }
-  }, [])
-
-  const sendMessage = () => {
-    if (message !== null) {
-      const msg = {
-        content: message,
-        id: id
-      }
-      socketRef.current.emit('sendDataClient', msg)
-      setMessage('')
-    }
-  }
-
-  const scrollToBottom = () => {
-    messagesEnd.current.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  const renderMess = mess.map((m, index) =>
-    <div key={index} className={`${m.id === id ? 'your-message' : 'other-people'} chat-item`}>
-      {m.content}
-    </div>
-  )
-
-  const handleChange = (e) => {
-    setMessage(e.target.value)
-  }
-
-  const onEnterPress = (e) => {
-    if (e.keyCode === 13 && e.shiftKey === false) {
-      sendMessage()
-    }
-  }
+  }, [accessToken, initSocket])
 
   return (
-    <div className="box-chat">
-      <div className="box-chat_message">
-        {renderMess}
-        <div style={{ float: 'left', clear: 'both' }} ref={messagesEnd}></div>
-      </div>
-
-      <div className="send-box">
-        <textarea
-          value={message}
-          onKeyDown={onEnterPress}
-          onChange={handleChange}
-          placeholder="Nhập tin nhắn ..."
-        />
-        <button onClick={sendMessage}>
-          Send
-        </button>
-      </div>
+    <div className="ml-10 mb-10 mr-10 glass shadow-golf backdrop-blur-lg rounded-lg p-4 overflow-hidden">
+      <DailyOperation
+        updateSelectedRow={updateSelectedRow}
+        highlightedFlights={highlightedFlights}
+      />
     </div>
   )
 }
