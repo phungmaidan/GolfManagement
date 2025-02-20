@@ -16,7 +16,7 @@ import {
 } from '~/redux/booking/bookingSlice'
 import FlightTable from './FlightTable/FlightTable'
 
-const DailyOperation = ({ updateSelectedRow, highlightedFlights }) => {
+const DailyOperation = () => {
   const dispatch = useDispatch()
   const selectedDate = useSelector(selectSelectedDate)
   const selectedCourse = useSelector(selectSelectedCourse)
@@ -31,8 +31,7 @@ const DailyOperation = ({ updateSelectedRow, highlightedFlights }) => {
     if (courses.length === 0) {
       dispatch(getCouseAPI())
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch])
+  }, [dispatch, courses])
 
   useEffect(() => {
     if (selectedDate && selectedCourse) {
@@ -74,14 +73,10 @@ const DailyOperation = ({ updateSelectedRow, highlightedFlights }) => {
         <FlightTable
           title="Morning"
           schedule={MorningDetail}
-          updateSelectedRow={updateSelectedRow}
-          highlightedFlights={highlightedFlights}
         />
         <FlightTable
           title="Afternoon"
           schedule={AfternoonDetail}
-          updateSelectedRow={updateSelectedRow}
-          highlightedFlights={highlightedFlights}
         />
       </div>
     )

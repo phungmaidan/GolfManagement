@@ -1,4 +1,4 @@
-// frontend/src/redux/bookingPopup/bookingPopupSlice.js
+// frontend/src/redux/bookingFlight/bookingFlightSlice.js
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
@@ -13,17 +13,17 @@ const initialState = {
   selectedPlayerIndex: -1
 }
 
-const bookingPopupSlice = createSlice({
-  name: 'bookingPopup',
+const bookingFlightSlice = createSlice({
+  name: 'bookingFlight',
   initialState,
   reducers: {
-    openPopup: (state, action) => {
+    openFlight: (state, action) => {
       state.isOpen = true
       state.flightInfo = action.payload.flightInfo
       state.playerName = action.payload.playerName
       state.selectedPlayerIndex = action.payload.playerIndex
     },
-    closePopup: (state) => {
+    closeFlight: (state) => {
       state.isOpen = false
       state.flightInfo = initialState.flightInfo
       state.playerName = ''
@@ -47,12 +47,12 @@ const bookingPopupSlice = createSlice({
   }
 })
 
-export const { openPopup, closePopup, updateFlightInfo, updateGuestInfo } = bookingPopupSlice.actions
+export const { openFlight, closeFlight, updateFlightInfo, updateGuestInfo } = bookingFlightSlice.actions
 
-export const selectBookingPopup = (state) => state.bookingPopup
-export const selectIsPopupOpen = (state) => state.bookingPopup.isOpen
-export const selectFlightInfo = (state) => state.bookingPopup.flightInfo
-export const selectPlayerName = (state) => state.bookingPopup.playerName
+export const selectBookingFlight = (state) => state.bookingFlight
+export const selectIsFlightOpen = (state) => state.bookingFlight.isOpen
+export const selectFlightInfo = (state) => state.bookingFlight.flightInfo
+export const selectPlayerName = (state) => state.bookingFlight.playerName
 
 
-export const bookingPopupReducer = bookingPopupSlice.reducer
+export const bookingFlightReducer = bookingFlightSlice.reducer

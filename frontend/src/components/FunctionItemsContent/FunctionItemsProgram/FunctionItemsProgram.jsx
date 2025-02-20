@@ -1,50 +1,24 @@
-import React, { useState, useEffect } from 'react'
-import DailyOperation from './DailyOperation/DailyOperation'
-import { useSocket } from '~/hooks/useSocket'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { selectAccessToken } from '~/redux/user/userSlice'
-import { useSelector } from 'react-redux'
+import { initializeSocket, selectConnectionStatus } from '~/redux/socket/socketSlice'
+import DailyOperation from './DailyOperation/DailyOperation'
 
 const FunctionItemsProgram = () => {
-  const [highlightedFlights, setHighlightedFlights] = useState(new Map())
-  const [id, setId] = useState()
+  const dispatch = useDispatch()
   const accessToken = useSelector(selectAccessToken)
-  const { socket, initSocket, updateSelectedRow } = useSocket(accessToken)
+  const isConnected = useSelector(selectConnectionStatus)
 
   useEffect(() => {
-    const socket = initSocket()
-
-    socket.on('getId', data => {
-      setId(data)
-    })
-
-    socket.on('sendDataServer', dataArray => {
-      console.log('Data got:', dataArray)
-      setHighlightedFlights(prev => {
-        const newMap = new Map()
-        dataArray.forEach(({ userId, data }) => {
-          if (data) {
-            newMap.set(userId, {
-              flight: data.flight,
-              teeTime: data.teeTime,
-              TeeBox: data.TeeBox
-            })
-          }
-        })
-        return newMap
-      })
-    })
-
-    return () => {
-      socket.disconnect()
-    }
-  }, [accessToken, initSocket])
+    dispatch(initializeSocket(accessToken))
+  }, [dispatch, accessToken])
 
   return (
     <div className="ml-10 mb-10 mr-10 glass shadow-golf backdrop-blur-lg rounded-lg p-4 overflow-hidden">
-      <DailyOperation
-        updateSelectedRow={updateSelectedRow}
-        highlightedFlights={highlightedFlights}
-      />
+      {isConnected && (
+        <div className="text-sm text-green-500 mb-2">Connected to server: Now you can book a flight real-time</div>
+      )}
+      <DailyOperation/>
     </div>
   )
 }

@@ -4,7 +4,8 @@ import { configureStore } from '@reduxjs/toolkit'
 import { userReducer } from './user/userSlice'
 import { moduleReducer } from './module/moduleSlice'
 import { bookingReducer } from './booking/bookingSlice'
-import { bookingPopupReducer } from './bookingPopup/bookingPopupSlice'
+import { bookingFlightReducer } from './bookingFlight/bookingFlightSlice'
+import { socketReducer } from './socket/socketSlice'
 /**
  * Cấu hình redux-persist
  * https://www.npmjs.com/package/redux-persist
@@ -20,7 +21,7 @@ import storage from 'redux-persist/lib/storage' // default là localstorage
 const rootPersistConfig = {
   key: 'root', // key của persist do chúng ta chỉ định, để mặc định là root
   storage: storage, // Biến storage ở trên - lưu vào localstorage
-  whitelist: ['user', 'module', 'booking', 'bookingPopup'] // định nghĩa các slice dữ liệu ĐƯỢC PHÉP duy trì qua mỗi lần f5 trình duyệt
+  whitelist: ['user', 'module', 'booking', 'bookingFlight', 'socket'] // định nghĩa các slice dữ liệu ĐƯỢC PHÉP duy trì qua mỗi lần f5 trình duyệt
   // blacklist: ['user'] // định nghĩa các slice KHÔNG ĐƯỢC PHÉP duy trì qua mỗi lần f5 trình duyệt
 }
 
@@ -30,7 +31,8 @@ const reducers = combineReducers({
   user: userReducer,
   module: moduleReducer,
   booking: bookingReducer,
-  bookingPopup: bookingPopupReducer
+  socket: socketReducer,
+  bookingFlight: bookingFlightReducer
 })
 
 // Thực hiện persist Reducer

@@ -26,12 +26,15 @@ export function getUserData() {
   return userDataMap
 }
 
-io.use((socket, next) => {
+io.use(async (socket, next) => {
   console.log('A user is trying to connect:', socket.id)
   const { token } = socket.handshake.headers
   if (token) {
     try {
-      const decoded = JwtProvider.verifyToken(token, env.ACCESS_TOKEN_SECRET_SIGNATURE)
+      const decoded = await JwtProvider.verifyToken(token, env.ACCESS_TOKEN_SECRET_SIGNATURE)
+      if (!decoded._id) {
+        return next(new Error('Invalid token'))
+      }
       socket.handshake.query.userId = decoded._id
       console.log('===> This user is verified and connected!!!')
     } catch (error) {
@@ -63,7 +66,6 @@ io.on('connection', (socket) => {
   socket.on('sendDataClient', function (data) {
     const userId = socket.handshake.query.userId
     console.log('Data received from client:', data)
-    console.log('userDataMap', userDataMap)
     if (!userId) return
 
     // Update data for specific user
@@ -76,7 +78,7 @@ io.on('connection', (socket) => {
         data: data
       })
     }
-
+    console.log('userDataMapCurrent: ', userDataMap)
     // Broadcast updated data to all clients
     io.emit('sendDataServer', userDataMap)
   })
@@ -91,6 +93,13 @@ io.on('connection', (socket) => {
       //   userDataMap.splice(userIndex, 1)
       //   io.emit('sendDataServer', userDataMap)
       // }
+      // Remove user data when they disconnect
+      const userIndex = userDataMap.findIndex(user => user.userId === userId)
+      if (userIndex !== -1) {
+        userDataMap.splice(userIndex, 1)
+        io.emit('sendDataServer', userDataMap)
+      }
+      console.log('Data after User unconnected:', userDataMap)
     }
     console.log('Client disconnected')
   })

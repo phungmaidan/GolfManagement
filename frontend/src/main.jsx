@@ -28,7 +28,6 @@ root.render(
   <BrowserRouter basename='/'>
     <Provider store={store}>
       <PersistGate persistor={persistor}>
-        {/* Thay thế MUI GlobalStyles bằng CSS của Tailwind trong index.css */}
         <App />
         {/* <ToastContainer position="bottom-left" theme="colored" /> */}
       </PersistGate>
