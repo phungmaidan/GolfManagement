@@ -7,7 +7,7 @@ const BookingInfo = () => {
   const flightInfo = useSelector(selectBookingFlight)
   const bookingDate = useSelector(selectTodayDate)
   // Tạo một đối tượng placeholder khi không có dữ liệu
-  const bookingData = flightInfo?.bookMap[flightInfo?.bookingIndex] || {
+  const bookingData = flightInfo?.bookMap?.[0] || {
     BookingID: '-'
   }
 

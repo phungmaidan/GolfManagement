@@ -26,7 +26,7 @@ const START_SERVER = () => {
   app.use(
     cors(corsOptions)
   )
-  
+
   // Use APIs V1
   app.use('/v1', APIs_V1)
 

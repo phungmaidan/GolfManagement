@@ -10,7 +10,7 @@ const CourseInfo = ({ flightInfo }) => {
   const selectedCourse = useSelector(selectSelectedCourse)
   const selectedDate = useSelector(selectSelectedDate)
   const HoleDescriptions = useSelector(selectHoleDescriptions)
-  const [selectedHole, setSelectedHole] = useState(flightInfo?.bookMap[flightInfo?.bookingIndex]?.Hole || HoleDescriptions[0])
+  const [selectedHole, setSelectedHole] = useState(flightInfo?.bookMap?.[flightInfo?.bookingIndex]?.Hole || HoleDescriptions[0])
 
   const fields = [
     { label: 'Course ID', type: 'text', value: selectedCourse, readOnly: true },

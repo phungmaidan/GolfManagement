@@ -11,7 +11,6 @@ export const initializeSocket = createAsyncThunk(
   async (accessToken, { dispatch }) => {
     if (!socket) {
       socket = io(API_ROOT, {
-        withCredentials: true,
         extraHeaders: {
           token: accessToken
         }

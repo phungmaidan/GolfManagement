@@ -2,7 +2,7 @@ import React from 'react'
 
 const IDInfo = ({ flightInfo }) => {
   const fields = [
-    { label: 'User ID', value: flightInfo?.bookMap[flightInfo?.bookingIndex]?.UserID || '' },
+    { label: 'User ID', value: flightInfo?.bookMap?.[flightInfo?.bookingIndex]?.UserID || '' },
     { label: 'Caddy', value: '90' },
     { label: 'Buggy', value: '100' }
   ]

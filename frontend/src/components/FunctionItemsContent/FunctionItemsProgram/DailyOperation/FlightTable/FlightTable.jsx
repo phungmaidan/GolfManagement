@@ -5,6 +5,7 @@ import FlightTableRow from './FlightTableRow/FlightTableRow'
 import { selectSelectedBookings } from '~/redux/socket/socketSlice'
 import { useSelector } from 'react-redux'
 const FlightTable = ({ title, schedule }) => {
+  console.log('FlightTable render')
   const selectedBookings = useSelector(selectSelectedBookings)
 
   // Memoize blocked flights to prevent unnecessary recalculations
@@ -22,7 +23,6 @@ const FlightTable = ({ title, schedule }) => {
     )
   }, [selectedBookings])
 
-  console.log('FlightTable render')
   return (
     <>
       <div className="bg-golf-green-50 p-4 rounded-lg shadow-golf overflow-x-auto animation-show">

@@ -13,8 +13,10 @@ const initialState = {
   TeeTimeInfo: null,
   MorningDetail: null,
   AfternoonDetail: null,
-  status: 'idle',
-  error: null
+  statusGetCourse: 'idle',
+  errorGetCourse: null,
+  statusGetSchedule: 'idle',
+  errorGetSchedule: null
 }
 
 export const getCouseAPI = createAsyncThunk(
@@ -34,16 +36,16 @@ export const getCouseAPI = createAsyncThunk(
 
 export const getScheduleAPI = createAsyncThunk(
   'booking/getScheduleAPI',
-  async ({ selectedCourse, selectedDate }, thunkAPI) => {
+  async ({ date, course }, thunkAPI) => {
     try {
       // Kiểm tra tham số trước khi gọi API
-      if (!selectedCourse || !selectedDate) {
+      if (!date || !course) {
         throw new Error('Missing required parameters')
       }
 
       const params = {
-        CourseID: selectedCourse,
-        date: selectedDate
+        CourseID: course,
+        date: date
       }
 
 
@@ -72,35 +74,38 @@ const bookingSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getCouseAPI.pending, (state) => {
-        state.status = 'loading'
+        console.log('getCourseAPI pending')
+        state.statusGetCourse = 'loading'
+        state.errorGetCourse = null
       })
       .addCase(getCouseAPI.fulfilled, (state, { payload }) => {
-        state.status = 'succeeded'
+        console.log('getCourseAPI fulfilled', payload)
+        state.statusGetCourse = 'succeeded'
         state.courseList = payload.courses
         state.selectedCourse = state.courseList[0].CourseID
         state.selectedDate = payload.date // Cập nhật selectedDate
-        state.error = null
       })
       .addCase(getCouseAPI.rejected, (state, { payload }) => {
-        state.status = 'failed'
-        state.error = payload
+        console.log('getCourseAPI rejected', payload)
+        state.statusGetCourse = 'failed'
+        state.errorGetCourse = payload
         state.courseList = null
         state.selectedCourse = null
       })
       .addCase(getScheduleAPI.pending, (state) => {
-        state.status = 'loading'
+        state.statusGetSchedule = 'loading'
+        state.errorGetSchedule = null
       })
       .addCase(getScheduleAPI.fulfilled, (state, { payload }) => {
-        state.status = 'succeeded'
-        state.error = null
+        state.statusGetSchedule = 'succeeded'
         state.TeeTimeInfo = payload?.TeeTimeInfo
         state.HoleDescriptions = payload?.HoleDescriptions
         state.MorningDetail = payload?.MorningDetail
         state.AfternoonDetail = payload?.AfternoonDetail
       })
       .addCase(getScheduleAPI.rejected, (state, { payload }) => {
-        state.status = 'failed'
-        state.error = payload
+        state.statusGetSchedule = 'failed'
+        state.errorGetSchedule = payload
         state.TeeTimeInfo = null
         state.MorningDetail = null
         state.AfternoonDetail = null
@@ -123,7 +128,9 @@ export const selectMorningDetail = (state) => state.booking.MorningDetail
 export const selectAfternoonDetail = (state) => state.booking.AfternoonDetail
 export const selectTodayDate = (state) => state.booking.todayDate
 
-export const selectBookingStatus = (state) => state.booking.status
-export const selectBookingError = (state) => state.booking.error
+export const selectStatusGetCourse = (state) => state.booking.statusGetCourse
+export const selectErrorGetCourse = (state) => state.booking.errorGetCourse
+export const selectStatusGetSchedule = (state) => state.booking.statusGetSchedule
+export const selectErrorGetSchedule = (state) => state.booking.errorGetSchedule
 
 export const bookingReducer = bookingSlice.reducer
