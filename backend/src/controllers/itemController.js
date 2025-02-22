@@ -1,6 +1,8 @@
 import { StatusCodes } from 'http-status-codes'
 import { itemService } from '~/services/itemService'
 
+
+
 const getCourse = async (req, res, next) => {
   try {
     const { date } = req.validatedData // Lấy giá trị từ req.query
@@ -21,7 +23,16 @@ const getSchedule = async (req, res, next) => {
   } catch (error) { next(error) }
 }
 
+const searchGuests = async (req, res, next) => {
+  try {
+    const { search, limit } = req.validatedData
+    const data = await itemService.searchGuests(search, limit)
+    res.status(StatusCodes.OK).json(data)
+  } catch (error) { next(error) }
+}
+
 export const itemController = {
   getCourse,
-  getSchedule
+  getSchedule,
+  searchGuests
 }

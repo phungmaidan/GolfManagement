@@ -38,18 +38,7 @@ function App() {
         {/* 404 Not Found - No Layout */}
         <Route path='*' element={<NotFound />} />
       </Routes>
-      <ToastContainer
-        position="bottom-left"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+
     </>
   )
 }

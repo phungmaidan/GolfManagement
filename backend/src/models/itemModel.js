@@ -208,6 +208,42 @@ const getHoleDescriptions = async ({ fields = ['Description'], execute = true })
   }
 }
 
+const searchGuests = async ({ searchTerm, limit = 5 }) => {
+  try {
+    const sql = `
+      SELECT TOP ${limit} A.GuestID,
+        A.FullName,
+        A.Salutation,
+        A.CardNumber,
+        A.CompanyName,
+        A.BirthDate,
+        A.IdentityCard,
+        A.Passport,
+        A.Nationality,
+        A.Gender,
+        A.Contact1,
+        A.Contact2,
+        A.Email1,
+        A.Email2,
+        A.CreditCardNumber,
+        A.CardExpiry,
+        A.GuestType, B.AccountStatus, B.ClassType 
+      FROM ComGuest A 
+      LEFT JOIN mrmPersonalInfo B ON B.ID = A.CardNumber 
+      WHERE A.FullName LIKE @search 
+      OR A.CardNumber LIKE @search 
+      OR A.Contact1 LIKE @search 
+      OR A.GuestID LIKE @search 
+      ORDER BY A.CardNumber, A.FullName
+    `
+    return await sqlQueryUtils.executeQuery(sql, {
+      search: `%${searchTerm}%`
+    }, 'Search guests failed')
+  } catch (error) {
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Database query ComGuest search failed: ' + error.message)
+  }
+}
+
 export const itemModel = {
   getCourseByDate,
   fetchTemplateOfDay,
@@ -220,5 +256,6 @@ export const itemModel = {
   getCountTotalInfoCourse,
   getComGuestType,
   getFreFlightStatus,
-  getHoleDescriptions
+  getHoleDescriptions,
+  searchGuests
 }

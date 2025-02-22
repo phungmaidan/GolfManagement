@@ -187,7 +187,24 @@ const getCourse = async (date) => {
   }
 }
 
+const searchGuests = async (searchTerm, limit = 5) => {
+  try {
+    const result = await itemModel.searchGuests({
+      searchTerm,
+      limit,
+      execute: true
+    })
+    return result
+  } catch (error) {
+    throw new ApiError(
+      error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
+      error.message || 'Internal server error'
+    )
+  }
+}
+
 export const itemService = {
   getSchedule,
-  getCourse
+  getCourse,
+  searchGuests
 }

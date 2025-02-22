@@ -50,7 +50,29 @@ const getSchedule = async (req, res, next) => {
   }
 }
 
+const searchGuests = async (req, res, next) => {
+  const schema = Joi.object({
+    search: Joi.string().required().min(1).messages({
+      'string.empty': 'Search term cannot be empty',
+      'any.required': 'Search term is required'
+    }),
+    limit: Joi.number().integer().min(1).max(20).default(5)
+  })
+
+  try {
+    const validatedData = await schema.validateAsync(req.query, { abortEarly: false })
+    req.validatedData = validatedData
+    next()
+  } catch (error) {
+    const errorMessage = error.details
+      ? error.details.map(detail => detail.message).join(', ')
+      : error.message
+    next(new ApiError(StatusCodes.BAD_REQUEST, errorMessage))
+  }
+}
+
 export const itemValidation = {
   getCourse,
-  getSchedule
+  getSchedule,
+  searchGuests
 }

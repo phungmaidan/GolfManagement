@@ -47,11 +47,10 @@ export const updateBookingData = createAsyncThunk(
       socket.emit('sendDataClient', null)
       return null
     }
-
     const flightData = {
-      flight: booking.Flight,
+      flight: booking.flight,
       TeeBox: booking.TeeBox,
-      teeTime: booking.TeeTime
+      teeTime: booking.teeTime
     }
     socket.emit('sendDataClient', flightData)
     return flightData

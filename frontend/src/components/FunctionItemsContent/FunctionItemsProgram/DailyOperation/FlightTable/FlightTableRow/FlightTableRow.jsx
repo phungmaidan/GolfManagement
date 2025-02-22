@@ -1,21 +1,21 @@
 /* eslint-disable no-console */
 // FlightTableRow.jsx
-import React, { useState, useCallback, useMemo } from 'react'
-import { useDispatch } from 'react-redux'
-import { updateBookingData } from '~/redux/socket/socketSlice'
-import BookingPopup from './BookingPopup'
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import DropdownMenu from './DropdownMenu/DropdownMenu'
 import PlayerCell from './PlayerCell/PlayerCell'
 import TeeTimeCell from './TeeTimeCell/TeeTimeCell'
 import { processItemUtils } from '~/utils/processItemUtils'
+import { selectIsPopBookingOpen, openBookingPopup, closeBookingPopup, selectSelectedBooking } from '~/redux/bookingFlight/bookingFlightSlice'
+import { updateBookingData } from '~/redux/socket/socketSlice'
+
 const FlightTableRow = ({ item, isBlock }) => {
   // Use useMemo for expensive calculations
-  const processedItem = useMemo(() => processItemUtils.processItem(item), [item])
+  const processedItem = processItemUtils.processItem(item)
   const dispatch = useDispatch()
-  const [selectedBooking, setSelectedBooking] = useState(null)
-  const [isPopupOpen, setIsPopupOpen] = useState(false)
-
-  const handlePlayerClick = useCallback((booking, bookingIndex) => {
+  const selectedBooking = useSelector(selectSelectedBooking)
+  const isPopupOpen = useSelector(selectIsPopBookingOpen)
+  const handlePlayerClick = (booking, bookingIndex) => {
     const bookingData = {
       flight: booking.Flight,
       TeeBox: booking.TeeBox,
@@ -23,14 +23,9 @@ const FlightTableRow = ({ item, isBlock }) => {
       bookMap: booking.children?.bookMap,
       bookingIndex: bookingIndex
     }
-    setSelectedBooking(bookingData)
-    dispatch(updateBookingData(booking))
-    setIsPopupOpen(true)
-  }, [dispatch])
-  const handlePopupClose = useCallback(() => {
-    dispatch(updateBookingData(null))
-    setIsPopupOpen(false)
-  }, [dispatch])
+    dispatch(updateBookingData(bookingData))
+    dispatch(openBookingPopup(bookingData))
+  }
   return (
     <>
       <tr className={`
@@ -53,21 +48,8 @@ const FlightTableRow = ({ item, isBlock }) => {
           />
         </td>
       </tr>
-      {isPopupOpen && (
-        <BookingPopup
-          isOpen={isPopupOpen}
-          onClose={handlePopupClose}
-          flightInfo={{
-            flight: selectedBooking?.flight,
-            TeeBox: selectedBooking?.TeeBox,
-            bookMap: selectedBooking?.bookMap || '',
-            teeTime: selectedBooking?.teeTime || '',
-            bookingIndex: selectedBooking?.bookingIndex || '0'
-          }}
-        />
-      )}
     </>
   )
 }
 
-export default React.memo(FlightTableRow)
+export default FlightTableRow

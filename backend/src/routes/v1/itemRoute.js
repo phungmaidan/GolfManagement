@@ -22,4 +22,11 @@ Router.route('/get-schedule')
     itemController.getSchedule
   )
 
+Router.route('/search-guests')
+  .get(
+    authMiddleware.isAuthorized,
+    itemValidation.searchGuests,
+    itemController.searchGuests
+  )
+
 export const itemRoute = Router

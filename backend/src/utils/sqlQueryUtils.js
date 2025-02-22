@@ -389,5 +389,6 @@ export const sqlQueryUtils = {
   execProcedure,
   convertToQuery,
   executeTransaction,
-  executeBatch
+  executeBatch,
+  executeQuery
 }
