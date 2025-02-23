@@ -1,14 +1,22 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import io from 'socket.io-client'
 import { API_ROOT } from '~/utils/constants'
+import { openBookingPopup } from '~/redux/bookingFlight/bookingFlightSlice'
+import { selectSelectedDate, selectSelectedCourse } from '~/redux/booking/bookingSlice'
 
+const initialState = {
+  isConnected: false,
+  selectedBookings: null,
+  error: null,
+  loading: false
+}
 // Tạo socket instance
 let socket = null
 
 // Thunk action để khởi tạo socket connection
 export const initializeSocket = createAsyncThunk(
   'socket/initialize',
-  async (accessToken, { dispatch }) => {
+  async (accessToken, { dispatch, getState }) => {
     if (!socket) {
       socket = io(API_ROOT, {
         extraHeaders: {
@@ -25,6 +33,20 @@ export const initializeSocket = createAsyncThunk(
       })
 
       socket.on('sendDataServer', (data) => {
+        // const state = getState()
+        // const selectedDate = selectSelectedDate(state)
+        // const selectedCourse = selectSelectedCourse(state)
+
+        // if (selectedDate && selectedCourse) {
+        //   const filteredData = data.filter(booking =>
+        //     booking?.data?.selectedDate === selectedDate &&
+        //     booking?.data?.selectedCourse === selectedCourse
+        //   )
+        //   console.log('filteredData', filteredData)
+        //   if (filteredData.length > 0) {
+        //     dispatch(setSelectedBookings(filteredData))
+        //   }
+        // }
         dispatch(setSelectedBookings(data))
       })
 
@@ -39,8 +61,12 @@ export const initializeSocket = createAsyncThunk(
 // Thunk action để gửi data
 export const updateBookingData = createAsyncThunk(
   'socket/updateBooking',
-  async (booking) => {
+  async (booking, { dispatch, getState }) => {
     if (!socket?.connected) return null
+
+    const state = getState()
+    const selectedDate = selectSelectedDate(state)
+    const selectedCourse = selectSelectedCourse(state)
 
     if (booking === null) {
       socket.emit('sendDataClient', null)
@@ -49,19 +75,18 @@ export const updateBookingData = createAsyncThunk(
     const flightData = {
       flight: booking.flight,
       TeeBox: booking.TeeBox,
-      teeTime: booking.teeTime
+      teeTime: booking.teeTime,
+      selectedDate,
+      selectedCourse
     }
+
+    // Dispatch action từ bookingFlightSlice trước khi emit
+    dispatch(openBookingPopup(booking))
+
     socket.emit('sendDataClient', flightData)
     return flightData
   }
 )
-
-const initialState = {
-  isConnected: false,
-  selectedBookings: null,
-  error: null,
-  loading: false
-}
 
 const socketSlice = createSlice({
   name: 'socket',

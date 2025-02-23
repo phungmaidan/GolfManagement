@@ -1,28 +1,30 @@
 import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import {
   selectSelectedDate,
   selectSelectedCourse,
   selectHoleDescriptions
 } from '~/redux/booking/bookingSlice'
+import { selectSelectedBooking } from '~/redux/bookingFlight/bookingFlightSlice'
 
-const CourseInfo = ({ flightInfo }) => {
+const CourseInfo = () => {
+  const bookingFlight = useSelector(selectSelectedBooking)
   const selectedCourse = useSelector(selectSelectedCourse)
   const selectedDate = useSelector(selectSelectedDate)
   const HoleDescriptions = useSelector(selectHoleDescriptions)
-  const [selectedHole, setSelectedHole] = useState(flightInfo?.bookMap?.[flightInfo?.bookingIndex]?.Hole || HoleDescriptions[0])
+  const [selectedHole, setSelectedHole] = useState(bookingFlight?.bookMap?.[bookingFlight?.bookingIndex]?.Hole || HoleDescriptions[0])
 
   const fields = [
     { label: 'Course ID', type: 'text', value: selectedCourse, readOnly: true },
-    { label: 'Tee Box', type: 'text', value: flightInfo?.TeeBox || '', readOnly: true },
-    { label: 'Tee Time', type: 'time', value: flightInfo?.teeTime || '', readOnly: true },
+    { label: 'Tee Box', type: 'text', value: bookingFlight?.TeeBox || '', readOnly: true },
+    { label: 'Tee Time', type: 'time', value: bookingFlight?.teeTime || '', readOnly: true },
     { label: 'Play Date', type: 'date', value: selectedDate, readOnly: true },
-    { label: 'Group', type: 'text', value: flightInfo?.bookMap?.[0]?.GroupName || '', readOnly: false }
+    { label: 'Group', type: 'text', value: bookingFlight?.bookMap?.[bookingFlight?.bookingIndex]?.GroupName || '', readOnly: false }
   ]
 
   const handleHoleChange = (e) => {
     setSelectedHole(e.target.value)
-    // You can add additional logic here to update flightInfo.Hole if needed
+    // You can add additional logic here to update bookingFlight.Hole if needed
   }
 
   return (

@@ -1,8 +1,10 @@
 import React from 'react'
-
-const IDInfo = ({ flightInfo }) => {
+import { useSelector } from 'react-redux'
+import { selectSelectedBooking } from '~/redux/bookingFlight/bookingFlightSlice'
+const IDInfo = () => {
+  const bookingFlight = useSelector(selectSelectedBooking)
   const fields = [
-    { label: 'User ID', value: flightInfo?.bookMap?.[flightInfo?.bookingIndex]?.UserID || '' },
+    { label: 'User ID', value: bookingFlight?.bookMap?.[bookingFlight?.bookingIndex]?.UserID || '' },
     { label: 'Caddy', value: '90' },
     { label: 'Buggy', value: '100' }
   ]

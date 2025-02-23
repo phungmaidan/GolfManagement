@@ -6,15 +6,13 @@ import DropdownMenu from './DropdownMenu/DropdownMenu'
 import PlayerCell from './PlayerCell/PlayerCell'
 import TeeTimeCell from './TeeTimeCell/TeeTimeCell'
 import { processItemUtils } from '~/utils/processItemUtils'
-import { selectIsPopBookingOpen, openBookingPopup, closeBookingPopup, selectSelectedBooking } from '~/redux/bookingFlight/bookingFlightSlice'
 import { updateBookingData } from '~/redux/socket/socketSlice'
 
-const FlightTableRow = ({ item, isBlock }) => {
+const FlightTableRow = React.memo(({ item, isBlock }) => {
   // Use useMemo for expensive calculations
+  console.log('FlightTableRow render')
   const processedItem = processItemUtils.processItem(item)
   const dispatch = useDispatch()
-  const selectedBooking = useSelector(selectSelectedBooking)
-  const isPopupOpen = useSelector(selectIsPopBookingOpen)
   const handlePlayerClick = (booking, bookingIndex) => {
     const bookingData = {
       flight: booking.Flight,
@@ -24,7 +22,6 @@ const FlightTableRow = ({ item, isBlock }) => {
       bookingIndex: bookingIndex
     }
     dispatch(updateBookingData(bookingData))
-    dispatch(openBookingPopup(bookingData))
   }
   return (
     <>
@@ -50,6 +47,6 @@ const FlightTableRow = ({ item, isBlock }) => {
       </tr>
     </>
   )
-}
+})
 
 export default FlightTableRow

@@ -1,13 +1,13 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { selectTodayDate } from '~/redux/booking/bookingSlice'
-import { selectBookingFlight } from '~/redux/bookingFlight/bookingFlightSlice'
+import { selectSelectedBooking } from '~/redux/bookingFlight/bookingFlightSlice'
 
 const BookingInfo = () => {
-  const flightInfo = useSelector(selectBookingFlight)
+  const bookingFlight = useSelector(selectSelectedBooking)
   const bookingDate = useSelector(selectTodayDate)
   // Tạo một đối tượng placeholder khi không có dữ liệu
-  const bookingData = flightInfo?.bookMap?.[0] || {
+  const bookingData = bookingFlight?.bookMap?.[0] || {
     BookingID: '-'
   }
 

@@ -35,7 +35,6 @@ const bookingFlightSlice = createSlice({
 
 export const { openBookingPopup, closeBookingPopup } = bookingFlightSlice.actions
 
-export const selectBookingFlight = (state) => state.bookingFlight
 export const selectIsPopBookingOpen = (state) => state.bookingFlight.isPopupOpen
 export const selectSelectedBooking = (state) => state.bookingFlight.selectedBooking
 

@@ -1,7 +1,9 @@
 import React from 'react'
-
-const GuestList = ({ flightInfo }) => {
-  const bookingInfo = flightInfo?.bookMa?.[flightInfo?.bookingIndex]?.details
+import { useSelector } from 'react-redux'
+import { selectSelectedBooking } from '~/redux/bookingFlight/bookingFlightSlice'
+const GuestList = () => {
+  const bookingFlight = useSelector(selectSelectedBooking)
+  const bookingInfo = bookingFlight?.bookMap?.[bookingFlight?.bookingIndex]?.details
 
   // Column width configurations
   const columnWidths = {
