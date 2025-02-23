@@ -185,7 +185,7 @@
 }
 
 .text-shimmer-gold {
-  background: linear-gradient(90deg, var(--luxury-gold-500), var(--luxury-gold-600), var(--luxury-gold-500));
+  background: linear-gradient(90deg, var(--luxury-gold-100), var(--luxury-gold-300), var(--luxury-gold-100));
   background-size: 200% auto;
   background-clip: text;
   -webkit-background-clip: text;
@@ -244,4 +244,33 @@
                 radial-gradient(circle at 80% 70%, var(--luxury-gold-600) 20%, transparent),
                 radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.15) 10%, transparent),
                 linear-gradient(45deg, var(--golf-green-500), var(--luxury-gold-500));
-  }
+}
+
+/* Custom scrollbar styles */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Optional: Custom scrollbar styling if you want to show it */
+.scrollbar-custom::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: var(--golf-green-50);
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: var(--luxury-gold-300);
+  border-radius: 2px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: var(--luxury-gold-400);
+}

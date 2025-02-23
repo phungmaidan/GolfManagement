@@ -1,9 +1,37 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { selectSelectedBooking } from '~/redux/bookingFlight/bookingFlightSlice'
+import GuestNameInput from './GuestNameInput'
+
 const GuestList = () => {
   const bookingFlight = useSelector(selectSelectedBooking)
   const bookingInfo = bookingFlight?.bookMap?.[bookingFlight?.bookingIndex]?.details
+  const [guestData, setGuestData] = useState(
+    bookingInfo ? bookingInfo.map((guest) => ({
+      Name: guest?.Name || '',
+      MemberNo: guest?.MemberNo || '',
+      GuestType: guest?.GuestType || '',
+      DailyNo: guest?.BagTag || '',
+      Caddy: guest?.CaddyNo || '',
+      BuggyNo: guest?.BuggyNo || '',
+      LockerNo: guest?.LockerNo || ''
+    })) : Array(4).fill({})
+  )
+
+  const handleGuestUpdate = (index, guestInfo) => {
+    console.log('guestInfo:', guestInfo)
+    console.log('index:', index)
+    setGuestData(prevData => {
+      console.log('prevData:', prevData)
+      const newData = [...prevData]
+      newData[index] = {
+        ...newData[index],
+        ...guestInfo
+      }
+      console.log('newData:', newData)
+      return newData
+    })
+  }
 
   // Column width configurations
   const columnWidths = {
@@ -17,17 +45,6 @@ const GuestList = () => {
     'Rnd': 'w-[8%]',
     'Select': 'w-[10%]'
   }
-
-  // Create empty array of 4 items if flightInfo is null/empty
-  const guestData = bookingInfo ? bookingInfo.map((guest) => ({
-    Name: guest?.Name || '',
-    MemberNo: guest?.MemberNo || '',
-    GuestType: guest?.GuestType || '',
-    DailyNo: guest?.BagTag || '',
-    Caddy: guest?.CaddyNo || '',
-    BuggyNo: guest?.BuggyNo || '',
-    LockerNo: guest?.LockerNo || ''
-  })) : Array(4).fill({})
 
   return (
     <div>
@@ -43,14 +60,21 @@ const GuestList = () => {
           </tr>
         </thead>
         <tbody>
-          {[1, 2, 3, 4].map((row) => (
-            <tr key={row} className="hover:bg-golf-green-50">
-              {['Name', 'MemberNo', 'GuestType', 'DailyNo', 'Caddy', 'BuggyNo', 'LockerNo', 'Rnd'].map((field) => (
+          {[0, 1, 2, 3].map((index) => (
+            <tr key={index} className="hover:bg-golf-green-50">
+              <td className={`p-1 ${columnWidths['Name']}`}>
+                <GuestNameInput
+                  value={guestData[index]?.Name}
+                  onChange={handleGuestUpdate}
+                  index={index}
+                />
+              </td>
+              {['MemberNo', 'GuestType', 'DailyNo', 'Caddy', 'BuggyNo', 'LockerNo', 'Rnd'].map((field) => (
                 <td key={field} className={`p-1 ${columnWidths[field.replace(/([A-Z])/g, ' $1').trim()]}`}>
                   <input
                     type="text"
                     className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
-                    defaultValue={guestData[row - 1]?.[field] || ''}
+                    defaultValue={guestData[index]?.[field] || ''}
                   />
                 </td>
               ))}

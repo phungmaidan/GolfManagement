@@ -36,9 +36,9 @@ const FlightTable = ({ title, schedule }) => {
     <>
       <div className="bg-golf-green-50 p-4 rounded-lg shadow-golf overflow-x-auto animation-show">
         <h3 className="font-semibold text-golf-green-700 text-lg mb-4">{title}</h3>
-        <table className="min-w-full border">
+        <table className="min-w-full">
           <FlightTableHeader />
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="divide-y divide-yellow-400">
             {schedule.map((item) => {
               const flightKey = `${item.Flight}-${item.TeeTime}-${item.TeeBox}`
               const userId = blockedFlightInfo.get(flightKey)

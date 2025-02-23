@@ -19,7 +19,7 @@ const FunctionItems = () => {
   const connectionMessage = useMemo(() => {
     if (isConnected) {
       return (
-        <div className="text-sm text-green-500 mb-2">
+        <div className="mt-2 text-xl text-center text-shimmer-gold mb-2">
           Connected to server: Now you can book a flight real-time
         </div>
       )
@@ -30,7 +30,7 @@ const FunctionItems = () => {
   return (
     <>
       {connectionMessage}
-      <div className="flex gap-5 min-h-150 flex-col bg-gradient-luxury justify-center">
+      <div className="flex gap-5 min-h-150 flex-col justify-center">
         <FunctionItemsTitle />
         <FunctionItemsProgram />
       </div>

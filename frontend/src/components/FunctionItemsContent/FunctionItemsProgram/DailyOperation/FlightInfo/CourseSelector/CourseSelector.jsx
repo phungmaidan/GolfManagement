@@ -35,7 +35,7 @@ function CourseSelector() {
   if (hasCourses) {
     context =
       <select
-        className="border outline-0 border-golf-green-700 rounded-md p-2"
+        className="border outline-0 border-golf-green-700 text-golf-green-700 rounded-md p-2"
         value={selectedCourse ?? ''}
         onChange={handleChangeCourse}
       >

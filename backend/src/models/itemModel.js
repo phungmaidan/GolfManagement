@@ -33,6 +33,7 @@ const fetchBookingDetails = async ({ bookingIDs, fields = ['*'], execute = true 
 }
 
 const fetchTeeTimeMaster = async ({ CourseID, txnDate, TemplateID, fields = ['*'], execute = true }) => {
+  console.log('txnDate', txnDate)
   const teeTimeMasterResult = await sqlQueryUtils.queryBuilder({
     tableName: 'FreTeeTimeMaster',
     fields: fields,
@@ -44,7 +45,6 @@ const fetchTeeTimeMaster = async ({ CourseID, txnDate, TemplateID, fields = ['*'
     },
     execute: execute
   })
-
   if (!Object.keys(teeTimeMasterResult).length) {
     return await releaseTeeTime({
       CourseID: CourseID,

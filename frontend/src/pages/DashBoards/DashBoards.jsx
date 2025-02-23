@@ -6,11 +6,13 @@ import Footer from '~/components/Footer/Footer'
 
 const Dashboard = () => {
   return (
-    <div className="flex min-h-screen bg-golf-green-500">
+    <div className="flex min-h-screen overflow-hidden">
       {/* Sidebar */}
       <SideBar />
       {/* Main Content */}
-      <MainContent />
+      <div className="flex-1 overflow-auto">
+        <MainContent />
+      </div>
     </div>
   )
 }

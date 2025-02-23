@@ -21,7 +21,7 @@ function DateSelector() {
       <h3 className="font-semibold text-lg mb-3 text-golf-green-700">Chọn thời gian</h3>
       <input
         type="date"
-        className="p-2 border outline-0 border-golf-green-700 rounded-md cursor-default"
+        className="p-2 border outline-0 text-golf-green-700 border-golf-green-700 rounded-md cursor-default"
         value={selectedDate !== 'null' ? selectedDate : today}
         onChange={handleChangeDate}
         min="2000-01-01"
@@ -29,7 +29,7 @@ function DateSelector() {
       />
       <input
         type="time"
-        className="p-2 border outline-0 border-golf-green-700 rounded-md mt-2"
+        className="p-2 border text-golf-green-700 outline-0 border-golf-green-700 rounded-md mt-2"
       />
     </div>
   )

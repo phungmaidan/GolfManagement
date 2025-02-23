@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import { setSelectedItem } from '~/redux/module/moduleSlice'
 import { useNavigate } from 'react-router-dom'
 import { slugify } from '~/utils/formatter'
-import styles from './Item_ContentArea.module.css'
+import { ChevronLeft, ChevronRight } from 'lucide-react' // Add icons
 
 function Item_ContentArea({ items }) {
   const dispatch = useDispatch()
@@ -49,65 +49,69 @@ function Item_ContentArea({ items }) {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.itemList}>
-        <div className="grid grid-cols-1 gap-4">
-          {currentItems.map((item) => (
-            <button
-              key={item.ItemID}
-              className={styles.itemButton}
-              onClick={() => handleFunctionClick(item)}
-            >
-              <div className={styles.itemContent}>
-                <span className={styles.itemName}>{item.ItemName}</span>
-                <span className={styles.arrow}>→</span>
-              </div>
-            </button>
-          ))}
-          {/* Thêm các placeholder items */}
-          {placeholderItems.map((_, index) => (
-            <div
-              key={`placeholder-${index}`}
-              className={`${styles.itemButton} opacity-0`}
-              aria-hidden="true"
-            >
-              <div className={styles.itemContent}>
-                <span className={styles.itemName}></span>
-              </div>
+    <div className="flex flex-col space-y-6">
+      {/* Items Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {currentItems.map((item) => (
+          <button
+            key={item.ItemID}
+            onClick={() => handleFunctionClick(item)}
+            className="group bg-white/50 hover:bg-luxury-gold-50
+              border border-golf-green-200 hover:border-luxury-gold-300
+              rounded-lg p-4 transition-all duration-300
+              shadow-sm hover:shadow-md"
+          >
+            <div className="flex items-center justify-between w-full">
+              <span className="text-golf-green-800 group-hover:text-luxury-gold-700
+                font-medium text-sm sm:text-base transition-colors text-left">
+                {item.ItemName}
+              </span>
+              <span className="text-golf-green-400 group-hover:text-luxury-gold-500
+                group-hover:translate-x-1 transition-all flex-shrink-0">
+                →
+              </span>
             </div>
-          ))}
-        </div>
+          </button>
+        ))}
+        {placeholderItems.map((_, index) => (
+          <div
+            key={`placeholder-${index}`}
+            className="invisible border border-transparent rounded-lg p-4"
+            aria-hidden="true"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-transparent">Placeholder</span>
+            </div>
+          </div>
+        ))}
       </div>
 
+      {/* Pagination */}
       {pageCount > 1 && (
-        <div className={styles.paginationContainer}>
+        <div className="flex items-center justify-center space-x-4">
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 0}
-            className={styles.navigationButton}
+            className={`p-2 rounded-full transition-all
+              ${currentPage === 0
+          ? 'text-gray-300 cursor-not-allowed'
+          : 'text-golf-green-600 hover:bg-golf-green-50'
+        }`}
             aria-label="Previous page"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <ChevronLeft size={20} />
           </button>
 
-          <div className={styles.dotsContainer}>
+          <div className="flex items-center space-x-2">
             {[...Array(pageCount)].map((_, index) => (
               <button
                 key={index}
                 onClick={() => handlePageClick(index)}
-                className={currentPage === index ? styles.dotActive : styles.dot}
+                className={`w-2 h-2 rounded-full transition-all
+                  ${currentPage === index
+                ? 'bg-luxury-gold-500 w-4'
+                : 'bg-golf-green-200 hover:bg-golf-green-300'
+              }`}
                 aria-label={`Go to page ${index + 1}`}
               />
             ))}
@@ -116,22 +120,14 @@ function Item_ContentArea({ items }) {
           <button
             onClick={handleNextPage}
             disabled={currentPage === pageCount - 1}
-            className={styles.navigationButton}
+            className={`p-2 rounded-full transition-all
+              ${currentPage === pageCount - 1
+          ? 'text-gray-300 cursor-not-allowed'
+          : 'text-golf-green-600 hover:bg-golf-green-50'
+        }`}
             aria-label="Next page"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
+            <ChevronRight size={20} />
           </button>
         </div>
       )}

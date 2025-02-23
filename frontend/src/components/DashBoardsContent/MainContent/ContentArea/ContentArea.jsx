@@ -25,7 +25,7 @@ const ContentArea = () => {
   }, [dispatch, currentModule, currentFunction])
 
   return (
-    <div className="pt-3 pl-3 pr-3">
+    <div className="pt-3 pl-3 pr-3 overflow-hidden">
       {loading ? (
         <div className="flex mt-50 justify-center h-full w-full">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 bg-luxury-gold-700 border-golf-green-200"></div>
@@ -33,12 +33,18 @@ const ContentArea = () => {
       ) : (
         <div
           key={`${display.module?.ModuleName}-${display.func?.label}`}
-          className="bg-white bg-opacity-40 backdrop-blur-md rounded-2xl animate-fadeIn shadow-xl border border-golf-green-300 p-8"
+          className="bg-white bg-opacity-40 backdrop-blur-md rounded animate-fadeIn shadow-xl border border-golf-green-300 p-4 sm:p-8"
         >
-          <h2 className="text-2xl font-medium text-golf-green-800 mb-8 flex items-center">
-            <span className="text-luxury-gold-500">{display.module?.ModuleName}</span>
-            <span className="mx-3 text-gray-400">•</span>
-            <span className="text-golf-green-700">{display.func?.label}</span>
+          <h2 className="text-xl sm:text-2xl font-medium text-golf-green-800 mb-4 sm:mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0">
+              <span className="text-luxury-gold-500 truncate">
+                {display.module?.ModuleName}
+              </span>
+              <span className="hidden sm:inline mx-3 text-gray-400">•</span>
+              <span className="text-golf-green-700 truncate">
+                {display.func?.label}
+              </span>
+            </div>
           </h2>
           <Item_ContentArea items={items} />
         </div>

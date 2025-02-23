@@ -26,7 +26,7 @@ const FlightTableRow = React.memo(({ item, isBlock }) => {
   return (
     <>
       <tr className={`
-        bg-white hover:bg-gray-50 transition duration-300 ease-in-out
+       hover:bg-gray-50 transition duration-300 ease-in-out
         ${isBlock ? 'border-2 border-red-500 animate-pulse' : ''}
       `}>
         <TeeTimeCell teeTime={processedItem.TeeTime} />

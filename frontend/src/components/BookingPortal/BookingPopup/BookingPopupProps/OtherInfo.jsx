@@ -1,22 +1,54 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { selectSelectedBooking } from '~/redux/bookingFlight/bookingFlightSlice'
+import AutocompleteInput from './AutocompleteInput'
+
 const OtherInfo = () => {
-  console.log('OtherInfo')
   const bookingFlight = useSelector(selectSelectedBooking)
   const otherInfo = bookingFlight?.bookMap?.[bookingFlight?.bookingIndex] || {}
+  const [formData, setFormData] = useState({
+    ContactPerson: otherInfo.ContactPerson || '',
+    Email: otherInfo.Email || '',
+    ContactNo: otherInfo.ContactNo || '',
+    Fax: otherInfo.Fax || '',
+    CreditCardNumber: otherInfo.CreditCardNumber || '',
+    CreditCardExpiry: otherInfo.CreditCardExpiry || '',
+    SalesPerson: otherInfo.SalesPerson || '',
+    ReferenceID: otherInfo.ReferenceID || '',
+    Remark: otherInfo.Remark || ''
+  })
+
+  const handleInputChange = (field, value) => {
+    console.log('field:', field)
+    setFormData(prev => {
+      console.log('prev:', prev)
+      return {
+        ...prev,
+        [field]: value
+      }})
+
+  }
+
+  const handleGuestSelect = (guestInfo) => {
+    setFormData(prev => ({
+      ...prev,
+      ...guestInfo // Cập nhật tất cả các trường liên quan
+    }))
+  }
 
   const fields = [
-    { label: 'Contact Person', type: 'text', value: otherInfo.ContactPerson || '' },
-    { label: 'Email', type: 'email', value: otherInfo.Email || '' },
-    { label: 'Contact No', type: 'tel', value: otherInfo.ContactNo || '' },
-    { label: 'Fax', type: 'text', value: otherInfo.Fax || '' },
-    { label: 'Credit Card', type: 'text', value: otherInfo.CreditCardNumber || '' },
-    { label: 'Expiry Date', type: 'text', value: otherInfo.CreditCardExpiry || '' },
-    { label: 'Sales Person', type: 'text', value: otherInfo.SalesPerson || '' },
-    { label: 'Reference Id', type: 'text', value: otherInfo.ReferenceID || '' },
-    { label: 'Remark', type: 'textarea', value: otherInfo.Remark || '' }
+    { label: 'Contact Person', type: 'text', field: 'ContactPerson', autocomplete: true },
+    { label: 'Email', type: 'email', field: 'Email' },
+    { label: 'Contact No', type: 'tel', field: 'ContactNo' },
+    { label: 'Fax', type: 'text', field: 'Fax' },
+    { label: 'Credit Card', type: 'text', field: 'CreditCardNumber' },
+    { label: 'Expiry Date', type: 'text', field: 'CreditCardExpiry' },
+    { label: 'Sales Person', type: 'text', field: 'SalesPerson' },
+    { label: 'Reference Id', type: 'text', field: 'ReferenceID' },
+    { label: 'Remark', type: 'textarea', field: 'Remark' }
   ]
+
+  const inputClassName = 'w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400'
 
   return (
     <div>
@@ -27,15 +59,25 @@ const OtherInfo = () => {
             <label className="block text-xs text-gray-600">{field.label}</label>
             {field.type === 'textarea' ? (
               <textarea
-                className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
+                className={inputClassName}
                 rows="3"
-                defaultValue={field.value}
+                value={formData[field.field]}
+                onChange={(e) => handleInputChange(field.field, e.target.value)}
+              />
+            ) : field.autocomplete ? (
+              <AutocompleteInput
+                value={formData[field.field]}
+                onChange={(value) => handleInputChange(field.field, value)}
+                onGuestSelect={handleGuestSelect} // Thêm prop mới
+                type={field.type}
+                className={inputClassName}
               />
             ) : (
               <input
                 type={field.type}
-                className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
-                defaultValue={field.value}
+                className={inputClassName}
+                value={formData[field.field]}
+                onChange={(e) => handleInputChange(field.field, e.target.value)}
               />
             )}
           </div>

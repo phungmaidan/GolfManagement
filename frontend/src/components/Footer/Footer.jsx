@@ -5,7 +5,7 @@ const Footer = ({ logo }) => {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-golf-green-800 text-luxury-gold-50 pb-6">
+    <footer className="text-luxury-gold-50 pb-6">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="grid grid-cols-1 pt-4 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo and Description */}

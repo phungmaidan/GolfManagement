@@ -8,7 +8,7 @@ const FunctionItemsTitle = () => {
   const selectedItem = useSelector(selectSelectedItem)
 
   return (
-    <div className="flex ml-10 items-center gap-6 mt-5 animation-show">
+    <div className="flex ml-10 items-center gap-6 animation-show">
       <Link
         to="/dashboards"
         className="no-underline"
