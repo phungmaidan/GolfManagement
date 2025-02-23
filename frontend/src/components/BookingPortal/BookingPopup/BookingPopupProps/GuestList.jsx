@@ -19,75 +19,110 @@ const GuestList = () => {
   )
 
   const handleGuestUpdate = (index, guestInfo) => {
-    console.log('guestInfo:', guestInfo)
-    console.log('index:', index)
     setGuestData(prevData => {
-      console.log('prevData:', prevData)
       const newData = [...prevData]
       newData[index] = {
         ...newData[index],
         ...guestInfo
       }
-      console.log('newData:', newData)
       return newData
     })
   }
 
-  // Column width configurations
-  const columnWidths = {
-    Name: 'w-[30%]', // Name column takes 30% of table width
-    'Member No': 'w-[10%]',
-    'Guest Type': 'w-[10%]',
-    'Daily No.': 'w-[8%]',
-    'Caddy': 'w-[8%]',
-    'Buggy No.': 'w-[8%]',
-    'Locker No': 'w-[8%]',
-    'Rnd': 'w-[8%]',
-    'Select': 'w-[10%]'
-  }
+  // Field configurations
+  const fields = [
+    { key: 'Name', label: 'Name', width: 'w-[30%]', isAutocomplete: true },
+    { key: 'MemberNo', label: 'Member No', width: 'w-[10%]' },
+    { key: 'GuestType', label: 'Guest Type', width: 'w-[10%]' },
+    { key: 'DailyNo', label: 'Daily No.', width: 'w-[8%]' },
+    { key: 'Caddy', label: 'Caddy', width: 'w-[8%]' },
+    { key: 'BuggyNo', label: 'Buggy No.', width: 'w-[8%]' },
+    { key: 'LockerNo', label: 'Locker No', width: 'w-[8%]' },
+    { key: 'Rnd', label: 'Rnd', width: 'w-[8%]' }
+  ]
 
   return (
     <div>
       <h3 className="text-sm font-semibold text-golf-green-600 mb-2">Guest Information</h3>
-      <table className="w-full text-sm animation-show table-fixed">
-        <thead className="bg-golf-green-50">
-          <tr>
-            {['Name', 'Member No', 'Guest Type', 'Daily No.', 'Caddy', 'Buggy No.', 'Locker No', 'Rnd', 'Select'].map((header) => (
-              <th key={header} className={`p-2 text-left text-xs text-golf-green-700 ${columnWidths[header]}`}>
-                {header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {[0, 1, 2, 3].map((index) => (
-            <tr key={index} className="hover:bg-golf-green-50">
-              <td className={`p-1 ${columnWidths['Name']}`}>
-                <GuestNameInput
-                  value={guestData[index]?.Name}
-                  onChange={handleGuestUpdate}
-                  index={index}
-                />
-              </td>
-              {['MemberNo', 'GuestType', 'DailyNo', 'Caddy', 'BuggyNo', 'LockerNo', 'Rnd'].map((field) => (
-                <td key={field} className={`p-1 ${columnWidths[field.replace(/([A-Z])/g, ' $1').trim()]}`}>
+      
+      {/* Desktop View */}
+      <div className="hidden md:block">
+        <table className="w-full text-sm animation-show table-fixed">
+          <thead className="bg-golf-green-50">
+            <tr>
+              {fields.map((field) => (
+                <th key={field.key} className={`p-2 text-left text-xs text-golf-green-700 ${field.width}`}>
+                  {field.label}
+                </th>
+              ))}
+              <th className="w-[10%] p-2 text-left text-xs text-golf-green-700">Select</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[0, 1, 2, 3].map((index) => (
+              <tr key={index} className="hover:bg-golf-green-50">
+                {fields.map((field) => (
+                  <td key={field.key} className={`p-1 ${field.width}`}>
+                    {field.isAutocomplete ? (
+                      <GuestNameInput
+                        value={guestData[index]?.Name}
+                        onChange={handleGuestUpdate}
+                        index={index}
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
+                        defaultValue={guestData[index]?.[field.key] || ''}
+                      />
+                    )}
+                  </td>
+                ))}
+                <td className="text-center">
                   <input
-                    type="text"
-                    className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
-                    defaultValue={guestData[index]?.[field] || ''}
+                    type="checkbox"
+                    className="form-checkbox text-golf-green-500 rounded focus:ring-golf-green-500"
                   />
                 </td>
-              ))}
-              <td className="text-center">
-                <input
-                  type="checkbox"
-                  className="form-checkbox text-golf-green-500 rounded focus:ring-golf-green-500"
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile View */}
+      <div className="md:hidden space-y-4">
+        {[0, 1, 2, 3].map((index) => (
+          <div key={index} className="bg-white border border-golf-green-200 rounded-lg p-4 space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-golf-green-600 font-medium">Guest {index + 1}</span>
+              <input
+                type="checkbox"
+                className="form-checkbox text-golf-green-500 rounded focus:ring-golf-green-500"
+              />
+            </div>
+            
+            {fields.map((field) => (
+              <div key={field.key} className="flex flex-col space-y-1">
+                <label className="text-xs text-golf-green-600">{field.label}</label>
+                {field.isAutocomplete ? (
+                  <GuestNameInput
+                    value={guestData[index]?.Name}
+                    onChange={handleGuestUpdate}
+                    index={index}
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    className="w-full p-2 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
+                    defaultValue={guestData[index]?.[field.key] || ''}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
