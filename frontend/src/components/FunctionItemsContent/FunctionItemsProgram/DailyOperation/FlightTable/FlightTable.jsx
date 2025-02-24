@@ -1,36 +1,28 @@
-// FlightTable.jsx
 import React, { useMemo } from 'react'
 import FlightTableHeader from './FlightTableHeader/FlightTableHeader'
 import FlightTableRow from './FlightTableRow/FlightTableRow'
-import { selectSelectedBookings } from '~/redux/socket/socketSlice'
+import { selectRoomData } from '~/redux/socket/socketSlice'
 import { selectSelectedDate, selectSelectedCourse } from '~/redux/booking/bookingSlice'
 import { useSelector } from 'react-redux'
+
 const FlightTable = ({ title, schedule }) => {
-  console.log('FlightTable render')
-  const selectedBookings = useSelector(selectSelectedBookings)
+  const roomData = useSelector(selectRoomData)
   const selectedDate = useSelector(selectSelectedDate)
   const selectedCourse = useSelector(selectSelectedCourse)
 
   // Memoize blocked flights to prevent unnecessary recalculations
   const blockedFlightInfo = useMemo(() => {
-    if (!selectedBookings) return new Map()
+    if (!roomData) return new Map()
 
-    const bookingsArray = Array.isArray(selectedBookings) ? selectedBookings : [selectedBookings]
     return new Map(
-      bookingsArray
-        .filter(booking =>
-          booking?.data?.flight &&
-          booking?.data?.teeTime &&
-          booking?.data?.TeeBox &&
-          booking.data.selectedDate === selectedDate &&
-          booking.data.selectedCourse === selectedCourse
-        )
+      roomData
+        .filter(booking => booking?.data)
         .map(booking => [
           `${booking.data.flight}-${booking.data.teeTime}-${booking.data.TeeBox}`,
           booking.userId
         ])
     )
-  }, [selectedBookings, selectedDate, selectedCourse])
+  }, [roomData])
 
   return (
     <>

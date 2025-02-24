@@ -3,7 +3,6 @@ import DailyOperation from './DailyOperation/DailyOperation'
 import FlightInfo from './DailyOperation/FlightInfo/FlightInfo'
 
 const FunctionItemsProgram = () => {
-  console.log('FunctionItemsProgram Render')
   const dailyOperation = useMemo(() => {
     return <DailyOperation />
   }, [])

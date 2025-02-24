@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setSelectedDate, getCouseAPI, selectSelectedDate, selectTodayDate } from '~/redux/booking/bookingSlice'
 
 function DateSelector() {
-  console.log('DateSelector Render')
   const dispatch = useDispatch()
   const today = useSelector(selectTodayDate)
   const selectedDate = useSelector(selectSelectedDate)

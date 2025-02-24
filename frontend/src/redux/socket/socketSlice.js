@@ -6,14 +6,14 @@ import { selectSelectedDate, selectSelectedCourse } from '~/redux/booking/bookin
 
 const initialState = {
   isConnected: false,
-  selectedBookings: null,
+  roomData: [],
   error: null,
-  loading: false
+  loading: false,
+  currentRoom: null
 }
-// Tạo socket instance
+
 let socket = null
 
-// Thunk action để khởi tạo socket connection
 export const initializeSocket = createAsyncThunk(
   'socket/initialize',
   async (accessToken, { dispatch, getState }) => {
@@ -26,28 +26,24 @@ export const initializeSocket = createAsyncThunk(
 
       socket.on('connect', () => {
         dispatch(setConnectionStatus(true))
+
+        // Rejoin room if there was one
+        const state = getState()
+        const selectedDate = selectSelectedDate(state)
+        const selectedCourse = selectSelectedCourse(state)
+
+        if (selectedDate && selectedCourse) {
+          dispatch(joinRoom({ date: selectedDate, courseId: selectedCourse }))
+        }
       })
 
       socket.on('disconnect', () => {
         dispatch(setConnectionStatus(false))
       })
 
-      socket.on('sendDataServer', (data) => {
-        // const state = getState()
-        // const selectedDate = selectSelectedDate(state)
-        // const selectedCourse = selectSelectedCourse(state)
-
-        // if (selectedDate && selectedCourse) {
-        //   const filteredData = data.filter(booking =>
-        //     booking?.data?.selectedDate === selectedDate &&
-        //     booking?.data?.selectedCourse === selectedCourse
-        //   )
-        //   console.log('filteredData', filteredData)
-        //   if (filteredData.length > 0) {
-        //     dispatch(setSelectedBookings(filteredData))
-        //   }
-        // }
-        dispatch(setSelectedBookings(data))
+      socket.on('roomData', (data) => {
+        console.log('roomData', data)
+        dispatch(setRoomData(data))
       })
 
       socket.on('error', (error) => {
@@ -58,7 +54,16 @@ export const initializeSocket = createAsyncThunk(
   }
 )
 
-// Thunk action để gửi data
+export const joinRoom = createAsyncThunk(
+  'socket/joinRoom',
+  async ({ date, courseId }, { dispatch }) => {
+    if (!socket?.connected) return null
+
+    socket.emit('joinRoom', { date, courseId })
+    return { date, courseId }
+  }
+)
+
 export const updateBookingData = createAsyncThunk(
   'socket/updateBooking',
   async (booking, { dispatch, getState }) => {
@@ -68,23 +73,16 @@ export const updateBookingData = createAsyncThunk(
     const selectedDate = selectSelectedDate(state)
     const selectedCourse = selectSelectedCourse(state)
 
-    if (booking === null) {
-      socket.emit('sendDataClient', null)
-      return null
+    const bookingData = {
+      date: selectedDate,
+      courseId: selectedCourse,
+      data: booking || null
     }
-    const flightData = {
-      flight: booking.flight,
-      TeeBox: booking.TeeBox,
-      teeTime: booking.teeTime,
-      selectedDate,
-      selectedCourse
+    if (booking) {
+      dispatch(openBookingPopup(booking))
     }
-
-    // Dispatch action từ bookingFlightSlice trước khi emit
-    dispatch(openBookingPopup(booking))
-
-    socket.emit('sendDataClient', flightData)
-    return flightData
+    socket.emit('updateBooking', bookingData)
+    return bookingData
   }
 )
 
@@ -95,8 +93,8 @@ const socketSlice = createSlice({
     setConnectionStatus: (state, action) => {
       state.isConnected = action.payload
     },
-    setSelectedBookings: (state, action) => {
-      state.selectedBookings = action.payload
+    setRoomData: (state, action) => {
+      state.roomData = action.payload
     },
     setError: (state, action) => {
       state.error = action.payload
@@ -111,27 +109,33 @@ const socketSlice = createSlice({
         state.loading = true
       })
       .addCase(initializeSocket.fulfilled, (state) => {
-        state.selectedBookings = null
         state.loading = false
         state.isConnected = true
       })
       .addCase(initializeSocket.rejected, (state, action) => {
         state.loading = false
-        state.selectedBookings = null
         state.error = action.error
       })
+      .addCase(joinRoom.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.currentRoom = `${action.payload.date}-${action.payload.courseId}`
+        }
+      })
       .addCase(updateBookingData.fulfilled, (state, action) => {
-        state.selectedBookings = action.payload
+        // Room updates will come through the roomData socket event
       })
   }
 })
 
 export const {
   setConnectionStatus,
-  setSelectedBookings,
+  setRoomData,
   setError,
   resetSocket
 } = socketSlice.actions
-export const selectSelectedBookings = (state) => state.socket.selectedBookings
+
+export const selectRoomData = (state) => state.socket.roomData
 export const selectConnectionStatus = (state) => state.socket.isConnected
+export const selectCurrentRoom = (state) => state.socket.currentRoom
+
 export const socketReducer = socketSlice.reducer

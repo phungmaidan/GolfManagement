@@ -1,7 +1,6 @@
 import React from 'react'
 
 function Stats() {
-    console.log('Stats')
   return (
     <div className="bg-gradient-golf p-4 rounded-lg shadow-golf animate-fadeIn text-white flex flex-col">
       <div className="grid grid-cols-2 gap-4 flex-grow">

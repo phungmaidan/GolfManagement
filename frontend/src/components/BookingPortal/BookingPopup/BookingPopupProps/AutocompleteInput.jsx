@@ -9,9 +9,8 @@ const AutocompleteInput = ({
   type = 'text',
   className = ''
 }) => {
-  console.log('value:', value)
   const [isOpen, setIsOpen] = useState(false)
-  const { searchTerm, setSearchTerm, suggestions, loading } = useGuestSearch()
+  const { searchTerm, setSearchTerm, suggestions, loading } = useGuestSearch('autocomplete')
   const inputRef = useRef(null)
   const dropdownRef = useRef(null)
 
@@ -39,7 +38,6 @@ const AutocompleteInput = ({
   }
 
   const handleSelect = (guest) => {
-    console.log('handleSelect', guest)
     setSearchTerm(guest.FullName)
     onChange(guest.FullName)
 

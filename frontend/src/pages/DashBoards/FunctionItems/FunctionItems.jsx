@@ -8,7 +8,6 @@ import { selectFunctionItemsState } from '~/redux/selectors/functionItemsSelecto
 
 const FunctionItems = () => {
   // Use memoized selector
-  console.group('FunctionItems Render')
   const { accessToken, isConnected } = useSelector(selectFunctionItemsState)
   const dispatch = useDispatch()
 

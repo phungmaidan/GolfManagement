@@ -5,7 +5,7 @@ import GuestNameInput from './GuestNameInput'
 
 const GuestList = () => {
   const bookingFlight = useSelector(selectSelectedBooking)
-  const bookingInfo = bookingFlight?.bookMap?.[bookingFlight?.bookingIndex]?.details
+  const bookingInfo = bookingFlight?.bookMap?.[bookingFlight?.bookingIndex || 0]?.details
   const [guestData, setGuestData] = useState(
     bookingInfo ? bookingInfo.map((guest) => ({
       Name: guest?.Name || '',
@@ -44,7 +44,7 @@ const GuestList = () => {
   return (
     <div>
       <h3 className="text-sm font-semibold text-golf-green-600 mb-2">Guest Information</h3>
-      
+
       {/* Desktop View */}
       <div className="hidden md:block">
         <table className="w-full text-sm animation-show table-fixed">
@@ -101,7 +101,7 @@ const GuestList = () => {
                 className="form-checkbox text-golf-green-500 rounded focus:ring-golf-green-500"
               />
             </div>
-            
+
             {fields.map((field) => (
               <div key={field.key} className="flex flex-col space-y-1">
                 <label className="text-xs text-golf-green-600">{field.label}</label>

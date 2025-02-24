@@ -12,14 +12,14 @@ const CourseInfo = () => {
   const selectedCourse = useSelector(selectSelectedCourse)
   const selectedDate = useSelector(selectSelectedDate)
   const HoleDescriptions = useSelector(selectHoleDescriptions)
-  const [selectedHole, setSelectedHole] = useState(bookingFlight?.bookMap?.[bookingFlight?.bookingIndex]?.Hole || HoleDescriptions[0])
+  const [selectedHole, setSelectedHole] = useState(bookingFlight?.bookMap?.[bookingFlight?.bookingIndex || 0]?.Hole || HoleDescriptions[0])
 
   const fields = [
     { label: 'Course ID', type: 'text', value: selectedCourse, readOnly: true },
     { label: 'Tee Box', type: 'text', value: bookingFlight?.TeeBox || '', readOnly: true },
     { label: 'Tee Time', type: 'time', value: bookingFlight?.teeTime || '', readOnly: true },
     { label: 'Play Date', type: 'date', value: selectedDate, readOnly: true },
-    { label: 'Group', type: 'text', value: bookingFlight?.bookMap?.[bookingFlight?.bookingIndex]?.GroupName || '', readOnly: false }
+    { label: 'Group', type: 'text', value: bookingFlight?.bookMap?.[bookingFlight?.bookingIndex || 0]?.GroupName || '', readOnly: false }
   ]
 
   const handleHoleChange = (e) => {

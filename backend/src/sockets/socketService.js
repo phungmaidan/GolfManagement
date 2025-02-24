@@ -8,26 +8,16 @@ import { JwtProvider } from '~/providers/JwtProvider'
 import { env } from '~/config/environment'
 
 const app = express()
-// Create HTTP server
 const httpServer = createServer(app)
 const io = new Server(httpServer, {
   cors: corsOptions
 })
 
-// Store both socket IDs and user data
-const userSocketMap = {} // {userId: socketId}
-const userDataMap = [] // [{userId: string, data: any}]
-
-export function getReceiverSocketId(userId) {
-  return userSocketMap[userId]
-}
-
-export function getUserData() {
-  return userDataMap
-}
+// Store room data
+const roomData = {} // { 'date-courseID': [{userId, data}] }
 
 io.use(async (socket, next) => {
-  console.log('A user is trying to connect:', socket.id)
+  //console.log('A user is trying to connect:', socket.id)
   const { token } = socket.handshake.headers
   if (token) {
     try {
@@ -36,7 +26,7 @@ io.use(async (socket, next) => {
         return next(new Error('Invalid token'))
       }
       socket.handshake.query.userId = decoded._id
-      console.log('===> This user is verified and connected!!!')
+      //console.log('===> This user is verified and connected!!!')
     } catch (error) {
       return next(new Error(error))
     }
@@ -46,62 +36,101 @@ io.use(async (socket, next) => {
 
 io.on('connection', (socket) => {
   const userId = socket.handshake.query.userId
-  if (userId) {
-    userSocketMap[userId] = socket.id
-    // Add new user to userDataMap if not exists
-    if (!userDataMap.find(user => user.userId === userId)) {
-      userDataMap.push({
+
+  // Handle joining room
+  socket.on('joinRoom', ({ date, courseId }) => {
+    const newRoomId = `${date}-${courseId}`
+
+    // Leave previous rooms and clear user data
+    Object.keys(roomData).forEach(roomId => {
+      const userIndex = roomData[roomId].findIndex(user => user.userId === userId)
+      if (userIndex !== -1) {
+        // Remove user from old room
+        roomData[roomId].splice(userIndex, 1)
+        socket.leave(roomId)
+
+        // Notify others in old room
+        io.to(roomId).emit('roomData', roomData[roomId])
+      }
+    })
+
+    // Initialize new room if not exists
+    if (!roomData[newRoomId]) {
+      roomData[newRoomId] = []
+    }
+
+    // Join new room
+    socket.join(newRoomId)
+
+    // Add user to new room with null data
+    if (!roomData[newRoomId].find(user => user.userId === userId)) {
+      roomData[newRoomId].push({
         userId: userId,
         data: null
       })
     }
-    console.log('Current User:', userSocketMap)
-    // Send current data state to all clients
-    io.emit('sendDataServer', userDataMap)
-  }
 
-  socket.emit('getId', socket.id)
+    // Send current room data to the client
+    socket.emit('roomData', roomData[newRoomId])
+    console.log(`User ${userId} joined room ${newRoomId}:`, roomData)
+  })
 
-  // Listen for data updates from clients
-  socket.on('sendDataClient', function (data) {
-    const userId = socket.handshake.query.userId
-    console.log('Data received from client:', data)
-    if (!userId) return
+  // Handle booking updates
+  socket.on('updateBooking', ({ date, courseId, data }) => {
+    const newRoomId = `${date}-${courseId}`
+    console.log('new data', data)
+    // Find and leave current room
+    Object.keys(roomData).forEach(roomId => {
+      const userIndex = roomData[roomId].findIndex(user => user.userId === userId)
+      if (userIndex !== -1) {
+        // Remove user from old room
+        roomData[roomId].splice(userIndex, 1)
+        socket.leave(roomId)
 
-    // Update data for specific user
-    const userIndex = userDataMap.findIndex(user => user.userId === userId)
-    if (userIndex !== -1) {
-      userDataMap[userIndex].data = data
-    } else {
-      userDataMap.push({
-        userId: userId,
-        data: data
-      })
+        // Clean up empty room
+        if (roomData[roomId].length === 0) {
+          delete roomData[roomId]
+        } else {
+          // Notify others in old room
+          io.to(roomId).emit('roomData', roomData[roomId])
+        }
+      }
+    })
+
+    // Initialize new room if it doesn't exist
+    if (!roomData[newRoomId]) {
+      roomData[newRoomId] = []
     }
-    console.log('userDataMapCurrent: ', userDataMap)
-    // Broadcast updated data to all clients
-    io.emit('sendDataServer', userDataMap)
+
+    // Join new room
+    socket.join(newRoomId)
+
+    // Add user to new room with updated data
+    roomData[newRoomId].push({
+      userId: userId,
+      data: data
+    })
+
+    // Broadcast updates to all users in the new room
+    io.to(newRoomId).emit('roomData', roomData[newRoomId])
+    console.log(`User ${userId} switched to room ${newRoomId}:`, roomData)
   })
 
   socket.on('disconnect', () => {
-    const userId = socket.handshake.query.userId
-    if (userId) {
-      delete userSocketMap[userId]
-      // Optionally remove user data when they disconnect
-      // const userIndex = userDataMap.findIndex(user => user.userId === userId)
-      // if (userIndex !== -1) {
-      //   userDataMap.splice(userIndex, 1)
-      //   io.emit('sendDataServer', userDataMap)
-      // }
-      // Remove user data when they disconnect
-      const userIndex = userDataMap.findIndex(user => user.userId === userId)
-      if (userIndex !== -1) {
-        userDataMap.splice(userIndex, 1)
-        io.emit('sendDataServer', userDataMap)
+    // Remove user from all rooms they were in
+    Object.keys(roomData).forEach(roomId => {
+      roomData[roomId] = roomData[roomId].filter(user => user.userId !== userId)
+
+      // Clean up empty rooms
+      if (roomData[roomId].length === 0) {
+        delete roomData[roomId]
+      } else {
+        // Broadcast updated room data
+        io.to(roomId).emit('roomData', roomData[roomId])
       }
-      console.log('Data after User unconnected:', userDataMap)
-    }
-    console.log('Client disconnected')
+    })
+
+    console.log(`User ${userId} disconnected`)
   })
 })
 

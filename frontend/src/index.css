@@ -178,8 +178,8 @@
 .text-shimmer-golf {
   background: linear-gradient(90deg, var(--golf-green-400), var(--golf-green-600), var(--golf-green-400));
   background-size: 200% auto;
-  background-clip: text;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: shimmer-text 2s linear infinite;
 }
@@ -187,8 +187,8 @@
 .text-shimmer-gold {
   background: linear-gradient(90deg, var(--luxury-gold-100), var(--luxury-gold-300), var(--luxury-gold-100));
   background-size: 200% auto;
-  background-clip: text;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: shimmer-text 2s linear infinite;
 }

@@ -9,7 +9,6 @@ import {
 import FlightTable from './FlightTable/FlightTable'
 
 const DailyOperation = () => {
-  console.log('DailyOperation Render')
   const statusGetSchedule = useSelector(selectStatusGetSchedule)
   const errorGetSchedule = useSelector(selectErrorGetSchedule)
   const MorningDetail = useSelector(selectMorningDetail)

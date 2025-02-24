@@ -1,7 +1,8 @@
 // src/utils/constants.js
 let apiRoot = ''
 if (process.env.BUILD_MODE === 'dev') {
-  apiRoot = 'http://192.168.0.182:5000'
+  // apiRoot = 'http://192.168.0.182:5000'
+  apiRoot = 'http://192.168.1.125:5000'
 }
 if (process.env.BUILD_MODE === 'production') {
   apiRoot = 'https://project-api-ikuu.onrender.com'

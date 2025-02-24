@@ -6,7 +6,7 @@ const IDInfo = () => {
   const currentUser = useSelector(selectCurrentUser)
   const bookingFlight = useSelector(selectSelectedBooking)
   const fields = [
-    { label: 'User ID', value: bookingFlight?.bookMap?.[bookingFlight?.bookingIndex]?.UserID || currentUser },
+    { label: 'User ID', value: bookingFlight?.bookMap?.[bookingFlight?.bookingIndex || 0]?.UserID || currentUser },
     { label: 'Caddy', value: '90' },
     { label: 'Buggy', value: '100' }
   ]

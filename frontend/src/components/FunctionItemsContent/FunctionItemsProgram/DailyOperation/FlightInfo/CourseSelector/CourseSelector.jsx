@@ -9,6 +9,7 @@ import {
   selectSelectedCourse,
   selectStatusGetCourse
 } from '~/redux/booking/bookingSlice'
+import { joinRoom } from '~/redux/socket/socketSlice'
 
 function CourseSelector() {
   const courses = useSelector(selectCourseList)
@@ -28,6 +29,8 @@ function CourseSelector() {
     if (newCourseId !== selectedCourse) {
       dispatch(setSelectedCourse(newCourseId))
       dispatch(getScheduleAPI({ date: selectedDate, course: newCourseId }))
+      // Join new room when course changes
+      dispatch(joinRoom({ date: selectedDate, courseId: newCourseId }))
     }
   }, [selectedCourse, dispatch, selectedDate])
 
