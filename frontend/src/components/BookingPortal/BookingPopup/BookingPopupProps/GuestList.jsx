@@ -1,37 +1,16 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useFormContext } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { selectSelectedBooking } from '~/redux/bookingFlight/bookingFlightSlice'
 import GuestNameInput from './GuestNameInput'
 
 const GuestList = () => {
+  const { register } = useFormContext()
   const bookingFlight = useSelector(selectSelectedBooking)
   const bookingInfo = bookingFlight?.bookMap?.[bookingFlight?.bookingIndex || 0]?.details
-  const [guestData, setGuestData] = useState(
-    bookingInfo ? bookingInfo.map((guest) => ({
-      Name: guest?.Name || '',
-      MemberNo: guest?.MemberNo || '',
-      GuestType: guest?.GuestType || '',
-      DailyNo: guest?.BagTag || '',
-      Caddy: guest?.CaddyNo || '',
-      BuggyNo: guest?.BuggyNo || '',
-      LockerNo: guest?.LockerNo || ''
-    })) : Array(4).fill({})
-  )
 
-  const handleGuestUpdate = (index, guestInfo) => {
-    setGuestData(prevData => {
-      const newData = [...prevData]
-      newData[index] = {
-        ...newData[index],
-        ...guestInfo
-      }
-      return newData
-    })
-  }
-
-  // Field configurations
   const fields = [
-    { key: 'Name', label: 'Name', width: 'w-[30%]', isAutocomplete: true },
+    { key: 'Name', label: 'Name', width: 'w-[30%]', isNameInput: true },
     { key: 'MemberNo', label: 'Member No', width: 'w-[10%]' },
     { key: 'GuestType', label: 'Guest Type', width: 'w-[10%]' },
     { key: 'DailyNo', label: 'Daily No.', width: 'w-[8%]' },
@@ -40,6 +19,21 @@ const GuestList = () => {
     { key: 'LockerNo', label: 'Locker No', width: 'w-[8%]' },
     { key: 'Rnd', label: 'Rnd', width: 'w-[8%]' }
   ]
+
+  const renderField = (field, index) => {
+    if (field.isNameInput) {
+      return <GuestNameInput index={index} />
+    }
+
+    return (
+      <input
+        {...register(`GuestList.${index}.${field.key}`)}
+        type="text"
+        defaultValue={bookingInfo?.[index]?.[field.key] || ''}
+        className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
+      />
+    )
+  }
 
   return (
     <div>
@@ -63,23 +57,12 @@ const GuestList = () => {
               <tr key={index} className="hover:bg-golf-green-50">
                 {fields.map((field) => (
                   <td key={field.key} className={`p-1 ${field.width}`}>
-                    {field.isAutocomplete ? (
-                      <GuestNameInput
-                        value={guestData[index]?.Name}
-                        onChange={handleGuestUpdate}
-                        index={index}
-                      />
-                    ) : (
-                      <input
-                        type="text"
-                        className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
-                        defaultValue={guestData[index]?.[field.key] || ''}
-                      />
-                    )}
+                    {renderField(field, index)}
                   </td>
                 ))}
                 <td className="text-center">
                   <input
+                    {...register(`GuestList.${index}.isSelected`)}
                     type="checkbox"
                     className="form-checkbox text-golf-green-500 rounded focus:ring-golf-green-500"
                   />
@@ -97,6 +80,7 @@ const GuestList = () => {
             <div className="flex justify-between items-center">
               <span className="text-golf-green-600 font-medium">Guest {index + 1}</span>
               <input
+                {...register(`GuestList.${index}.isSelected`)}
                 type="checkbox"
                 className="form-checkbox text-golf-green-500 rounded focus:ring-golf-green-500"
               />
@@ -105,19 +89,7 @@ const GuestList = () => {
             {fields.map((field) => (
               <div key={field.key} className="flex flex-col space-y-1">
                 <label className="text-xs text-golf-green-600">{field.label}</label>
-                {field.isAutocomplete ? (
-                  <GuestNameInput
-                    value={guestData[index]?.Name}
-                    onChange={handleGuestUpdate}
-                    index={index}
-                  />
-                ) : (
-                  <input
-                    type="text"
-                    className="w-full p-2 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
-                    defaultValue={guestData[index]?.[field.key] || ''}
-                  />
-                )}
+                {renderField(field, index)}
               </div>
             ))}
           </div>
@@ -127,4 +99,4 @@ const GuestList = () => {
   )
 }
 
-export default GuestList
+export default React.memo(GuestList)

@@ -1,55 +1,98 @@
 // src/components/BookingPortal/BookingPopup/BookingPopupProps/GuestNameInput.jsx
 import React, { useState, useRef, useEffect } from 'react'
-import { useDebounce } from '~/hooks/useDebounce'
-import authorizedAxiosInstance from '~/utils/authorizeAxios'
-import { API_ROOT } from '~/utils/constants'
+import { useFormContext } from 'react-hook-form'
+import { useGuestSearch } from '~/hooks/useGuestSearch'
 
-const GuestNameInput = ({ value, onChange, index }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState(value || '')
-  const [suggestions, setSuggestions] = useState([])
-  const [loading, setLoading] = useState(false)
-  const debouncedSearchTerm = useDebounce(searchTerm, 300)
+const GuestNameInput = ({ index }) => {
+  const { setValue, watch } = useFormContext()
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [highlightedIndex, setHighlightedIndex] = useState(-1)
   const inputRef = useRef(null)
   const dropdownRef = useRef(null)
 
-  // Xử lý API search
+  // Get the current name value from the form
+  const currentName = watch(`GuestList.${index}.Name`) || ''
+
+  // Get all relevant data from form to check if we have prefilled data
+  const memberNo = watch(`GuestList.${index}.MemberNo`) || ''
+  const guestType = watch(`GuestList.${index}.GuestType`) || ''
+  const hasPrefilledData = currentName && (memberNo || guestType)
+
+  // Use our custom hook for guest search with initial value
+  const {
+    searchTerm,
+    setSearchTerm,
+    suggestions,
+    setSuggestions,
+    loading
+  } = useGuestSearch(currentName)
+
+  // Setup initial prefilled data if available
   useEffect(() => {
-    const searchGuests = async () => {
-      if (!debouncedSearchTerm) {
-        setSuggestions([])
-        return
+    if (hasPrefilledData && currentName) {
+      // Create a synthetic guest object from our prefilled data
+      const prefilledGuest = {
+        FullName: currentName,
+        CardNumber: memberNo,
+        GuestType: guestType,
+        BagTag: watch(`GuestList.${index}.DailyNo`) || '',
+        CaddyNo: watch(`GuestList.${index}.Caddy`) || '',
+        BuggyNo: watch(`GuestList.${index}.BuggyNo`) || '',
+        LockerNo: watch(`GuestList.${index}.LockerNo`) || ''
       }
 
-      setLoading(true)
-      try {
-        const response = await authorizedAxiosInstance.get(
-          `${API_ROOT}/v1/items/search-guests`,
-          {
-            params: {
-              search: debouncedSearchTerm,
-              limit: 5
-            }
-          }
-        )
-        setSuggestions(response.data)
-      } catch (error) {
-        console.error('Error searching guests:', error)
-        setSuggestions([])
-      } finally {
-        setLoading(false)
-      }
+      // Set it as initial suggestion to prevent API call
+      setSuggestions([prefilledGuest])
     }
+  }, [hasPrefilledData])
 
-    searchGuests()
-  }, [debouncedSearchTerm])
+  // Sync form value with search term
+  useEffect(() => {
+    if (currentName !== searchTerm) {
+      setSearchTerm(currentName)
+    }
+  }, [currentName])
 
-  // Xử lý click outside
+  // Handle input change
+  const handleInputChange = (event) => {
+    const newValue = event.target.value
+    setValue(`GuestList.${index}.Name`, newValue)
+    setSearchTerm(newValue)
+
+    // Show dropdown if we have at least 2 characters
+    if (newValue.length >= 2) {
+      setShowDropdown(true)
+    } else {
+      setShowDropdown(false)
+    }
+  }
+
+  // Handle selection of a guest
+  const handleSelectGuest = (guest) => {
+    // Update form values
+    setValue(`GuestList.${index}.Name`, guest.FullName || guest.name)
+    setValue(`GuestList.${index}.MemberNo`, guest.CardNumber || guest.id || '')
+    setValue(`GuestList.${index}.GuestType`, guest.GuestType || guest.type || '')
+    setValue(`GuestList.${index}.DailyNo`, guest.BagTag || guest.dailyNo || '')
+    setValue(`GuestList.${index}.Caddy`, guest.CaddyNo || guest.caddy || '')
+    setValue(`GuestList.${index}.BuggyNo`, guest.BuggyNo || guest.buggyNo || '')
+    setValue(`GuestList.${index}.LockerNo`, guest.LockerNo || guest.lockerNo || '')
+
+    // Close dropdown
+    setShowDropdown(false)
+    setHighlightedIndex(-1)
+  }
+
+  // Handle click outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
-                inputRef.current && !inputRef.current.contains(event.target)) {
-        setIsOpen(false)
+      if (
+        inputRef.current &&
+        dropdownRef.current &&
+        !inputRef.current.contains(event.target) &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setShowDropdown(false)
       }
     }
 
@@ -57,58 +100,87 @@ const GuestNameInput = ({ value, onChange, index }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const handleInputChange = (e) => {
-    const newValue = e.target.value
-    setSearchTerm(newValue)
-    onChange(index, { Name: newValue })
-    setIsOpen(true)
+  // Handle keyboard navigation
+  const handleKeyDown = (event) => {
+    if (!showDropdown) return
+
+    // Arrow down
+    if (event.key === 'ArrowDown') {
+      event.preventDefault()
+      setHighlightedIndex(prev =>
+        prev < suggestions.length - 1 ? prev + 1 : prev
+      )
+    }
+
+    // Arrow up
+    if (event.key === 'ArrowUp') {
+      event.preventDefault()
+      setHighlightedIndex(prev => (prev > 0 ? prev - 1 : 0))
+    }
+
+    // Enter
+    if (event.key === 'Enter' && highlightedIndex >= 0) {
+      event.preventDefault()
+      handleSelectGuest(suggestions[highlightedIndex])
+    }
+
+    // Escape
+    if (event.key === 'Escape') {
+      setShowDropdown(false)
+    }
   }
 
-  const handleSelect = (guest) => {
-    setSearchTerm(guest.FullName)
-    onChange(index, {
-      Name: guest.FullName,
-      GuestType: guest.GuestType,
-      MemberNo: guest.CardNumber
-    })
-    setIsOpen(false)
+  // Show dropdown on focus if we have search term
+  const handleFocus = () => {
+    if (currentName.length >= 2) {
+      setShowDropdown(true)
+    }
   }
 
   return (
     <div className="relative">
       <input
-        ref={inputRef}
         type="text"
-        className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
-        value={searchTerm}
+        ref={inputRef}
+        value={currentName}
         onChange={handleInputChange}
-        onFocus={() => setIsOpen(true)}
+        onFocus={handleFocus}
+        onKeyDown={handleKeyDown}
+        className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
+        placeholder="Type name to search"
+        autoComplete="off"
       />
 
-      {isOpen && (searchTerm || loading) && (
+      {showDropdown && (suggestions.length > 0 || loading) && (
         <div
           ref={dropdownRef}
-          className="absolute z-50 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto"
+          className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
         >
           {loading ? (
-            <div className="p-2 text-sm text-gray-500">Loading...</div>
+            <div className="px-3 py-2 text-sm text-gray-500">Searching...</div>
           ) : suggestions.length > 0 ? (
-            suggestions.map((guest) => (
-              <div
-                key={guest.GuestID}
-                className="p-2 text-sm hover:bg-golf-green-50 cursor-pointer"
-                onClick={() => handleSelect(guest)}
-              >
-                <div className="font-medium">{guest.FullName}</div>
-                <div className="text-xs text-gray-500">
-                  <span>ID: {guest.GuestID}</span>
-                  <span> - {guest.GuestType}</span>
-                  {guest?.Contact1 && <span> - {guest.Contact1}</span>}
-                </div>
-              </div>
-            ))
+            <ul className="py-1">
+              {suggestions.map((guest, idx) => (
+                <li
+                  key={guest.GuestID || guest.id || idx}
+                  className={`px-3 py-2 cursor-pointer text-sm ${
+                    highlightedIndex === idx ? 'bg-golf-green-100' : 'hover:bg-golf-green-50'
+                  }`}
+                  onClick={() => handleSelectGuest(guest)}
+                  onMouseEnter={() => setHighlightedIndex(idx)}
+                >
+                  <div className="font-medium">{guest.FullName || guest.name}</div>
+                  <div className="text-xs text-gray-500">
+                    {guest.GuestID && <span>ID: {guest.GuestID}</span>}
+                    {guest.GuestType && <span> · {guest.GuestType}</span>}
+                    {guest.Contact1 && <span> · {guest.Contact1}</span>}
+                    {guest.CardNumber && <span> · Card: {guest.CardNumber}</span>}
+                  </div>
+                </li>
+              ))}
+            </ul>
           ) : (
-            <div className="p-2 text-sm text-gray-500">No results found</div>
+            <div className="px-3 py-2 text-sm text-gray-500">No results found</div>
           )}
         </div>
       )}
@@ -116,4 +188,4 @@ const GuestNameInput = ({ value, onChange, index }) => {
   )
 }
 
-export default GuestNameInput
+export default React.memo(GuestNameInput)

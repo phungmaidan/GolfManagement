@@ -1,33 +1,48 @@
 import React from 'react'
+import { useFormContext } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { selectSelectedBooking } from '~/redux/bookingFlight/bookingFlightSlice'
 import { selectCurrentUser } from '~/redux/user/userSlice'
+
 const IDInfo = () => {
+  const { register } = useFormContext()
   const currentUser = useSelector(selectCurrentUser)
   const bookingFlight = useSelector(selectSelectedBooking)
-  const fields = [
-    { label: 'User ID', value: bookingFlight?.bookMap?.[bookingFlight?.bookingIndex || 0]?.UserID || currentUser },
-    { label: 'Caddy', value: '90' },
-    { label: 'Buggy', value: '100' }
-  ]
 
   return (
     <div>
       <h3 className="text-sm font-semibold text-golf-green-600 mb-2">ID Information</h3>
       <div className="space-y-2 animation-show">
-        {fields.map(({ label, value }) => (
-          <div key={label}>
-            <label className="block text-xs text-gray-600">{label}</label>
-            <input
-              type="text"
-              className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
-              defaultValue={value}
-            />
-          </div>
-        ))}
+        <div>
+          <label className="block text-xs text-gray-600">User ID</label>
+          <input
+            {...register('IDInfo.userId')}
+            type="text"
+            defaultValue={bookingFlight?.bookMap?.[bookingFlight?.bookingIndex]?.UserID || currentUser}
+            className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-600">Caddy</label>
+          <input
+            {...register('IDInfo.caddy')}
+            type="text"
+            defaultValue={bookingFlight?.bookMap?.[bookingFlight?.bookingIndex]?.CaddyNo || '90'}
+            className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-600">Buggy</label>
+          <input
+            {...register('IDInfo.buggy')}
+            type="text"
+            defaultValue={bookingFlight?.bookMap?.[bookingFlight?.bookingIndex]?.BuggyNo || '100'}
+            className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
+          />
+        </div>
       </div>
     </div>
   )
 }
 
-export default IDInfo
+export default React.memo(IDInfo)

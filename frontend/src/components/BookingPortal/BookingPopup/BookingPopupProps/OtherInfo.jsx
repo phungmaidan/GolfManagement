@@ -1,39 +1,19 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useFormContext } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { selectSelectedBooking } from '~/redux/bookingFlight/bookingFlightSlice'
 import AutocompleteInput from './AutocompleteInput'
 
 const OtherInfo = () => {
+  const { register, setValue, watch } = useFormContext()
   const bookingFlight = useSelector(selectSelectedBooking)
   const otherInfo = bookingFlight?.bookMap?.[bookingFlight?.bookingIndex] || {}
-  const [formData, setFormData] = useState({
-    ContactPerson: otherInfo.ContactPerson || '',
-    Email: otherInfo.Email || '',
-    ContactNo: otherInfo.ContactNo || '',
-    Fax: otherInfo.Fax || '',
-    CreditCardNumber: otherInfo.CreditCardNumber || '',
-    CreditCardExpiry: otherInfo.CreditCardExpiry || '',
-    SalesPerson: otherInfo.SalesPerson || '',
-    ReferenceID: otherInfo.ReferenceID || '',
-    Remark: otherInfo.Remark || ''
-  })
-
-  const handleInputChange = (field, value) => {
-    console.log('field:', field)
-    setFormData(prev => {
-      console.log('prev:', prev)
-      return {
-        ...prev,
-        [field]: value
-      }})
-
-  }
 
   const handleGuestSelect = (guestInfo) => {
-    setFormData(prev => ({
-      ...prev,
-      ...guestInfo // Cập nhật tất cả các trường liên quan
-    }))
+    // Update form values from selected guest
+    Object.entries(guestInfo).forEach(([key, value]) => {
+      setValue(`OtherInfo.${key}`, value)
+    })
   }
 
   const fields = [
@@ -59,25 +39,25 @@ const OtherInfo = () => {
             <label className="block text-xs text-gray-600">{field.label}</label>
             {field.type === 'textarea' ? (
               <textarea
+                {...register(`OtherInfo.${field.field}`)}
                 className={inputClassName}
                 rows="3"
-                value={formData[field.field]}
-                onChange={(e) => handleInputChange(field.field, e.target.value)}
+                defaultValue={otherInfo[field.field] || ''}
               />
             ) : field.autocomplete ? (
               <AutocompleteInput
-                value={formData[field.field]}
-                onChange={(value) => handleInputChange(field.field, value)}
-                onGuestSelect={handleGuestSelect} // Thêm prop mới
+                name={`OtherInfo.${field.field}`}
+                defaultValue={otherInfo[field.field] || ''}
+                onGuestSelect={handleGuestSelect}
                 type={field.type}
                 className={inputClassName}
               />
             ) : (
               <input
+                {...register(`OtherInfo.${field.field}`)}
                 type={field.type}
                 className={inputClassName}
-                value={formData[field.field]}
-                onChange={(e) => handleInputChange(field.field, e.target.value)}
+                defaultValue={otherInfo[field.field] || ''}
               />
             )}
           </div>
@@ -87,4 +67,4 @@ const OtherInfo = () => {
   )
 }
 
-export default OtherInfo
+export default React.memo(OtherInfo)
