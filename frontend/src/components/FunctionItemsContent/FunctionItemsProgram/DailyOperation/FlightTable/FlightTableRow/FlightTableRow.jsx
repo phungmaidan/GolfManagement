@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 // FlightTableRow.jsx
-import React from 'react'
-import { useDispatch } from 'react-redux'
+import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import DropdownMenu from './DropdownMenu/DropdownMenu'
 import PlayerCell from './PlayerCell/PlayerCell'
 import TeeTimeCell from './TeeTimeCell/TeeTimeCell'
@@ -9,11 +9,11 @@ import { processItemUtils } from '~/utils/processItemUtils'
 import { updateBookingData } from '~/redux/socket/socketSlice'
 
 const FlightTableRow = React.memo(({ item, isBlock }) => {
-  const processedItem = processItemUtils.processItem(item)
+  // Mỗi booking(item) trong 1 flight có thể có 1 đến 3 group booking nên phải tách ra thành các group khác nhau để truy vấn chính xác, BookingIndices lưu vị trí của các guest thuộc cùng 1 group trong 1 flight
+  const processedItem = processItemUtils.processItemFlightTable(item)
   const dispatch = useDispatch()
 
   const handlePlayerClick = (booking, bookingIndex) => {
-    console.log('booking', booking)
     const bookingData = {
       flight: booking.Flight,
       TeeBox: booking.TeeBox,

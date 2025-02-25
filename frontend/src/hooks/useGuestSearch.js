@@ -13,7 +13,7 @@ export const useGuestSearch = (initialValue = '') => {
   const [loading, setLoading] = useState(false)
   const debouncedSearchTerm = useDebounce(searchTerm, 300)
   const hasFetchedRef = useRef(false)
-  
+
   // Set initial value if provided
   useEffect(() => {
     if (initialValue && initialValue !== searchTerm) {
@@ -63,7 +63,7 @@ export const useGuestSearch = (initialValue = '') => {
             }
           }
         )
-        
+
         // Store in cache and update state
         const results = response.data
         searchCache.set(debouncedSearchTerm, results)
@@ -88,7 +88,7 @@ export const useGuestSearch = (initialValue = '') => {
     if (guests && guests.length > 0) {
       setSuggestions(guests)
       hasFetchedRef.current = true
-      
+
       // Add to cache as well
       const guestName = guests[0]?.FullName || guests[0]?.name || ''
       if (guestName) {
@@ -97,11 +97,11 @@ export const useGuestSearch = (initialValue = '') => {
     }
   }
 
-  return { 
-    searchTerm, 
-    setSearchTerm, 
-    suggestions, 
-    setSuggestions: setInitialSuggestions, 
-    loading 
+  return {
+    searchTerm,
+    setSearchTerm,
+    suggestions,
+    setSuggestions: setInitialSuggestions,
+    loading
   }
 }

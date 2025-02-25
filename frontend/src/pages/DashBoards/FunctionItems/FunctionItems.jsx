@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react'
 import FunctionItemsProgram from '~/components/FunctionItemsContent/FunctionItemsProgram/FunctionItemsProgram'
 import FunctionItemsTitle from '~/components/FunctionItemsContent/FunctionItemsTitle/FunctionItemsTitle'
 import { useDispatch, useSelector } from 'react-redux'
-import BookingPortal from '~/components/BookingPortal'
+import BookingPortal from '~/components/BookingPortal/BookingPortal'
 import { initializeSocket } from '~/redux/socket/socketSlice'
 import { selectFunctionItemsState } from '~/redux/selectors/functionItemsSelectors'
 

@@ -214,7 +214,7 @@ const saveBooking = async (bookingData) => {
     } = bookingData
 
     let bookingId = BookingInfo.bookingId
-    
+
     // Generate new BookingID if not provided
     if (!bookingId) {
       // Format date as DDMMYY for BookingID
@@ -223,7 +223,7 @@ const saveBooking = async (bookingData) => {
       const month = (bookingDate.getMonth() + 1).toString().padStart(2, '0')
       const year = bookingDate.getFullYear().toString().slice(2, 4)
       const dateFormatted = `${day}${month}${year}`
-      
+
       // Get or create booking number from FreBookingNumber table
       // Fix: Format date as YYYY-MM-DD for SQL compatibility
       const dateStr = bookingDate.toISOString().split('T')[0]
@@ -232,35 +232,35 @@ const saveBooking = async (bookingData) => {
       const queries = [
         // Fix: Use parameterized query for dates
         {
-          sql: `SELECT Counter FROM FreBookingNumber WHERE ID = @dateStr`,
+          sql: 'SELECT Counter FROM FreBookingNumber WHERE ID = @dateStr',
           params: { dateStr: dateStr }
         }
       ]
-      
+
       const results = await sqlQueryUtils.executeTransaction(queries)
       let counter
-      
+
       if (results[0]?.length > 0) {
         // Update existing counter
         counter = (parseInt(results[0][0].Counter) + 1).toString().padStart(3, '0')
         queries.push({
-          sql: `UPDATE FreBookingNumber SET Counter = @counter WHERE ID = @dateStr`,
+          sql: 'UPDATE FreBookingNumber SET Counter = @counter WHERE ID = @dateStr',
           params: { counter: counter, dateStr: dateStr }
         })
       } else {
         // Insert new counter
         counter = '001'
         queries.push({
-          sql: `INSERT INTO FreBookingNumber (ID, Counter) VALUES (@dateStr, @counter)`,
+          sql: 'INSERT INTO FreBookingNumber (ID, Counter) VALUES (@dateStr, @counter)',
           params: { dateStr: dateStr, counter: counter }
         })
       }
-      
+
       // Execute the update/insert if needed
       if (queries.length > 1) {
         await sqlQueryUtils.executeTransaction(queries.slice(1))
       }
-      
+
       // Generate booking ID in format DDMMYY-NNN
       bookingId = `${dateFormatted}-${counter}`
     }
@@ -307,8 +307,8 @@ const saveBooking = async (bookingData) => {
       MemberNo: guest.MemberNo,
       Name: guest.Name,
       ContactNo: OtherInfo.ContactNo,
-      GuestID: guest.DailyNo,
-      BagTag: '',
+      GuestID: guest.GuestID,
+      BagTag: guest.DailyNo || '',
       CaddyNo: guest.Caddy || IDInfo.caddy,
       FolioID: '',
       LockerNo: guest.LockerNo,

@@ -91,6 +91,7 @@ const saveBooking = async (req, res, next) => {
     GuestList: Joi.array().items(
       Joi.object({
         Name: Joi.string().allow(''),
+        GuestID: Joi.string().required(),
         MemberNo: Joi.string().allow(''),
         GuestType: Joi.string().allow(''),
         DailyNo: Joi.string().allow(''),
@@ -112,7 +113,6 @@ const saveBooking = async (req, res, next) => {
       Remark: Joi.string().allow('')
     })
   })
-
   try {
     const validatedData = await schema.validateAsync(req.body, { abortEarly: false })
     req.validatedData = validatedData

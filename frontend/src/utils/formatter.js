@@ -7,14 +7,6 @@ export const capitalizeFirstLetter = (val) => {
   return `${val.charAt(0).toUpperCase()}${val.slice(1)}`
 }
 
-export const generatePlaceholderCard = (column) => {
-  return {
-    _id: `${column._id}-placeholder-card`,
-    boardId: column.boardId,
-    columnId: column._id,
-    FE_PlaceholderCard: true
-  }
-}
 
 // Kỹ thuật dùng css pointer-event để chặn user spam click tại bất kỳ chỗ nào có hành động click gọi api
 // Đây là một kỹ thuật rất hay tận dụng Axios Interceptors và CSS Pointer-events để chỉ phải viết code xử lý một lần cho toàn bộ dự án
@@ -49,4 +41,31 @@ export const slugify = (val) => {
     .replace(/[^a-z0-9 -]/g, '') // remove non-alphanumeric characters
     .replace(/\s+/g, '-') // replace spaces with hyphens
     .replace(/-+/g, '-') // remove consecutive hyphens
+}
+
+/**
+ * Deep conversion function to convert all values in an object to strings
+ * @param {any} obj - The object to convert
+ * @returns {any} A new object with all values converted to strings
+ */
+export const convertToStrings = (obj) => {
+  // Handle null or undefined
+  if (obj === null || obj === undefined) return ''
+
+  // Handle primitive values
+  if (typeof obj !== 'object') {
+    return String(obj)
+  }
+
+  // Handle arrays
+  if (Array.isArray(obj)) {
+    return obj.map(item => convertToStrings(item))
+  }
+
+  // Handle objects recursively
+  const result = {}
+  Object.entries(obj).forEach(([key, value]) => {
+    result[key] = convertToStrings(value)
+  })
+  return result
 }

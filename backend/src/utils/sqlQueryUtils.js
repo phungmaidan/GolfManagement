@@ -49,10 +49,10 @@ const executeQuery = async (sql, params, errorMessage = 'Database query failed')
  */
 const executeTransaction = async (queries) => {
   const pool = GET_DB()
-  
+
   // Create a new transaction
   const transaction = new sql.Transaction(pool)
-  
+
   try {
     // Begin the transaction
     await transaction.begin()
@@ -61,7 +61,7 @@ const executeTransaction = async (queries) => {
     for (const query of queries) {
       // Create request with transaction
       const request = new sql.Request(transaction)
-      
+
       // Add parameters if provided
       if (query.params) {
         Object.entries(query.params).forEach(([key, value]) => {
@@ -79,7 +79,7 @@ const executeTransaction = async (queries) => {
       } else {
         throw new Error('Invalid SQL query: sql property missing or invalid')
       }
-      
+
       const result = await request.query(sqlStatement)
       results.push(result.recordset || result.rowsAffected)
     }
@@ -91,6 +91,7 @@ const executeTransaction = async (queries) => {
       try {
         await transaction.rollback()
       } catch (rollbackError) {
+        // eslint-disable-next-line no-console
         console.error('Transaction rollback failed:', rollbackError)
       }
     }
@@ -248,7 +249,8 @@ const updateRecord = async ({
 
     const combinedParams = { ...params, ...updateFields }
     if (!execute) {
-      return convertToQuery(sqlQuery, params)
+      // Fix: Use combinedParams instead of just params
+      return convertToQuery(sqlQuery, combinedParams)
     }
     const result = await executeQuery(
       sqlQuery,
@@ -294,7 +296,7 @@ const insertRecord = async ({
     const cleanData = Object.fromEntries(
       Object.entries(data).filter(([_, value]) => value !== undefined)
     )
-    
+
     // Check if there's data left after cleaning
     if (Object.keys(cleanData).length === 0) {
       throw new ApiError(StatusCodes.BAD_REQUEST, `No valid data provided for insert into ${tableName}`)

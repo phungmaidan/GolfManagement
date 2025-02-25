@@ -1,4 +1,4 @@
-const processItem = (item) => {
+const processItemFlightTable = (item) => {
   const blockMap = item.children.blockMap
   const bookMap = item.children.bookMap
   const isBlock = blockMap?.length > 0
@@ -34,5 +34,5 @@ const processItem = (item) => {
 }
 
 export const processItemUtils = {
-  processItem
+  processItemFlightTable
 }
