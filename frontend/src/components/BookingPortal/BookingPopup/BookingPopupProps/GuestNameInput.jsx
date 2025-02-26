@@ -35,6 +35,7 @@ const GuestNameInput = ({ index }) => {
         FullName: currentName,
         CardNumber: memberNo,
         GuestType: guestType,
+        GuestID: watch(`GuestList.${index}.GuestID`) || '', // Add this line
         BagTag: watch(`GuestList.${index}.DailyNo`) || '',
         CaddyNo: watch(`GuestList.${index}.Caddy`) || '',
         BuggyNo: watch(`GuestList.${index}.BuggyNo`) || '',
@@ -77,6 +78,10 @@ const GuestNameInput = ({ index }) => {
     setValue(`GuestList.${index}.Caddy`, guest.CaddyNo || guest.caddy || '')
     setValue(`GuestList.${index}.BuggyNo`, guest.BuggyNo || guest.buggyNo || '')
     setValue(`GuestList.${index}.LockerNo`, guest.LockerNo || guest.lockerNo || '')
+
+    // Explicitly convert GuestID to string to avoid type errors
+    const guestId = guest.GuestID || guest.id || ''
+    setValue(`GuestList.${index}.GuestID`, String(guestId))
 
     // Close dropdown
     setShowDropdown(false)

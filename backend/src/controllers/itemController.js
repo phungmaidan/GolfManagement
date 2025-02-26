@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 import { itemService } from '~/services/itemService'
+import { io } from '~/sockets/socketService' // Import the socket.io instance
 
 const getCourse = async (req, res, next) => {
   try {
@@ -32,6 +33,22 @@ const searchGuests = async (req, res, next) => {
 const saveBooking = async (req, res, next) => {
   try {
     const result = await itemService.saveBooking(req.validatedData)
+
+    // Extract date and courseId from the booking data to create the room ID
+    const { CourseInfo } = req.validatedData
+    if (CourseInfo && CourseInfo.playDate && CourseInfo.courseId) {
+      const roomId = `${CourseInfo.playDate}-${CourseInfo.courseId}`
+
+      // Emit a 'bookingUpdated' event to notify all users in the same room
+      io.to(roomId).emit('bookingUpdated', {
+        date: CourseInfo.playDate,
+        courseId: CourseInfo.courseId,
+        booking: result
+      })
+
+      console.log(`Booking update emitted to room ${roomId}`)
+    }
+
     res.status(StatusCodes.OK).json(result)
   } catch (error) { next(error) }
 }

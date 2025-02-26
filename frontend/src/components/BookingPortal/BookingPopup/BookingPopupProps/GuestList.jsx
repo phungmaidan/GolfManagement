@@ -10,7 +10,8 @@ const GuestList = () => {
   const bookingInfo = bookingFlight?.bookMap?.[bookingFlight?.bookingIndex || 0]?.details
 
   const fields = [
-    { key: 'Name', label: 'Name', width: 'w-[30%]', isNameInput: true },
+    { key: 'GuestID', label: 'Guest ID', width: 'w-[8%]' }, // Remove hidden: true
+    { key: 'Name', label: 'Name', width: 'w-[22%]', isNameInput: true },
     { key: 'MemberNo', label: 'Member No', width: 'w-[10%]' },
     { key: 'GuestType', label: 'Guest Type', width: 'w-[10%]' },
     { key: 'DailyNo', label: 'Daily No.', width: 'w-[8%]' },
@@ -25,11 +26,11 @@ const GuestList = () => {
       return <GuestNameInput index={index} />
     }
 
+    // Use Controller instead of register directly
     return (
       <input
         {...register(`GuestList.${index}.${field.key}`)}
         type="text"
-        defaultValue={bookingInfo?.[index]?.[field.key] || ''}
         className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
       />
     )
