@@ -39,7 +39,7 @@ const BookingPopup = () => {
     // Apply the conversion function to get a new object with string values
     const cleanedData = convertToStrings(data)
     dispatch(updateBookingData(cleanedData))
-    // dispatch(saveBookingAPI(cleanedData))
+    dispatch(saveBookingAPI(cleanedData))
     dispatch(closeBookingPopup())
   }, [dispatch])
 

@@ -63,7 +63,6 @@ const GuestList = () => {
                 ))}
                 <td className="text-center">
                   <input
-                    {...register(`GuestList.${index}.isSelected`)}
                     type="checkbox"
                     className="form-checkbox text-golf-green-500 rounded focus:ring-golf-green-500"
                   />
@@ -81,7 +80,6 @@ const GuestList = () => {
             <div className="flex justify-between items-center">
               <span className="text-golf-green-600 font-medium">Guest {index + 1}</span>
               <input
-                {...register(`GuestList.${index}.isSelected`)}
                 type="checkbox"
                 className="form-checkbox text-golf-green-500 rounded focus:ring-golf-green-500"
               />

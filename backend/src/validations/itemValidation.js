@@ -91,7 +91,7 @@ const saveBooking = async (req, res, next) => {
     GuestList: Joi.array().items(
       Joi.object({
         Name: Joi.string().allow(''),
-        GuestID: Joi.string().required(),
+        GuestID: Joi.string().allow(''),
         MemberNo: Joi.string().allow(''),
         GuestType: Joi.string().allow(''),
         DailyNo: Joi.string().allow(''),
