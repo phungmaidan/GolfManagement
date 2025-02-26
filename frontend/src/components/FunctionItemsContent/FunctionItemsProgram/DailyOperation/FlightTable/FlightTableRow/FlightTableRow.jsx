@@ -13,6 +13,7 @@ const FlightTableRow = React.memo(({ item, isBlock }) => {
   const dispatch = useDispatch()
 
   const handlePlayerClick = (booking, bookingIndex) => {
+    console.log('booking', booking)
     const bookingData = {
       flight: booking.Flight,
       TeeBox: booking.TeeBox,

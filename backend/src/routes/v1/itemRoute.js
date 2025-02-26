@@ -10,7 +10,6 @@ Router.route('/get-course')
   .get(
     authMiddleware.isAuthorized,
     itemValidation.getCourse,
-    cacheMiddleware.caching,
     itemController.getCourse
   )
 
@@ -18,7 +17,6 @@ Router.route('/get-schedule')
   .get(
     authMiddleware.isAuthorized,
     itemValidation.getSchedule,
-    cacheMiddleware.caching,
     itemController.getSchedule
   )
 
@@ -27,6 +25,13 @@ Router.route('/search-guests')
     authMiddleware.isAuthorized,
     itemValidation.searchGuests,
     itemController.searchGuests
+  )
+
+Router.route('/save-booking')
+  .post(
+    authMiddleware.isAuthorized,
+    itemValidation.saveBooking,
+    itemController.saveBooking
   )
 
 export const itemRoute = Router

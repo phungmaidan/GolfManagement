@@ -203,8 +203,148 @@ const searchGuests = async (searchTerm, limit = 5) => {
   }
 }
 
+const saveBooking = async (bookingData) => {
+  try {
+    const {
+      BookingInfo,
+      CourseInfo,
+      IDInfo,
+      GuestList,
+      OtherInfo
+    } = bookingData
+
+    let bookingId = BookingInfo.bookingId
+    
+    // Generate new BookingID if not provided
+    if (!bookingId) {
+      // Format date as DDMMYY for BookingID
+      const bookingDate = new Date(CourseInfo.playDate)
+      const day = bookingDate.getDate().toString().padStart(2, '0')
+      const month = (bookingDate.getMonth() + 1).toString().padStart(2, '0')
+      const year = bookingDate.getFullYear().toString().slice(2, 4)
+      const dateFormatted = `${day}${month}${year}`
+      
+      // Get or create booking number from FreBookingNumber table
+      // Fix: Format date as YYYY-MM-DD for SQL compatibility
+      const dateStr = bookingDate.toISOString().split('T')[0]
+      console.log('dateStr', dateStr)
+      // Transaction to handle booking number
+      const queries = [
+        // Fix: Use parameterized query for dates
+        {
+          sql: `SELECT Counter FROM FreBookingNumber WHERE ID = @dateStr`,
+          params: { dateStr: dateStr }
+        }
+      ]
+      
+      const results = await sqlQueryUtils.executeTransaction(queries)
+      let counter
+      
+      if (results[0]?.length > 0) {
+        // Update existing counter
+        counter = (parseInt(results[0][0].Counter) + 1).toString().padStart(3, '0')
+        queries.push({
+          sql: `UPDATE FreBookingNumber SET Counter = @counter WHERE ID = @dateStr`,
+          params: { counter: counter, dateStr: dateStr }
+        })
+      } else {
+        // Insert new counter
+        counter = '001'
+        queries.push({
+          sql: `INSERT INTO FreBookingNumber (ID, Counter) VALUES (@dateStr, @counter)`,
+          params: { dateStr: dateStr, counter: counter }
+        })
+      }
+      
+      // Execute the update/insert if needed
+      if (queries.length > 1) {
+        await sqlQueryUtils.executeTransaction(queries.slice(1))
+      }
+      
+      // Generate booking ID in format DDMMYY-NNN
+      bookingId = `${dateFormatted}-${counter}`
+    }
+
+    // Fix: Format date string for SQL Server
+    const formatSqlDate = (dateString) => {
+      if (!dateString) return null
+      const date = new Date(dateString)
+      return date.toISOString().split('T')[0]
+    }
+
+    // Prepare master booking data
+    const masterData = {
+      BookingID: bookingId,
+      EntryDate: new Date().toISOString().split('T')[0], // Fix: Format date
+      BookingDate: formatSqlDate(CourseInfo.playDate),
+      CourseID: CourseInfo.courseId,
+      Session: getSession(CourseInfo.teeTime),
+      TeeBox: CourseInfo.teeBox,
+      Hole: CourseInfo.hole,
+      Flight: CourseInfo.group,
+      TeeTime: CourseInfo.teeTime,
+      GuestType: GuestList[0]?.GuestType || '',
+      MemberNo: GuestList[0]?.MemberNo || '',
+      Name: GuestList[0]?.Name || '',
+      ContactNo: OtherInfo.ContactNo,
+      Pax: GuestList.filter(g => g.Name).length,
+      Remark: OtherInfo.Remark,
+      UserID: IDInfo.userId,
+      ContactPerson: OtherInfo.ContactPerson,
+      Fax: OtherInfo.Fax,
+      CreditCardNumber: OtherInfo.CreditCardNumber,
+      CreditCardExpiry: OtherInfo.CreditCardExpiry,
+      Email: OtherInfo.Email,
+      SalesPerson: OtherInfo.SalesPerson,
+      ReferenceID: OtherInfo.ReferenceID
+    }
+
+    // Prepare details data
+    const detailsData = GuestList.filter(guest => guest.Name).map((guest, index) => ({
+      BookingID: bookingId,
+      Counter: index + 1,
+      GuestType: guest.GuestType,
+      MemberNo: guest.MemberNo,
+      Name: guest.Name,
+      ContactNo: OtherInfo.ContactNo,
+      GuestID: guest.DailyNo,
+      BagTag: '',
+      CaddyNo: guest.Caddy || IDInfo.caddy,
+      FolioID: '',
+      LockerNo: guest.LockerNo,
+      BuggyNo: guest.BuggyNo || IDInfo.buggy
+    }))
+
+    const result = await itemModel.saveBooking({
+      bookingId: BookingInfo.bookingId,
+      masterData,
+      detailsData,
+      execute: true
+    })
+
+    return {
+      success: true,
+      bookingId,
+      message: `Booking ${BookingInfo.bookingId ? 'updated' : 'created'} successfully`
+    }
+
+  } catch (error) {
+    throw new ApiError(
+      error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
+      error.message || 'Error saving booking'
+    )
+  }
+}
+
+// Helper function to determine session based on tee time
+const getSession = (teeTime) => {
+  const hour = parseInt(teeTime.split(':')[0])
+  return hour < 12 ? 'Morning' : 'Afternoon'
+}
+
 export const itemService = {
   getSchedule,
   getCourse,
-  searchGuests
+  searchGuests,
+  saveBooking
 }

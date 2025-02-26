@@ -1,5 +1,9 @@
 // frontend/src/redux/bookingFlight/bookingFlightSlice.js
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { toast } from 'react-toastify'
+import authorizedAxiosInstance from '~/utils/authorizeAxios'
+import { API_ROOT } from '~/utils/constants'
+
 const initialState = {
   isPopupOpen: false,
   BookingInfo: null,
@@ -15,6 +19,27 @@ const initialState = {
     bookingIndex: -1
   }
 }
+
+export const saveBookingAPI = createAsyncThunk(
+  'bookingFlight/saveBookingAPI',
+  async (bookingData, thunkAPI) => {
+    try {
+      const response = await authorizedAxiosInstance.post(
+        `${API_ROOT}/v1/items/save-booking`,
+        bookingData
+      )
+
+      // Show success message
+      toast.success('Booking saved successfully!')
+
+      return response.data
+    } catch (error) {
+      // Show error message
+      toast.error(error.response?.data?.message || 'Failed to save booking')
+      return thunkAPI.rejectWithValue(error.response?.data || error.message)
+    }
+  }
+)
 
 const bookingFlightSlice = createSlice({
   name: 'bookingFlight',
@@ -57,6 +82,19 @@ const bookingFlightSlice = createSlice({
       state.GuestList = GuestList
       state.OtherInfo = OtherInfo
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(saveBookingAPI.pending, (state) => {
+        // Optional: Handle loading state
+      })
+      .addCase(saveBookingAPI.fulfilled, (state, action) => {
+        // Handle successful save
+        state.isPopupOpen = false // Close popup after successful save
+      })
+      .addCase(saveBookingAPI.rejected, (state, action) => {
+        // Handle failed save
+      })
   }
 })
 

@@ -1,4 +1,5 @@
 // ~/utils/dbUtils.js
+import sql from 'mssql'
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError'
 import { GET_DB } from '~/config/sqldb'
@@ -48,17 +49,19 @@ const executeQuery = async (sql, params, errorMessage = 'Database query failed')
  */
 const executeTransaction = async (queries) => {
   const pool = GET_DB()
-  const transaction = new pool.Transaction(pool)
-
+  
+  // Create a new transaction
+  const transaction = new sql.Transaction(pool)
+  
   try {
+    // Begin the transaction
     await transaction.begin()
-    const request = new pool.Request(transaction)
     const results = []
 
     for (const query of queries) {
-      // Reset request parameters for each query
-      request.parameters = {}
-
+      // Create request with transaction
+      const request = new sql.Request(transaction)
+      
       // Add parameters if provided
       if (query.params) {
         Object.entries(query.params).forEach(([key, value]) => {
@@ -66,22 +69,31 @@ const executeTransaction = async (queries) => {
         })
       }
 
-      // Execute query with SET NOCOUNT ON for consistent results
-      const sql = `
-        SET NOCOUNT ON;
-        ${query.sql.trim()}
-      `
-      const result = await request.query(sql)
+      // Check if sql is a string before calling trim()
+      // Fix: Handle case where query.sql might not be a string
+      let sqlStatement
+      if (typeof query.sql === 'string') {
+        sqlStatement = `SET NOCOUNT ON; ${query.sql.trim()}`
+      } else if (query.sql) {
+        sqlStatement = `SET NOCOUNT ON; ${query.sql}`
+      } else {
+        throw new Error('Invalid SQL query: sql property missing or invalid')
+      }
+      
+      const result = await request.query(sqlStatement)
       results.push(result.recordset || result.rowsAffected)
     }
 
     await transaction.commit()
-    return {
-      success: true,
-      recordsets: results
-    }
+    return results
   } catch (error) {
-    await transaction.rollback()
+    if (transaction._aborted !== true) {
+      try {
+        await transaction.rollback()
+      } catch (rollbackError) {
+        console.error('Transaction rollback failed:', rollbackError)
+      }
+    }
     throw new ApiError(
       StatusCodes.NOT_ACCEPTABLE,
       `Transaction failed: ${error.message}`
@@ -278,22 +290,31 @@ const insertRecord = async ({
   execute = true
 }) => {
   try {
-    const fields = Object.keys(data)
+    // Remove undefined values from data
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([_, value]) => value !== undefined)
+    )
+    
+    // Check if there's data left after cleaning
+    if (Object.keys(cleanData).length === 0) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, `No valid data provided for insert into ${tableName}`)
+    }
+
+    const fields = Object.keys(cleanData)
     const values = fields.map(field => `@${field}`).join(', ')
 
     const sqlQuery = `
-            INSERT INTO ${tableName} 
-            (${fields.join(', ')})
-            VALUES (${values})
-            ${returnInserted ? 'OUTPUT Inserted.*' : ''}
-        `
+      INSERT INTO ${tableName} 
+      (${fields.join(', ')})
+      VALUES (${values})
+      ${returnInserted ? 'OUTPUT Inserted.*' : ''}
+    `
     if (!execute) {
-      // Fix: Use 'data' instead of undefined 'params'
-      return convertToQuery(sqlQuery, data)
+      return convertToQuery(sqlQuery, cleanData)
     }
     const result = await executeQuery(
       sqlQuery,
-      data,
+      cleanData,
       `Error inserting record into ${tableName}`
     )
 

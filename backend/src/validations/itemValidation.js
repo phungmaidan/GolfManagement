@@ -71,8 +71,63 @@ const searchGuests = async (req, res, next) => {
   }
 }
 
+const saveBooking = async (req, res, next) => {
+  const schema = Joi.object({
+    BookingInfo: Joi.object({
+      bookingId: Joi.string().allow(''),
+      bookingDate: Joi.string().required()
+    }),
+    CourseInfo: Joi.object({
+      courseId: Joi.string().required(),
+      teeBox: Joi.string().required(),
+      teeTime: Joi.string().required(),
+      playDate: Joi.string().required(),
+      group: Joi.string().allow(''),
+      hole: Joi.string().required()
+    }),
+    IDInfo: Joi.object({
+      userId: Joi.string().required()
+    }),
+    GuestList: Joi.array().items(
+      Joi.object({
+        Name: Joi.string().allow(''),
+        MemberNo: Joi.string().allow(''),
+        GuestType: Joi.string().allow(''),
+        DailyNo: Joi.string().allow(''),
+        Caddy: Joi.string().allow(''),
+        BuggyNo: Joi.string().allow(''),
+        LockerNo: Joi.string().allow(''),
+        Rnd: Joi.string().allow('')
+      })
+    ),
+    OtherInfo: Joi.object({
+      ContactPerson: Joi.string().allow(''),
+      Email: Joi.string().allow(''),
+      ContactNo: Joi.string().allow(''),
+      Fax: Joi.string().allow(''),
+      CreditCardNumber: Joi.string().allow(''),
+      CreditCardExpiry: Joi.string().allow(''),
+      SalesPerson: Joi.string().allow(''),
+      ReferenceID: Joi.string().allow(''),
+      Remark: Joi.string().allow('')
+    })
+  })
+
+  try {
+    const validatedData = await schema.validateAsync(req.body, { abortEarly: false })
+    req.validatedData = validatedData
+    next()
+  } catch (error) {
+    const errorMessage = error.details
+      ? error.details.map(detail => detail.message).join(', ')
+      : error.message
+    next(new ApiError(StatusCodes.BAD_REQUEST, errorMessage))
+  }
+}
+
 export const itemValidation = {
   getCourse,
   getSchedule,
-  searchGuests
+  searchGuests,
+  saveBooking
 }

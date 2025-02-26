@@ -244,6 +244,57 @@ const searchGuests = async ({ searchTerm, limit = 5 }) => {
   }
 }
 
+const saveBooking = async ({ bookingId, masterData, detailsData, execute = true }) => {
+  try {
+    const queries = []
+
+    if (bookingId) {
+      // Update existing booking
+      const updateSql = await sqlQueryUtils.updateRecord({
+        tableName: 'FreBookingMaster',
+        updateFields: masterData,
+        where: 'BookingID = @BookingID',
+        params: { BookingID: bookingId },
+        execute: false
+      })
+      queries.push({ sql: updateSql })
+
+      // Delete existing details to replace with new ones
+      queries.push({
+        sql: `DELETE FROM FreBookingDetails WHERE BookingID = '${bookingId}'`
+      })
+
+    } else {
+      // Insert new booking
+      const insertSql = await sqlQueryUtils.insertRecord({
+        tableName: 'FreBookingMaster',
+        data: masterData,
+        execute: false
+      })
+      queries.push({ sql: insertSql })
+    }
+
+    // Insert booking details - Use Promise.all to await all insert operations
+    const detailsQueries = await Promise.all(detailsData.map(async (detail) => {
+      const detailSql = await sqlQueryUtils.insertRecord({
+        tableName: 'FreBookingDetails',
+        data: detail,
+        execute: false
+      })
+      return { sql: detailSql }
+    }))
+    
+    // Add the resolved detail queries to the main queries array
+    queries.push(...detailsQueries)
+
+    if (!execute) return queries
+
+    return await sqlQueryUtils.executeTransaction(queries)
+  } catch (error) {
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, error.message)
+  }
+}
+
 export const itemModel = {
   getCourseByDate,
   fetchTemplateOfDay,
@@ -257,5 +308,6 @@ export const itemModel = {
   getComGuestType,
   getFreFlightStatus,
   getHoleDescriptions,
-  searchGuests
+  searchGuests,
+  saveBooking
 }

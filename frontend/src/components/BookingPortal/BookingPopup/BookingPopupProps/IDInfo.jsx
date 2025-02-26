@@ -25,18 +25,16 @@ const IDInfo = () => {
         <div>
           <label className="block text-xs text-gray-600">Caddy</label>
           <input
-            {...register('IDInfo.caddy')}
             type="text"
-            defaultValue={bookingFlight?.bookMap?.[bookingFlight?.bookingIndex]?.CaddyNo || '90'}
+            defaultValue='100'
             className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
           />
         </div>
         <div>
           <label className="block text-xs text-gray-600">Buggy</label>
           <input
-            {...register('IDInfo.buggy')}
             type="text"
-            defaultValue={bookingFlight?.bookMap?.[bookingFlight?.bookingIndex]?.BuggyNo || '100'}
+            defaultValue='100'
             className="w-full p-1 text-sm border rounded focus:ring-golf-green-500 focus:border-golf-green-500 hover:border-golf-green-400"
           />
         </div>

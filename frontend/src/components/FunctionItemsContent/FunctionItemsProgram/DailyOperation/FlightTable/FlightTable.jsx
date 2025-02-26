@@ -2,13 +2,10 @@ import React, { useMemo } from 'react'
 import FlightTableHeader from './FlightTableHeader/FlightTableHeader'
 import FlightTableRow from './FlightTableRow/FlightTableRow'
 import { selectRoomData } from '~/redux/socket/socketSlice'
-import { selectSelectedDate, selectSelectedCourse } from '~/redux/booking/bookingSlice'
 import { useSelector } from 'react-redux'
 
 const FlightTable = ({ title, schedule }) => {
   const roomData = useSelector(selectRoomData)
-  const selectedDate = useSelector(selectSelectedDate)
-  const selectedCourse = useSelector(selectSelectedCourse)
 
   // Memoize blocked flights to prevent unnecessary recalculations
   const blockedFlightInfo = useMemo(() => {
