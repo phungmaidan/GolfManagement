@@ -239,26 +239,32 @@ const saveBooking = async (bookingData) => {
 
       const results = await sqlQueryUtils.executeTransaction(queries)
       let counter
-
+      let counterToUpdate
       if (results[0]?.length > 0) {
+        // Get existing counter
+        counter = (parseInt(results[0][0].Counter)).toString().padStart(3, '0')
+        counterToUpdate = (parseInt(counter) + 1).toString()
+        // Process data with the counter value
+        // ... (Xử lý dữ liệu với giá trị counter)
+
         // Update existing counter
-        counter = (parseInt(results[0][0].Counter) + 1).toString().padStart(3, '0')
-        queries.push({
+        const updateQuery = {
           sql: 'UPDATE FreBookingNumber SET Counter = @counter WHERE ID = @dateStr',
-          params: { counter: counter, dateStr: dateStr }
-        })
+          params: { counter: counterToUpdate, dateStr: dateStr }
+        }
+
+        // Execute the update query
+        await sqlQueryUtils.executeTransaction([updateQuery])
       } else {
         // Insert new counter
         counter = '001'
-        queries.push({
+        const insertQuery = {
           sql: 'INSERT INTO FreBookingNumber (ID, Counter) VALUES (@dateStr, @counter)',
-          params: { dateStr: dateStr, counter: counter }
-        })
-      }
+          params: { dateStr: dateStr, counter: '1' }
+        }
 
-      // Execute the update/insert if needed
-      if (queries.length > 1) {
-        await sqlQueryUtils.executeTransaction(queries.slice(1))
+        // Execute the insert query
+        await sqlQueryUtils.executeTransaction([insertQuery])
       }
 
       // Generate booking ID in format DDMMYY-NNN
