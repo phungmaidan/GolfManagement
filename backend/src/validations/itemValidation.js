@@ -81,6 +81,7 @@ const saveBooking = async (req, res, next) => {
       courseId: Joi.string().required(),
       teeBox: Joi.string().required(),
       teeTime: Joi.string().required(),
+      Session: Joi.string().required(),
       playDate: Joi.string().required(),
       group: Joi.string().allow(''),
       hole: Joi.string().required()

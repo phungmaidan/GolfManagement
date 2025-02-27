@@ -239,15 +239,16 @@ const updateRecord = async ({
     const updateSetClause = Object.keys(updateFields)
       .map(field => `${field} = @${field}`)
       .join(', ')
-
+    console.log('updateSetClause', updateSetClause)
     const sqlQuery = `
             UPDATE ${tableName}
             SET ${updateSetClause}
             ${where ? `WHERE ${where}` : ''}
             ${returnUpdated ? 'OUTPUT Inserted.*' : ''}
         `
-
+    console.log('params', params)
     const combinedParams = { ...params, ...updateFields }
+    console.log('combinedParams', combinedParams)
     if (!execute) {
       // Fix: Use combinedParams instead of just params
       return convertToQuery(sqlQuery, combinedParams)
@@ -294,7 +295,7 @@ const insertRecord = async ({
   try {
     // Remove undefined values from data
     const cleanData = Object.fromEntries(
-      Object.entries(data).filter(([_, value]) => value !== undefined)
+      Object.entries(data).filter(([key, value]) => value !== undefined)
     )
 
     // Check if there's data left after cleaning

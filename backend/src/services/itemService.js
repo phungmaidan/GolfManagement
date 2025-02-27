@@ -217,58 +217,7 @@ const saveBooking = async (bookingData) => {
 
     // Generate new BookingID if not provided
     if (!bookingId) {
-      // Format date as DDMMYY for BookingID
-      const bookingDate = new Date(CourseInfo.playDate)
-      const day = bookingDate.getDate().toString().padStart(2, '0')
-      const month = (bookingDate.getMonth() + 1).toString().padStart(2, '0')
-      const year = bookingDate.getFullYear().toString().slice(2, 4)
-      const dateFormatted = `${day}${month}${year}`
-
-      // Get or create booking number from FreBookingNumber table
-      // Fix: Format date as YYYY-MM-DD for SQL compatibility
-      const dateStr = bookingDate.toISOString().split('T')[0]
-      console.log('dateStr', dateStr)
-      // Transaction to handle booking number
-      const queries = [
-        // Fix: Use parameterized query for dates
-        {
-          sql: 'SELECT Counter FROM FreBookingNumber WHERE ID = @dateStr',
-          params: { dateStr: dateStr }
-        }
-      ]
-
-      const results = await sqlQueryUtils.executeTransaction(queries)
-      let counter
-      let counterToUpdate
-      if (results[0]?.length > 0) {
-        // Get existing counter
-        counter = (parseInt(results[0][0].Counter)).toString().padStart(3, '0')
-        counterToUpdate = (parseInt(counter) + 1).toString()
-        // Process data with the counter value
-        // ... (Xử lý dữ liệu với giá trị counter)
-
-        // Update existing counter
-        const updateQuery = {
-          sql: 'UPDATE FreBookingNumber SET Counter = @counter WHERE ID = @dateStr',
-          params: { counter: counterToUpdate, dateStr: dateStr }
-        }
-
-        // Execute the update query
-        await sqlQueryUtils.executeTransaction([updateQuery])
-      } else {
-        // Insert new counter
-        counter = '001'
-        const insertQuery = {
-          sql: 'INSERT INTO FreBookingNumber (ID, Counter) VALUES (@dateStr, @counter)',
-          params: { dateStr: dateStr, counter: '1' }
-        }
-
-        // Execute the insert query
-        await sqlQueryUtils.executeTransaction([insertQuery])
-      }
-
-      // Generate booking ID in format DDMMYY-NNN
-      bookingId = `${dateFormatted}-${counter}`
+      bookingId = await itemModel.generateBookingId({ playDate: CourseInfo.playDate })
     }
 
     // Fix: Format date string for SQL Server
@@ -284,7 +233,7 @@ const saveBooking = async (bookingData) => {
       EntryDate: new Date().toISOString().split('T')[0], // Fix: Format date
       BookingDate: formatSqlDate(CourseInfo.playDate),
       CourseID: CourseInfo.courseId,
-      Session: getSession(CourseInfo.teeTime),
+      Session: CourseInfo.Session,
       TeeBox: CourseInfo.teeBox,
       Hole: CourseInfo.hole,
       Flight: CourseInfo.group,
@@ -340,12 +289,6 @@ const saveBooking = async (bookingData) => {
       error.message || 'Error saving booking'
     )
   }
-}
-
-// Helper function to determine session based on tee time
-const getSession = (teeTime) => {
-  const hour = parseInt(teeTime.split(':')[0])
-  return hour < 12 ? 'Morning' : 'Afternoon'
 }
 
 export const itemService = {
