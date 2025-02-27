@@ -8,14 +8,14 @@ import TeeTimeCell from './TeeTimeCell/TeeTimeCell'
 import { processItemUtils } from '~/utils/processItemUtils'
 import { updateBookingData } from '~/redux/socket/socketSlice'
 
-const FlightTableRow = React.memo(({ item, isBlock }) => {
+const FlightTableRow = React.memo(({ item, isBlock, Session }) => {
   // Mỗi booking(item) trong 1 flight có thể có 1 đến 3 group booking nên phải tách ra thành các group khác nhau để truy vấn chính xác, BookingIndices lưu vị trí của các guest thuộc cùng 1 group trong 1 flight
   const processedItem = processItemUtils.processItemFlightTable(item)
   const dispatch = useDispatch()
-
   const handlePlayerClick = (booking, bookingIndex) => {
     const bookingData = {
       flight: booking.Flight,
+      Session: Session,
       TeeBox: booking.TeeBox,
       teeTime: booking.TeeTime,
       bookMap: booking.children?.bookMap,

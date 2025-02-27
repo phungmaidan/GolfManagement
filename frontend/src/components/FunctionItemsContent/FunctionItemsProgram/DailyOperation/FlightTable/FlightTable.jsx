@@ -4,9 +4,8 @@ import FlightTableRow from './FlightTableRow/FlightTableRow'
 import { selectRoomData } from '~/redux/socket/socketSlice'
 import { useSelector } from 'react-redux'
 
-const FlightTable = ({ title, schedule }) => {
+const FlightTable = ({ title, schedule, Session }) => {
   const roomData = useSelector(selectRoomData)
-
   // Memoize blocked flights to prevent unnecessary recalculations
   const blockedFlightInfo = useMemo(() => {
     if (!roomData) return new Map()
@@ -36,6 +35,7 @@ const FlightTable = ({ title, schedule }) => {
                 <FlightTableRow
                   key={flightKey}
                   item={item}
+                  Session={Session}
                   isBlock={isBlock}
                 />
               )

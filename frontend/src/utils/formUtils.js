@@ -10,6 +10,7 @@ export const getDefaultFormValues = (bookingFlight, selectedCourse, selectedDate
     CourseInfo: {
       courseId: selectedCourse || '',
       teeBox: bookingFlight?.TeeBox || '',
+      Session: bookingFlight?.Session || '',
       teeTime: bookingFlight?.teeTime || '',
       playDate: selectedDate || '',
       group: bookMap.GroupName || '',
