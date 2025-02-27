@@ -3,7 +3,8 @@ import { env } from '~/config/environment'
 export const WHITELIST_DOMAINS = [
   'http://192.168.1.125:5173',
   'http://localhost:5173/',
-  'http://192.168.0.182:5173'
+  'http://192.168.0.182:5173',
+  'http://192.168.1.250:5173'
 ]
 
 
@@ -19,7 +20,7 @@ export const SESSION = {
 
 export const BOOKING_ITEM_FIELDS = {
   TEE_TIME_DETAILS: ['TeeBox', 'TeeTime', 'Flight', 'Status'],
-  BOOKING_INFO: ['BookingID', 'Session', 'TeeBox', 'Hole', 'Flight', 'TeeTime', 'GuestType', 'MemberNo', 'Name', 'ContactNo', 'Remark', 'RecordStatus', 'UserID', 'ContactPerson', 'Fax', 'Email', 'CreditCardNumber', 'CreditCardExpiry', 'GroupID', 'GroupName', 'SalesPerson', 'ReferenceID'],
+  BOOKING_INFO: ['BookingID', 'TeeBox', 'Hole', 'Flight', 'TeeTime', 'GuestType', 'MemberNo', 'Name', 'ContactNo', 'Remark', 'RecordStatus', 'UserID', 'ContactPerson', 'Fax', 'Email', 'CreditCardNumber', 'CreditCardExpiry', 'GroupID', 'GroupName', 'SalesPerson', 'ReferenceID'],
   BLOCK_BOOKING: ['TeeTime', 'Remark', 'Color'],
   PROCESSED_BOOKING: ['BookingID', 'Counter', 'GuestType', 'MemberNo', 'Name', 'ContactNo', 'GuestID', 'BagTag', 'CaddyNo', 'FolioID', 'LockerNo', 'BuggyNo']
 }

@@ -257,12 +257,10 @@ const saveBooking = async ({ bookingId, masterData, detailsData, execute = true 
         execute: false
       })
       queries.push({ sql: updateSql })
-
       // Delete existing details to replace with new ones
       queries.push({
         sql: `DELETE FROM FreBookingDetails WHERE BookingID = '${bookingId}'`
       })
-
     } else {
       // Insert new booking
       const insertSql = await sqlQueryUtils.insertRecord({
@@ -282,7 +280,7 @@ const saveBooking = async ({ bookingId, masterData, detailsData, execute = true 
       })
       return { sql: detailSql }
     }))
-    
+
     // Add the resolved detail queries to the main queries array
     queries.push(...detailsQueries)
 
@@ -291,6 +289,63 @@ const saveBooking = async ({ bookingId, masterData, detailsData, execute = true 
     return await sqlQueryUtils.executeTransaction(queries)
   } catch (error) {
     throw new ApiError(StatusCodes.NOT_ACCEPTABLE, error.message)
+  }
+}
+
+const generateBookingId = async ({ playDate }) => {
+  try {
+    console.log('date', playDate)
+    // Format date as DDMMYY for BookingID
+    const bookingDate = new Date(playDate)
+    const day = bookingDate.getDate().toString().padStart(2, '0')
+    const month = (bookingDate.getMonth() + 1).toString().padStart(2, '0')
+    const year = bookingDate.getFullYear().toString().slice(2, 4)
+    const dateFormatted = `${day}${month}${year}`
+
+    // Format date as YYYY-MM-DD for SQL compatibility
+    const dateStr = bookingDate.toISOString().split('T')[0]
+    
+    // Transaction to handle booking number
+    const queries = [
+      {
+        sql: 'SELECT Counter FROM FreBookingNumber WHERE ID = @dateStr',
+        params: { dateStr: dateStr }
+      }
+    ]
+
+    const results = await sqlQueryUtils.executeTransaction(queries)
+    let counter
+    let counterToUpdate
+    
+    if (results[0]?.length > 0) {
+      // Get existing counter
+      counter = (parseInt(results[0][0].Counter)).toString().padStart(3, '0')
+      counterToUpdate = (parseInt(counter) + 1).toString()
+      
+      // Update existing counter
+      const updateQuery = {
+        sql: 'UPDATE FreBookingNumber SET Counter = @counter WHERE ID = @dateStr',
+        params: { counter: counterToUpdate, dateStr: dateStr }
+      }
+
+      // Execute the update query
+      await sqlQueryUtils.executeTransaction([updateQuery])
+    } else {
+      // Insert new counter
+      counter = '001'
+      const insertQuery = {
+        sql: 'INSERT INTO FreBookingNumber (ID, Counter) VALUES (@dateStr, @counter)',
+        params: { dateStr: dateStr, counter: '1' }
+      }
+
+      // Execute the insert query
+      await sqlQueryUtils.executeTransaction([insertQuery])
+    }
+
+    // Generate booking ID in format DDMMYY-NNN
+    return `${dateFormatted}-${counter}`
+  } catch (error) {
+    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, `Error generating booking ID: ${error.message}`)
   }
 }
 
@@ -308,5 +363,6 @@ export const itemModel = {
   getFreFlightStatus,
   getHoleDescriptions,
   searchGuests,
-  saveBooking
+  saveBooking,
+  generateBookingId  // Add the new function to the export
 }

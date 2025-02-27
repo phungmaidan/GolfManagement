@@ -38,10 +38,12 @@ const DailyOperation = () => {
         <FlightTable
           title="Morning"
           schedule={MorningDetail}
+          Session="Morning"
         />
         <FlightTable
           title="Afternoon"
           schedule={AfternoonDetail}
+          Session="Afternoon"
         />
       </div>
     )

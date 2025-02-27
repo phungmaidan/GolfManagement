@@ -72,13 +72,13 @@ io.on('connection', (socket) => {
 
     // Send current room data to the client
     socket.emit('roomData', roomData[newRoomId])
-    console.log(`User ${userId} joined room ${newRoomId}:`, roomData)
+    // console.log(`User ${userId} joined room ${newRoomId}:`, roomData)
   })
 
   // Handle booking updates
   socket.on('updateBooking', ({ date, courseId, data }) => {
     const newRoomId = `${date}-${courseId}`
-    console.log('new data', data)
+    // console.log('new data', data)
     // Find and leave current room
     Object.keys(roomData).forEach(roomId => {
       const userIndex = roomData[roomId].findIndex(user => user.userId === userId)
@@ -113,7 +113,7 @@ io.on('connection', (socket) => {
 
     // Broadcast updates to all users in the new room
     io.to(newRoomId).emit('roomData', roomData[newRoomId])
-    console.log(`User ${userId} switched to room ${newRoomId}:`, roomData)
+    // console.log(`User ${userId} switched to room ${newRoomId}:`, roomData)
   })
 
   socket.on('disconnect', () => {
