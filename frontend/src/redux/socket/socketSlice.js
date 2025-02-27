@@ -17,12 +17,11 @@ let socket = null
 
 export const initializeSocket = createAsyncThunk(
   'socket/initialize',
-  async (accessToken, { dispatch, getState }) => {
+  async (_, { dispatch, getState }) => {
     if (!socket) {
       socket = io(API_ROOT, {
-        extraHeaders: {
-          token: accessToken
-        }
+        // Nếu client và server khác domain, cần bật withCredentials
+        withCredentials: true
       })
 
       socket.on('connect', () => {

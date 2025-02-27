@@ -294,7 +294,6 @@ const saveBooking = async ({ bookingId, masterData, detailsData, execute = true 
 
 const generateBookingId = async ({ playDate }) => {
   try {
-    console.log('date', playDate)
     // Format date as DDMMYY for BookingID
     const bookingDate = new Date(playDate)
     const day = bookingDate.getDate().toString().padStart(2, '0')
@@ -304,7 +303,7 @@ const generateBookingId = async ({ playDate }) => {
 
     // Format date as YYYY-MM-DD for SQL compatibility
     const dateStr = bookingDate.toISOString().split('T')[0]
-    
+
     // Transaction to handle booking number
     const queries = [
       {
@@ -316,12 +315,12 @@ const generateBookingId = async ({ playDate }) => {
     const results = await sqlQueryUtils.executeTransaction(queries)
     let counter
     let counterToUpdate
-    
+
     if (results[0]?.length > 0) {
       // Get existing counter
       counter = (parseInt(results[0][0].Counter)).toString().padStart(3, '0')
       counterToUpdate = (parseInt(counter) + 1).toString()
-      
+
       // Update existing counter
       const updateQuery = {
         sql: 'UPDATE FreBookingNumber SET Counter = @counter WHERE ID = @dateStr',
@@ -364,5 +363,5 @@ export const itemModel = {
   getHoleDescriptions,
   searchGuests,
   saveBooking,
-  generateBookingId  // Add the new function to the export
+  generateBookingId // Add the new function to the export
 }

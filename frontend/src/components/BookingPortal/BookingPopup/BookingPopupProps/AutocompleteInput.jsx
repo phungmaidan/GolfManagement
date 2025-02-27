@@ -15,7 +15,6 @@ const AutocompleteInput = ({
   const { searchTerm, setSearchTerm, suggestions, loading } = useGuestSearch('autocomplete')
   const inputRef = useRef(null)
   const dropdownRef = useRef(null)
-  
   const currentValue = watch(name) || ''
 
   // Initialize input with form value

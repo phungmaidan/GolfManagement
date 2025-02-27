@@ -35,11 +35,7 @@ const GuestNameInput = ({ index }) => {
         FullName: currentName,
         CardNumber: memberNo,
         GuestType: guestType,
-        GuestID: watch(`GuestList.${index}.GuestID`) || '', // Add this line
-        BagTag: watch(`GuestList.${index}.DailyNo`) || '',
-        CaddyNo: watch(`GuestList.${index}.Caddy`) || '',
-        BuggyNo: watch(`GuestList.${index}.BuggyNo`) || '',
-        LockerNo: watch(`GuestList.${index}.LockerNo`) || ''
+        GuestID: watch(`GuestList.${index}.GuestID`) || ''
       }
 
       // Set it as initial suggestion to prevent API call
@@ -74,13 +70,7 @@ const GuestNameInput = ({ index }) => {
     setValue(`GuestList.${index}.Name`, guest.FullName || guest.name)
     setValue(`GuestList.${index}.MemberNo`, guest.CardNumber || guest.id || '')
     setValue(`GuestList.${index}.GuestType`, guest.GuestType || guest.type || '')
-    setValue(`GuestList.${index}.DailyNo`, guest.BagTag || guest.dailyNo || '')
-    setValue(`GuestList.${index}.Caddy`, guest.CaddyNo || guest.caddy || '')
-    setValue(`GuestList.${index}.BuggyNo`, guest.BuggyNo || guest.buggyNo || '')
-    setValue(`GuestList.${index}.LockerNo`, guest.LockerNo || guest.lockerNo || '')
-
-    // Explicitly convert GuestID to string to avoid type errors
-    const guestId = guest.GuestID || guest.id || ''
+    const guestId = guest.GuestID || ''
     setValue(`GuestList.${index}.GuestID`, String(guestId))
 
     // Close dropdown

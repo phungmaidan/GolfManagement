@@ -6,8 +6,7 @@ import ApiError from '~/utils/ApiError'
 // Middleware này sẽ đảm nhiệm việc quan trọng: Xác thực cái JWT accessToken nhận được từ phía FE có hợp lệ hay không
 const isAuthorized = async (req, res, next) => {
   // Lấy accessToken nằm trong request cookies phía client - withCredentials trong file authorizeAxios
-  const authHeader = req.headers['authorization']
-  const clientAccessToken = authHeader?.split(' ')[1] // Lấy token từ 'Bearer'
+  const clientAccessToken = req.cookies?.accessToken
 
   // Nếu như clientAccessToken không tồn tại thì trả về lỗi
   if (!clientAccessToken) {

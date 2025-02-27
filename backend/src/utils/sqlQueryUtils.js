@@ -239,16 +239,13 @@ const updateRecord = async ({
     const updateSetClause = Object.keys(updateFields)
       .map(field => `${field} = @${field}`)
       .join(', ')
-    console.log('updateSetClause', updateSetClause)
     const sqlQuery = `
             UPDATE ${tableName}
             SET ${updateSetClause}
             ${where ? `WHERE ${where}` : ''}
             ${returnUpdated ? 'OUTPUT Inserted.*' : ''}
         `
-    console.log('params', params)
     const combinedParams = { ...params, ...updateFields }
-    console.log('combinedParams', combinedParams)
     if (!execute) {
       // Fix: Use combinedParams instead of just params
       return convertToQuery(sqlQuery, combinedParams)
