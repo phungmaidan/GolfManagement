@@ -34,6 +34,7 @@ function App() {
         {/* Authentication - No Layout */}
         <Route element={<Layout />}>
           <Route path='/login' element={<Auth />} />
+          <Route path='/guest-login' element={<Auth />} />
         </Route>
         {/* 404 Not Found - No Layout */}
         <Route path='*' element={<NotFound />} />

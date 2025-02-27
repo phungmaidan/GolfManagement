@@ -21,11 +21,7 @@ let authorizedAxiosInstance = axios.create()
 authorizedAxiosInstance.defaults.timeout = 1000 * 60 * 10
 
 // withCredentials: Sẽ cho phép axios tự động gửi cookie trong mỗi request lên BE (phục vụ cho việc lưu JWT tokens (refresh & acess) vào trong httpOnly Cookie của trình duyệt)
-//authorizedAxiosInstance.defaults.withCredentials = true
-
-// 👉 Hàm lấy accessToken từ Redux store
-const getAccessToken = () => axiosReduxStore.getState().user.accessToken
-
+authorizedAxiosInstance.defaults.withCredentials = true
 
 /**
  * Cấu hình Interceptors (Bộ đánh chặn vào giữa mọi Request & Response)
@@ -35,8 +31,6 @@ authorizedAxiosInstance.interceptors.request.use((config) => {
   // Do something before request is sent
   // Kỹ thuật chăn spam click
   interceptorLoadingElements(true)
-  const token = getAccessToken()
-  if (token) config.headers.Authorization = `Bearer ${token}` // Gắn accessToken vào header
   return config
 }, (error) => {
   // Do something with request error
@@ -83,13 +77,8 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
     if (!refreshTokenPromise) {
       refreshTokenPromise = refreshTokenAPI()
         .then(data => {
-          const newAccessToken = data?.accessToken
-          if (newAccessToken) {
-            // 🎯 Lưu token mới vào Redux store
-            axiosReduxStore.dispatch({ type: 'user/updateAccessToken', payload: newAccessToken })
-            return newAccessToken
-          }
-          throw new Error('Không lấy được accessToken mới!')
+          // Đồng thời accessToken đã nằm trong httpOnly cookie (xử lý từ phía BE)
+          return data?.accessToken
         })
         .catch((_error) => {
           // Nếu nhận bất kỳ lỗi nào từ api refresh token thì logout luôn
@@ -113,7 +102,6 @@ authorizedAxiosInstance.interceptors.response.use((response) => {
       */
 
       // Bước 2: Bước Quan trọng: Return lại axios instance của chúng ta kết hợp các originalRequests để gọi lại những api ban đầu bị lỗi
-      originalRequests.headers.Authorization = `Bearer ${newAccessToken}`
       return authorizedAxiosInstance(originalRequests) // Gọi lại request ban đầu
     })
   }

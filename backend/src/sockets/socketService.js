@@ -17,21 +17,39 @@ const io = new Server(httpServer, {
 const roomData = {} // { 'date-courseID': [{userId, data}] }
 
 io.use(async (socket, next) => {
-  //console.log('A user is trying to connect:', socket.id)
-  const { token } = socket.handshake.headers
-  if (token) {
-    try {
-      const decoded = await JwtProvider.verifyToken(token, env.ACCESS_TOKEN_SECRET_SIGNATURE)
-      if (!decoded._id) {
-        return next(new Error('Invalid token'))
+  try {
+    const cookieString = socket.handshake.headers.cookie
+    // Parse the cookie string to get the accessToken
+    if (cookieString) {
+      const cookies = cookieString.split('; ').reduce((acc, cookie) => {
+        const [name, value] = cookie.split('=')
+        acc[name] = value
+        return acc
+      }, {})
+
+      const accessToken = cookies.accessToken
+
+      if (accessToken) {
+        try {
+          const decoded = await JwtProvider.verifyToken(accessToken, env.ACCESS_TOKEN_SECRET_SIGNATURE)
+          if (!decoded._id) {
+            return next(new Error('Invalid token'))
+          }
+          socket.handshake.query.userId = decoded._id
+          console.log('User authenticated:', decoded._id)
+          return next()
+        } catch (error) {
+          return next(new Error('Token validation failed: ' + error.message))
+        }
       }
-      socket.handshake.query.userId = decoded._id
-      //console.log('===> This user is verified and connected!!!')
-    } catch (error) {
-      return next(new Error(error))
     }
+
+    // If we reached here, no valid token found
+    return next(new Error('Authentication required'))
+  } catch (error) {
+    console.error('Socket authentication error:', error)
+    return next(new Error('Authentication error'))
   }
-  next()
 })
 
 io.on('connection', (socket) => {
@@ -72,7 +90,7 @@ io.on('connection', (socket) => {
 
     // Send current room data to the client
     socket.emit('roomData', roomData[newRoomId])
-    // console.log(`User ${userId} joined room ${newRoomId}:`, roomData)
+    console.log(`User ${userId} joined room ${newRoomId}:`, roomData)
   })
 
   // Handle booking updates
@@ -113,7 +131,7 @@ io.on('connection', (socket) => {
 
     // Broadcast updates to all users in the new room
     io.to(newRoomId).emit('roomData', roomData[newRoomId])
-    // console.log(`User ${userId} switched to room ${newRoomId}:`, roomData)
+    console.log(`User ${userId} switched to room ${newRoomId}:`, roomData)
   })
 
   socket.on('disconnect', () => {

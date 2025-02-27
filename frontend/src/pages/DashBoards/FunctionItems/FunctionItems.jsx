@@ -3,17 +3,16 @@ import FunctionItemsProgram from '~/components/FunctionItemsContent/FunctionItem
 import FunctionItemsTitle from '~/components/FunctionItemsContent/FunctionItemsTitle/FunctionItemsTitle'
 import { useDispatch, useSelector } from 'react-redux'
 import BookingPortal from '~/components/BookingPortal/BookingPortal'
-import { initializeSocket } from '~/redux/socket/socketSlice'
-import { selectFunctionItemsState } from '~/redux/selectors/functionItemsSelectors'
+import { initializeSocket, selectConnectionStatus } from '~/redux/socket/socketSlice'
 
 const FunctionItems = () => {
-  // Use memoized selector
-  const { accessToken, isConnected } = useSelector(selectFunctionItemsState)
+  // Use connection status selector directly from socketSlice
+  const isConnected = useSelector(selectConnectionStatus)
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(initializeSocket(accessToken))
-  }, [dispatch, accessToken])
+    dispatch(initializeSocket())
+  }, [dispatch]) // Remove accessToken from dependencies
 
   const connectionMessage = useMemo(() => {
     if (isConnected) {

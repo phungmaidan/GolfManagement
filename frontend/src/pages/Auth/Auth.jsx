@@ -2,11 +2,12 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import Login from './Login'
-import styles from './Auth.module.css'
+import GuestLogin from './GuestLogin'
 
 function Auth() {
   const location = useLocation()
   const isLogin = location.pathname === '/login'
+  const isGuestLogin = location.pathname === '/guest-login'
   const currentUser = useSelector(selectCurrentUser)
 
   if (currentUser) {
@@ -14,35 +15,39 @@ function Auth() {
   }
 
   return (
-    <>
-      <div className={'min-h-screen relative flex items-center justify-center px-4'}>
-        <div className="max-w-4xl w-full flex flex-col lg:flex-row items-center gap-8">
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="max-w-5xl w-full bg-white rounded-xl shadow-xl overflow-hidden">
+        <div className="flex flex-col lg:flex-row">
           {/* Left side - Login form */}
-          <div className="w-full max-w-sm mx-auto">
-            {isLogin && <Login />}
+          <div className="w-full lg:w-1/2 px-8 py-12 flex items-center justify-center">
+            <div className="w-full max-w-sm">
+              {isLogin && <Login />}
+              {isGuestLogin && <GuestLogin />}
+            </div>
           </div>
 
           {/* Right side - Image and text */}
-          <div className="flex-1 hidden lg:block">
-            <div className={styles.imageWrapper}>
-              <img
-                src="https://media.istockphoto.com/id/465611306/vi/anh/golf-ball-g%E1%BA%A7n-l%E1%BB%97.jpg?s=612x612&w=0&k=20&c=sBdkhD3D7gLqivXskF517nIwzbROVMzkk4kNPPhqiXA="
-                alt="Luxury Golf"
-                className="w-full h-[480px] object-cover" // Reduced height
-              />
-              <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-golf-green-900/90 to-transparent">
-                <h3 className={`${styles.welcomeTitle} text-luxury-gold-300 text-2xl font-bold mb-2`}>
-              Welcome to GolfOne
-                </h3>
-                <p className="text-luxury-gold-50 text-base">
-              Experience luxury and excellence in every swing
-                </p>
-              </div>
+          <div className="w-full lg:w-1/2 relative hidden lg:block">
+            <div className="absolute inset-0 bg-gradient-to-br from-golf-green-700 to-golf-green-900 opacity-90 z-10"></div>
+            <img
+              src="https://media.istockphoto.com/id/465611306/vi/anh/golf-ball-g%E1%BA%A7n-l%E1%BB%97.jpg?s=612x612&w=0&k=20&c=sBdkhD3D7gLqivXskF517nIwzbROVMzkk4kNPPhqiXA="
+              alt="Luxury Golf"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="relative z-20 h-full flex flex-col justify-end p-12">
+              <h3 className="font-serif text-luxury-gold-300 text-3xl font-bold mb-4">
+                {isGuestLogin ? 'Guest Access to GolfOne' : 'Welcome to GolfOne'}
+              </h3>
+              <p className="text-luxury-gold-50 text-lg">
+                {isGuestLogin 
+                  ? 'Quick access for guest players and visitors' 
+                  : 'Experience luxury and excellence in every swing'}
+              </p>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
