@@ -7,6 +7,8 @@ import { API_ROOT } from '~/utils/constants'
 // Khởi tạo giá trị của một cái Slice trong Redux
 const initialState = {
   currentUser: null,
+  isActive: false,
+  isStaff: false,
   userDetails: null,
   accessToken: null,
   userModule: []
@@ -41,6 +43,15 @@ export const logoutUserAPI = createAsyncThunk(
   }
 )
 
+export const loginGuestAPI = createAsyncThunk(
+  'guest/loginGuestAPI',
+  async (data) => {
+    const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/guests/login`, data)
+    // Lưu ý axios sẽ trả kết quả về qua property của nó là data
+    return response.data
+  }
+)
+
 // Khởi tạo một cái Slice trong kho lưu trữ - Redux Store
 export const userSlice = createSlice({
   name: 'user',
@@ -53,6 +64,8 @@ export const userSlice = createSlice({
       // action.payload ở đây chính là response.data trả về ở trên
       state.currentUser = action.payload?.ID
       state.accessToken = action.payload?.accessToken
+      state.isActive = action.payload?.Active
+      state.isStaff = true
       state.userDetails = action.payload
       state.userModule = action.payload?.userModule
     })
@@ -63,6 +76,8 @@ export const userSlice = createSlice({
              */
       state.accessToken = null
       state.userModule = []
+      state.isActive = false
+      state.isStaff = false
       state.userDetails = null
       state.currentUser = null
     })
@@ -70,10 +85,17 @@ export const userSlice = createSlice({
       const user = action.payload
       state.userModule = user.accessToken
       state.accessToken = user.accessToken
+      state.isActive = true
+      state.isStaff = true
       state.userDetails = user.user
       state.currentUser = user
     })
-
+    builder.addCase(loginGuestAPI.fulfilled, (state, action) => {
+      state.currentUser = action.payload?.GuestID
+      state.accessToken = action.payload?.accessToken
+      state.isActive = action.payload?.AccountStatus
+      state.userDetails = action.payload
+    })
   }
 })
 
@@ -91,6 +113,12 @@ export const selectUserModule = (state) => {
 }
 export const selectUserDetails = (state) => {
   return state.user.userDetails
+}
+export const selectIsActiveAccount = (state) => {
+  return state.user.isActive
+}
+export const selectIsStaff = (state) => {
+  return state.user.isStaff
 }
 export const selectAccessToken = (state) => {
   return state.user.accessToken

@@ -24,3 +24,11 @@ export const BOOKING_ITEM_FIELDS = {
   BLOCK_BOOKING: ['TeeTime', 'Remark', 'Color'],
   PROCESSED_BOOKING: ['BookingID', 'Counter', 'GuestType', 'MemberNo', 'Name', 'ContactNo', 'GuestID', 'BagTag', 'CaddyNo', 'FolioID', 'LockerNo', 'BuggyNo']
 }
+
+export const ACCOUNT_STATUS = {
+  INACTIVE: 0,
+  ACTIVE: 1,
+  SUSPENDED: 2,
+  DELETED: 3,
+  EXPIRED: 4
+}

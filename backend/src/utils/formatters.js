@@ -33,6 +33,17 @@ export const pickUser = (user) => {
   ])
 }
 
+// Lấy một vài dữ liệu cụ thể trong Guest để tránh việc trả về các dữ liệu nhạy cảm như hash password
+export const pickGuest = (Guest) => {
+  if (!Guest) return {}
+  return pick(Guest, [
+    'GuestID',
+    'Username',
+    'AccountStatus',
+    'DisplayName'
+  ])
+}
+
 export const TeeTimeUtils = {
   formatTime: (isoString) => {
     const date = new Date(isoString)

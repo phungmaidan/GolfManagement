@@ -1,19 +1,16 @@
 import React from 'react'
-import SideBar from '~/components/DashBoardsContent/SideBar/SideBar'
-import MainContent from '~/components/DashBoardsContent/MainContent/MainContent'
-import Header from '~/components/Header/Header'
-import Footer from '~/components/Footer/Footer'
+
+import { useSelector } from 'react-redux'
+import { selectIsStaff } from '~/redux/user/userSlice'
+import StaffDashBoard from './StaffDashBoard/StaffDashBoard'
+import GuestDashBoard from './Guest/GuestDashBoard'
 
 const Dashboard = () => {
+  const isStaff = useSelector(selectIsStaff)
   return (
-    <div className="flex min-h-screen overflow-hidden">
-      {/* Sidebar */}
-      <SideBar />
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <MainContent />
-      </div>
-    </div>
+    <>
+      {isStaff ? <StaffDashBoard /> : <GuestDashBoard />}
+    </>
   )
 }
 

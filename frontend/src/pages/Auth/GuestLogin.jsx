@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { loginUserAPI } from '~/redux/user/userSlice'
+import { loginGuestAPI } from '~/redux/user/userSlice'
 
 function GuestLogin() {
   const dispatch = useDispatch()
@@ -17,13 +17,10 @@ function GuestLogin() {
     setError(null)
 
     try {
-      // Gọi API đăng nhập với vai trò khách
-      await dispatch(loginUserAPI({
+      await dispatch(loginGuestAPI({
         account: guestId,
-        password: guestPassword,
-        isGuest: true // Flag để backend biết đây là guest login
-      })).unwrap()
-
+        password: guestPassword
+      }))
       navigate('/')
     } catch (err) {
       setError('Invalid guest credentials. Please try again.')
@@ -110,11 +107,8 @@ function GuestLogin() {
       <div className="text-center">
         <button
           onClick={handleLoginInstead}
-          className="inline-flex items-center justify-center text-white hover:text-luxury-gold-100 cursor-pointer font-medium transition-colors"
+          className="w-full py-2.5 px-4 border border-luxury-gold-400 text-luxury-gold-300 rounded-md hover:bg-golf-green-600 transition-colors duration-300 font-medium text-center cursor-pointer"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
           Sign in for Staff Account
         </button>
       </div>
