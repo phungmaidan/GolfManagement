@@ -3,7 +3,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { selectIsStaff } from '~/redux/user/userSlice'
 import StaffDashBoard from './StaffDashBoard/StaffDashBoard'
-import GuestDashBoard from './Guest/GuestDashBoard'
+import GuestDashBoard from './GuestDashBoard/GuestDashBoard'
 
 const Dashboard = () => {
   const isStaff = useSelector(selectIsStaff)

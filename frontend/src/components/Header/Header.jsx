@@ -11,7 +11,6 @@ const Header = ({ logo }) => {
   const isAuthenticated = useSelector(selectIsActiveAccount)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const userMenuRef = useRef(null)
-
   const menuItems = [
     { title: 'Trang chủ', path: 'https://songbegolf.com.vn/', icon: <Home size={20} />, external: true },
     { title: 'Đặt lịch', path: 'dashboards/daily-operation', icon: <Calendar size={20} /> }

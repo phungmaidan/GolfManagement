@@ -6,6 +6,7 @@ import { moduleReducer } from './module/moduleSlice'
 import { bookingReducer } from './booking/bookingSlice'
 import { bookingFlightReducer } from './bookingFlight/bookingFlightSlice'
 import { socketReducer } from './socket/socketSlice'
+import { guestReducer } from './guest/guestSlice'
 /**
  * Cấu hình redux-persist
  * https://www.npmjs.com/package/redux-persist
@@ -21,7 +22,7 @@ import storage from 'redux-persist/lib/storage' // default là localstorage
 const rootPersistConfig = {
   key: 'root', // key của persist do chúng ta chỉ định, để mặc định là root
   storage: storage, // Biến storage ở trên - lưu vào localstorage
-  whitelist: ['user', 'module', 'booking', 'socket'] // định nghĩa các slice dữ liệu ĐƯỢC PHÉP duy trì qua mỗi lần f5 trình duyệt
+  whitelist: ['user', 'module', 'booking', 'socket', 'guest'] // định nghĩa các slice dữ liệu ĐƯỢC PHÉP duy trì qua mỗi lần f5 trình duyệt
   // blacklist: ['user'] // định nghĩa các slice KHÔNG ĐƯỢC PHÉP duy trì qua mỗi lần f5 trình duyệt
 }
 
@@ -32,7 +33,8 @@ const reducers = combineReducers({
   module: moduleReducer,
   booking: bookingReducer,
   socket: socketReducer,
-  bookingFlight: bookingFlightReducer
+  bookingFlight: bookingFlightReducer,
+  guest: guestReducer
 })
 
 // Thực hiện persist Reducer

@@ -29,6 +29,27 @@ const login = async (req, res, next) => {
   }
 }
 
+const getSchedule = async (req, res, next) => {
+  try {
+    const { CourseID, date } = req.query
+    const result = await guestService.getSchedule(CourseID, date)
+    res.status(StatusCodes.OK).json(result)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const saveBooking = async (req, res, next) => {
+  try {
+    const result = await guestService.saveBooking(req.body)
+    res.status(StatusCodes.OK).json(result)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const guestController = {
-  login
+  login,
+  saveBooking,
+  getSchedule
 }

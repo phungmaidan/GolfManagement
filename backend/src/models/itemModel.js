@@ -55,7 +55,7 @@ const fetchTeeTimeMaster = async ({ CourseID, txnDate, TemplateID, fields = ['*'
   return teeTimeMasterResult
 }
 
-const fetchTeeTimeDetails = async ({ CourseID, txnDate, Session, fields = ['*'], execute = true }) => {
+const fetchTeeTimeDetailsBySession = async ({ CourseID, txnDate, Session, fields = ['*'], execute = true }) => {
   return await sqlQueryUtils.queryBuilder({
     tableName: 'FreTeeTimeDetails',
     fields: fields,
@@ -330,7 +330,7 @@ export const itemModel = {
   getCourseByDate,
   fetchTemplateOfDay,
   fetchTeeTimeMaster,
-  fetchTeeTimeDetails,
+  fetchTeeTimeDetailsBySession,
   fetchTemplateMaster,
   getBookingInfo,
   getFreBlockBooking,
@@ -340,5 +340,5 @@ export const itemModel = {
   getHoleDescriptions,
   searchGuests,
   saveBooking,
-  generateBookingId // Add the new function to the export
+  generateBookingId
 }

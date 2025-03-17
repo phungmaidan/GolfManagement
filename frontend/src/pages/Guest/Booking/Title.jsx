@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 function Title() {
   return (
-    <div className="flex ml-10 items-center gap-6 animation-show">
+    <div className="flex items-center gap-6 animation-show">
       <Link
         to="/dashboards"
         className="no-underline"

@@ -74,19 +74,16 @@ const bookingSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getCouseAPI.pending, (state) => {
-        console.log('getCourseAPI pending')
         state.statusGetCourse = 'loading'
         state.errorGetCourse = null
       })
       .addCase(getCouseAPI.fulfilled, (state, { payload }) => {
-        console.log('getCourseAPI fulfilled', payload)
         state.statusGetCourse = 'succeeded'
         state.courseList = payload.courses
         state.selectedCourse = state.courseList[0].CourseID
         state.selectedDate = payload.date // Cập nhật selectedDate
       })
       .addCase(getCouseAPI.rejected, (state, { payload }) => {
-        console.log('getCourseAPI rejected', payload)
         state.statusGetCourse = 'failed'
         state.errorGetCourse = payload
         state.courseList = null

@@ -3,10 +3,11 @@ import { guestModel } from '~/models/guestModel'
 import ApiError from '~/utils/ApiError'
 import { StatusCodes } from 'http-status-codes'
 import bcryptjs from 'bcryptjs'
-import { pickGuest } from '~/utils/formatters'
+import { getDayOfWeek, pickGuest } from '~/utils/formatters'
 import { env } from '~/config/environment'
 import { JwtProvider } from '~/providers/JwtProvider'
 import { ACCOUNT_STATUS } from '~/utils/constants'
+import { itemModel } from '~/models/itemModel'
 const login = async (reqBody) => {
   try {
     const existGuest = await guestModel.findOneByAccount({
@@ -23,7 +24,11 @@ const login = async (reqBody) => {
     }
 
     const guestInfo = { _id: existGuest.GuestID, _username: existGuest.Username }
-
+    const guestDetail = await guestModel.getGuestDetail({
+      guestId: existGuest.GuestID,
+      fields: ['*'],
+      execute: true
+    })
     const accessToken = await JwtProvider.generateToken(
       guestInfo,
       env.ACCESS_TOKEN_SECRET_SIGNATURE,
@@ -36,7 +41,7 @@ const login = async (reqBody) => {
       env.REFRESH_TOKEN_LIFE
     )
 
-    return { accessToken, refreshToken, ...pickGuest(existGuest) }
+    return { accessToken, refreshToken, ...pickGuest(existGuest), guestDetail }
 
   } catch (error) { throw error }
 }
@@ -62,7 +67,85 @@ const refreshToken = async (clientRefreshToken) => {
   } catch (error) { throw error }
 }
 
+const getSchedule = async (CourseID, date) => {
+  try {
+    const dateOfWeek = getDayOfWeek(date)
+    const fetchTemplate = await itemModel.fetchTemplateOfDay({
+      CourseID: CourseID,
+      fields: [dateOfWeek],
+      execute: true
+    })
+    const TemplateID = fetchTemplate[dateOfWeek]
+    if (!TemplateID) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        `No template found for course ${CourseID} on ${dateOfWeek}`
+      )
+    }
+
+    // First call to create/fetch tee time data
+    let TeeTimeInfo = await itemModel.fetchTeeTimeMaster({
+      CourseID: CourseID,
+      txnDate: date,
+      TemplateID: TemplateID,
+      execute: true
+    })
+
+    // Add retry logic with delay to ensure data is created
+    let retryCount = 0
+    const maxRetries = 3
+    const delayMs = 1000 // 1 second delay
+
+    while ((!TeeTimeInfo || TeeTimeInfo.length === 0) && retryCount < maxRetries) {
+      await new Promise(resolve => setTimeout(resolve, delayMs))
+
+      TeeTimeInfo = await itemModel.fetchTeeTimeMaster({
+        CourseID: CourseID,
+        txnDate: date,
+        TemplateID: TemplateID,
+        execute: true
+      })
+
+      retryCount++
+    }
+
+    if (!TeeTimeInfo || TeeTimeInfo.length === 0) {
+      throw new ApiError(
+        StatusCodes.NOT_FOUND,
+        `No tee time information found for course ${CourseID} on ${date} after ${maxRetries} attempts`
+      )
+    }
+
+    const MorningSession = await itemModel.fetchTeeTimeDetailsBySession({
+      CourseID: CourseID,
+      txnDate: date,
+      Session: 'Morning',
+      execute: true
+    })
+
+    const AfternoonSession = await itemModel.fetchTeeTimeDetailsBySession({
+      CourseID: CourseID,
+      txnDate: date,
+      Session: 'Afternoon',
+      execute: true
+    })
+
+    return {
+      MorningSession: MorningSession,
+      AfternoonSession: AfternoonSession
+    }
+  } catch (error) { throw error }
+}
+
+const saveBooking = async (bookingData) => {
+  // const bookingId = await itemModel.generateBookingId({ playDate: bookingData.playDate })
+  // const booking = await itemModel.saveBooking({ bookingId, ...bookingData })
+  return bookingData
+}
+
 export const guestService = {
   login,
-  refreshToken
+  refreshToken,
+  saveBooking,
+  getSchedule
 }

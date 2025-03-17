@@ -94,7 +94,11 @@ export const userSlice = createSlice({
       state.currentUser = action.payload?.GuestID
       state.accessToken = action.payload?.accessToken
       state.isActive = action.payload?.AccountStatus
-      state.userDetails = action.payload
+      state.userDetails = {
+        GuestInfo: action.payload?.guestDetail,
+        DisplayName: action.payload?.DisplayName,
+        Username: action.payload?.username
+      }
     })
   }
 })

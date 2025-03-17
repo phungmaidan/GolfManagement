@@ -27,7 +27,7 @@ function GuestDashBoard() {
       {/* Weather Widget */}
       <div className="mb-8">
         <h1 className="text-3xl text-luxury-gold-100 font-bold text-left py-6">Welcome, {guestName}</h1>
-        <div className="bg-gradient-to-r from-green-700 to-green-500 rounded-xl overflow-hidden shadow-lg">
+        <div className="bg-gradient-to-r from-green-700 to-green-600 rounded-xl overflow-hidden shadow-lg">
           <div className="p-6 text-white">
             <div className="flex justify-between items-center">
               <div>

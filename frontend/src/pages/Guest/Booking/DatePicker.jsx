@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { DateTime } from 'luxon'
+import { useDispatch } from 'react-redux'
+import { setSelectedDate, setSelectedCourse, setSelectedTimeSlot } from '~/redux/guest/guestSlice'
 
-const DatePicker = ({ onSelect, initialDate = null, minDate = null }) => {
+const DatePicker = ({ initialDate = null, minDate = null }) => {
+  const dispatch = useDispatch()
   const today = DateTime.now().startOf('day')
   const [currentMonth, setCurrentMonth] = useState(initialDate ? DateTime.fromJSDate(initialDate) : today)
-  const [selectedDate, setSelectedDate] = useState(initialDate ? DateTime.fromJSDate(initialDate) : today)
+  const [selectedDate, setLocalSelectedDate] = useState(initialDate ? DateTime.fromJSDate(initialDate) : today)
   const [animationDirection, setAnimationDirection] = useState(null)
 
   // Set minimum date to today if not provided
@@ -21,8 +24,10 @@ const DatePicker = ({ onSelect, initialDate = null, minDate = null }) => {
   }
 
   const handleDateSelect = (date) => {
-    setSelectedDate(date)
-    onSelect(date.toJSDate())
+    setLocalSelectedDate(date)
+    dispatch(setSelectedDate(date.toJSDate()))
+    dispatch(setSelectedTimeSlot(null))
+    dispatch(setSelectedCourse(null))
   }
 
   const handleMonthYearSelect = (event) => {
@@ -85,8 +90,8 @@ const DatePicker = ({ onSelect, initialDate = null, minDate = null }) => {
   const calendarDays = getCalendarDays()
 
   return (
-    <div className="w-full max-w-md mx-auto mt-6 mb-8 bg-white rounded-lg shadow-lg overflow-hidden animate-fadeIn">
-      <div className="bg-[linear-gradient(135deg,var(--luxury-gold-500)_0%,var(--luxury-gold-600)_100%)] text-white p-4">
+    <div className="mx-auto bg-white rounded-lg shadow-lg overflow-hidden animate-fadeIn">
+      <div className="bg-[linear-gradient(135deg,var(--luxury-gold-500)_0%,var(--luxury-gold-600)_100%)] h-15 text-white p-4">
         <div className="flex items-center justify-between">
           <button
             onClick={handlePreviousMonth}
@@ -110,7 +115,7 @@ const DatePicker = ({ onSelect, initialDate = null, minDate = null }) => {
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-4 h-75">
         <div className="grid grid-cols-7 gap-1 mb-2">
           {weekdays.map(day => (
             <div key={day} className="text-center text-sm font-medium text-gray-600">
