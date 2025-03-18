@@ -48,10 +48,10 @@ function TopNavigation() {
                 duration-300 
                 relative
                 ${
-                  selectedModule?.ModuleID === item.ModuleID
-                    ? 'text-luxury-gold-500 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-luxury-gold-500'
-                    : 'text-golf-green-800 hover:text-luxury-gold-400 hover:scale-105'
-                }
+            selectedModule?.ModuleID === item.ModuleID
+              ? 'text-luxury-gold-500 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-luxury-gold-500'
+              : 'text-golf-green-800 hover:text-luxury-gold-400 hover:scale-105'
+            }
               `}
               onClick={() => handleModuleClick(item)}
             >

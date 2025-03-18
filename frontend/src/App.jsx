@@ -10,6 +10,7 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 import Layout from './components/Layout/Layout'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import Booking from './pages/Guest/Booking/Booking'
 
 function App() {
   const currentUser = useSelector(selectCurrentUser)
@@ -27,6 +28,7 @@ function App() {
         <Route element={<ProtectedRoute user={currentUser} />}>
           <Route element={<Layout />}>
             <Route path='/dashboards' element={<DashBoards />} />
+            <Route path='/booking' element={<Booking />} />
             <Route path='/dashboards/:slug' element={<FunctionItems />} />
           </Route>
         </Route>

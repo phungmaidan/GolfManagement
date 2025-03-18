@@ -1,17 +1,16 @@
-import React, { useState, useEffect, useRef, act } from 'react'
+import React, { useState, useEffect, useRef, act, use } from 'react'
 import { Home, LogOut, Calendar, User } from 'lucide-react'
 import { useSelector, useDispatch } from 'react-redux'
-import { logoutUserAPI, selectUserDetails } from '~/redux/user/userSlice'
+import { logoutUserAPI, selectIsActiveAccount, selectUserDetails } from '~/redux/user/userSlice'
 import { Link, useNavigate } from 'react-router-dom'
 
 const Header = ({ logo }) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const userDetails = useSelector(selectUserDetails)
-  const isAuthenticated = userDetails?.Active
+  const isAuthenticated = useSelector(selectIsActiveAccount)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const userMenuRef = useRef(null)
-
   const menuItems = [
     { title: 'Trang chủ', path: 'https://songbegolf.com.vn/', icon: <Home size={20} />, external: true },
     { title: 'Đặt lịch', path: 'dashboards/daily-operation', icon: <Calendar size={20} /> }
@@ -94,7 +93,7 @@ const Header = ({ logo }) => {
                 {isUserMenuOpen && (
                   <div className="absolute top-full right-0 mt-1 w-48 py-2 bg-white shadow-lg rounded-lg z-10">
                     <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="font-medium text-gray-800">{userDetails?.Name || 'Người dùng'}</p>
+                      <p className="font-medium text-gray-800">{userDetails?.Name || userDetails?.DisplayName || 'Người dùng'}</p>
                       <p className="text-sm text-gray-500">{userDetails?.Email}</p>
                     </div>
                     <button

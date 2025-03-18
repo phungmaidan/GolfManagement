@@ -55,7 +55,7 @@ const fetchTeeTimeMaster = async ({ CourseID, txnDate, TemplateID, fields = ['*'
   return teeTimeMasterResult
 }
 
-const fetchTeeTimeDetails = async ({ CourseID, txnDate, Session, fields = ['*'], execute = true }) => {
+const fetchTeeTimeDetailsBySession = async ({ CourseID, txnDate, Session, fields = ['*'], execute = true }) => {
   return await sqlQueryUtils.queryBuilder({
     tableName: 'FreTeeTimeDetails',
     fields: fields,
@@ -71,7 +71,7 @@ const fetchTeeTimeDetails = async ({ CourseID, txnDate, Session, fields = ['*'],
 
 const fetchTemplateOfDay = async ({ CourseID, fields = ['Top 1 *'], execute = true }) => {
   const result = await sqlQueryUtils.queryBuilder({
-    tableName: 'FreTemplateofDay',
+    tableName: 'FreTemplateOfDay',
     fields: fields,
     where: 'CourseID = @CourseID',
     params: { CourseID: CourseID },
@@ -142,28 +142,6 @@ const getCourseByDate = async ({ date, fields = ['CourseID', 'Name'], execute = 
     })
   } catch (error) {
     throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Database query ComCourseMaster by date failed: ' + error.message)
-  }
-}
-
-const getCountTotalInfoCourse = async ({ bookingDate, courseId, execute = true }) => {
-  try {
-    return await sqlQueryUtils.queryBuilder({
-      tableName: 'BookingTable',
-      fields: ['ISNULL(COUNT(DISTINCT TeeTime), 0) AS TotalCount'],
-      where: `
-        BookingDate = @BookingDate
-        AND CourseID = @CourseID
-        AND (RecordStatus IS NULL OR RecordStatus = 'Registered')
-        AND Session IN ('Morning', 'Afternoon')
-      `,
-      params: {
-        BookingDate: bookingDate,
-        CourseID: courseId
-      },
-      execute: execute
-    })
-  } catch (error) {
-    throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Database query getCountTotalInfoCourse failed: ' + error.message)
   }
 }
 
@@ -352,16 +330,15 @@ export const itemModel = {
   getCourseByDate,
   fetchTemplateOfDay,
   fetchTeeTimeMaster,
-  fetchTeeTimeDetails,
+  fetchTeeTimeDetailsBySession,
   fetchTemplateMaster,
   getBookingInfo,
   getFreBlockBooking,
   fetchBookingDetails,
-  getCountTotalInfoCourse,
   getComGuestType,
   getFreFlightStatus,
   getHoleDescriptions,
   searchGuests,
   saveBooking,
-  generateBookingId // Add the new function to the export
+  generateBookingId
 }

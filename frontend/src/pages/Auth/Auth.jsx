@@ -3,12 +3,25 @@ import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 import Login from './Login'
 import GuestLogin from './GuestLogin'
+import { useState, useEffect } from 'react'
 
 function Auth() {
   const location = useLocation()
   const isLogin = location.pathname === '/login'
   const isGuestLogin = location.pathname === '/guest-login'
   const currentUser = useSelector(selectCurrentUser)
+  const [animateClass, setAnimateClass] = useState('')
+
+  // Handle animation when route changes
+  useEffect(() => {
+    setAnimateClass('opacity-0 -translate-x-6')
+
+    const timer = setTimeout(() => {
+      setAnimateClass('opacity-100 translate-x-0')
+    }, 150)
+
+    return () => clearTimeout(timer)
+  }, [location.pathname])
 
   if (currentUser) {
     return <Navigate to='/' replace={true} />
@@ -16,11 +29,11 @@ function Auth() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-5xl w-full bg-white rounded-xl shadow-xl overflow-hidden">
+      <div className="max-w-5xl w-full  lg:bg-white rounded-xl lg:shadow-xl overflow-hidden">
         <div className="flex flex-col lg:flex-row">
           {/* Left side - Login form */}
           <div className="w-full lg:w-1/2 px-8 py-12 flex items-center justify-center">
-            <div className="w-full max-w-sm">
+            <div className={`w-full max-w-sm transform transition-all duration-300 ease-out ${animateClass}`}>
               {isLogin && <Login />}
               {isGuestLogin && <GuestLogin />}
             </div>
@@ -35,12 +48,12 @@ function Auth() {
               className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="relative z-20 h-full flex flex-col justify-end p-12">
-              <h3 className="font-serif text-luxury-gold-300 text-3xl font-bold mb-4">
+              <h3 className={`font-serif text-luxury-gold-300 text-3xl font-bold mb-4 transition-all duration-300 ${animateClass}`}>
                 {isGuestLogin ? 'Guest Access to GolfOne' : 'Welcome to GolfOne'}
               </h3>
-              <p className="text-luxury-gold-50 text-lg">
-                {isGuestLogin 
-                  ? 'Quick access for guest players and visitors' 
+              <p className={`text-luxury-gold-50 text-lg transition-all duration-300 ${animateClass}`}>
+                {isGuestLogin
+                  ? 'Quick access for guest players and visitors'
                   : 'Experience luxury and excellence in every swing'}
               </p>
             </div>

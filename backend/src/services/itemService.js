@@ -14,7 +14,7 @@ const prepareQueries = async (CourseID, date, sessions) => {
   for (const session of sessions) {
     queries.push(
       ...[
-        await itemModel.fetchTeeTimeDetails({
+        await itemModel.fetchTeeTimeDetailsBySession({
           CourseID,
           txnDate: date,
           Session: session,
