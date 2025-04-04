@@ -1,98 +1,247 @@
-# README.md
+# CalendarOne - Backend
 
---- MIÊU TẢ DỰ ÁN
-1. Công nghệ sử dụng: 
-• Backend: Node.js với Express.js, Sequelize (theo cách database-first) và SQL Server. 
-• Quản lý package: Yarn. 
-• Realtime: Socket.IO để gửi thông báo booking mới. 
-• Xác thực: JWT (có refresh token) để bảo vệ API và phân quyền. 
-• Caching và concurrency: Redis để lưu cache dữ liệu tạm thời (như danh sách sân golf) và dùng lock để tránh xung đột dữ liệu khi có nhiều request đặt lịch cùng lúc. 
-• Validate dữ liệu: Joi để validate input từ request. 
-• Logging: Winston để log lỗi và hoạt động hệ thống. 
-• Rate limiting: Express-rate-limit để bảo vệ API khỏi spam request. 
+## Giới Thiệu
+CalendarOne là một hệ thống quản lý đặt lịch sân golf với nhiều tính năng bao gồm đặt lịch realtime, quản lý khách hàng, và báo cáo tích hợp.
 
-2. Kiến trúc chương trình: 
-• MVCS (Model - View - Controller - Service): 
-    • Controller xử lý request và trả response. 
-    • Service chứa logic nghiệp vụ. 
-    • Model (theo cách database-first) được sinh ra từ cấu trúc database có sẵn qua Sequelize CLI. 
-    • Middleware: 
-        • Auth middleware cho JWT. 
-        • Validation middleware cho Joi.
+## Công Nghệ Sử Dụng
+- **Backend Framework**: Node.js với Express.js
+- **ORM**: Sequelize (database-first approach) với SQL Server
+- **Quản lý Package**: Yarn
+- **Realtime Communication**: Socket.IO
+- **Xác thực**: JWT (với refresh token)
+- **Caching & Concurrency**: Redis
+- **Data Validation**: Joi
+- **Logging**: Winston
+- **Rate Limiting**: Express-rate-limit
+- **Bảo mật bổ sung**: Helmet, CORS, Compression
+- **Module Syntax**: ES6+ (import/export)
+- **Transpiling**: Babel
+- **Testing**: Jest
+- **Development Tools**: ESLint, Nodemon
+- **Thư viện bổ trợ**: Lodash, Moment, UUID, HTTP Status Codes, Async Exit Hook, bcryptjs, Cookie Parser
 
-3. Yêu cầu chính của hệ thống: 
-    1. Xử lý booking với các trạng thái: pending, confirmed, cancelled. 
-    2. Tránh xung đột dữ liệu khi nhiều người đặt cùng một sân golf qua Redis lock hoặc giải pháp tương tự. 
-    3. Gửi thông báo realtime qua Socket.IO khi có booking mới. 
-    4. Tối ưu hiệu năng với Redis cache (cho các dữ liệu ít thay đổi như danh sách sân golf) và connection pooling của Sequelize. 
-    5. Bảo vệ hệ thống khỏi spam request bằng rate limiting. 
-    6. Có sử dụng cookies để dùng cho đăng nhập, xác thực.
-    7. Sử dụng cách khai báo thư viện là import thay vì require.
-    8. Response cho client mã Status Code bằng package http-status-codes.
-    9. Sử dụng thêm các package phụ trợ lodash, moment, cross-env, dotenv, eslint, uuid, @babel/core @babel/cli @babel/preset-env, sequelize-auto sequelize-cli, http-status-codes, async-exit-hook, bcryptjs, cookie-parser, cors, cross-env, dotenv, redis, helmet, compression.
-    10. Tách Route thành thư mục route chuyên xử lý các route, chia thành các thư.
-    11. Có tài liệu hướng dẫn đầy đủ cách cài đặt, chạy chương trình
+## Kiến Trúc Chương Trình
+Dự án được tổ chức theo mô hình **MVCS (Model-View-Controller-Service)**:
 
-4. Quy tắc viết code: 
-    • Áp dụng Clean Code và nguyên tắc SOLID để code dễ đọc, dễ bảo trì. 
-    • Sử dụng Winston để log lỗi và hoạt động của hệ thống. 
-    • Tích hợp Swagger để tạo tài liệu API. 
-    • Khi ổn định, bổ sung Jest để viết unit test cho service và controller. 
+- **Controllers**: Xử lý request và response
+- **Services**: Chứa logic nghiệp vụ
+- **Models**: Ánh xạ từ cấu trúc database (database-first)
+- **Middlewares**: Xử lý authentication, validation, error handling, và rate limiting
 
-5. Mong muốn từ AI: 
-    • Thiết kế kiến trúc chương trình theo mô hình MVCS, đồng thời đảm bảo phù hợp với việc sử dụng Sequelize theo cách database-first.
-    • Hướng dẫn tích hợp các công nghệ đã nêu, đặc biệt Redis (cache và lock), Socket.IO, JWT, Joi, Winston, và Express-rate-limit.
-    • Gợi ý các giải pháp đơn giản và dễ hiểu để tránh xung đột dữ liệu khi xử lý nhiều request đồng thời.
-    • Cung cấp best practices cho bảo mật, tối ưu hiệu năng, và quản lý mã nguồn khi sử dụng Sequelize theo cách database-first.
-    • Cung cấp example cho từng công nghệ: sequelize database-first, jest, redis.
-
---- CẤU TRÚC THƯ MỤC
-golf-booking-api/
-├── node_modules/                # Thư viện của dự án
-├── src/                         # Mã nguồn dự án
-│   ├── config/                  # Cấu hình hệ thống
-│   │   ├── db.config.js         # Cấu hình database
-│   │   ├── redis.config.js      # Cấu hình Redis
-│   │   ├── jwt.config.js        # Cấu hình JWT
-│   │   └── logger.config.js     # Cấu hình Winston logger
-│   ├── controllers/             # Các controller
-│   │   ├── booking.controller.js
-│   │   ├── course.controller.js
-│   │   └── auth.controller.js
-│   ├── services/                # Các service (chứa logic nghiệp vụ)
-│   │   ├── booking.service.js
-│   │   ├── course.service.js
-│   │   └── auth.service.js
-│   ├── models/                  # Các model từ Sequelize
-│   │   ├── index.js             # Export tất cả các model
-│   │   ├── booking.model.js
-│   │   ├── course.model.js
-│   │   └── user.model.js
-│   ├── routes/                  # Các route xử lý api
-│   │   ├── v1/                  # Export tất cả các model
-│   │   │     ├── index.js       # Khai báo các route
-│   │   │     ├── booking.route.js
-│   │   │     ├── course.route.js
-│   │   │     └── user.route.js
-│   │   └── v2/                  # Route này tạm bỏ trống, để sau này phát triển
-│   ├── middlewares/             # Middleware
-│   │   ├── auth.middleware.js
-│   │   ├── validation.middleware.js
-│   │   ├── error.middleware.js
-│   │   └── rate-limit.middleware.js
-│   ├── utils/                   # Các tiện ích
-│   │   ├── redis.utils.js       # Tiện ích làm việc với Redis
-│   │   ├── socket.utils.js      # Tiện ích Socket.IO
-│   │   └── response.utils.js    # Tiện ích format response
-│   ├── validations/             # Schema validation với Joi
-│   │   ├── booking.validation.js
-│   │   └── auth.validation.js
-│   ├── sockets/                 # Quản lý Socket.IO
-│   │   └── booking.socket.js    # Sự kiện socket cho booking
-│   ├── test/
-│   └── app.js                   # Khởi tạo Express app
-├── .env                         # Biến môi trường
-├── .env.example                 # Mẫu file biến môi trường
+## Cấu Trúc Thư Mục
+```
+backend/
+├── babel.config.js              # Cấu hình Babel
+├── golf-booking-architecture.svg # Sơ đồ kiến trúc hệ thống
+├── jsconfig.json                # Cấu hình JavaScript
 ├── package.json                 # Thông tin dự án và dependencies
-├── yarn.lock                    # Yarn lock file
-└── server.js                    # Entry point khởi động
+├── README.md                    # Tài liệu hướng dẫn (file này)
+├── server.js                    # Entry point khởi động
+├── logs/                        # Lưu trữ log files
+│   ├── combined.log
+│   └── error.log
+├── seeders/                     # Dữ liệu khởi tạo
+│   └── 20250324100057-demo.js
+└── src/                         # Mã nguồn dự án
+    ├── app.js                   # Khởi tạo Express app
+    ├── config/                  # Cấu hình hệ thống
+    │   ├── db.config.js         # Cấu hình database
+    │   ├── environment.config.js # Cấu hình môi trường
+    │   ├── jwt.config.js        # Cấu hình JWT
+    │   ├── logger.config.js     # Cấu hình Winston logger
+    │   └── redis.config.js      # Cấu hình Redis
+    ├── controllers/             # Các controller
+    │   ├── auth.controller.js
+    │   ├── booking.controller.js
+    │   └── guest.controller.js
+    ├── middlewares/             # Middleware
+    │   ├── auth.middleware.js
+    │   ├── error.middleware.js
+    │   ├── rate-limit.middleware.js
+    │   └── validation.middleware.js
+    ├── models/                  # Các model từ Sequelize
+    │   ├── index.js             # Export tất cả các model
+    │   ├── com/                 # Common models
+    │   │   ├── comCourseDetail.js
+    │   │   ├── comCourseMaintenance.js
+    │   │   ├── comCourseMaster.js
+    │   │   ├── comGuest.js
+    │   │   ├── comGuestAcount.js
+    │   │   └── comGuestType.js
+    │   ├── example/             # Mẫu models
+    │   │   ├── booking.model.js
+    │   │   ├── course.model.js
+    │   │   └── user.model.js
+    │   ├── fre/                 # Booking models
+    │   │   ├── freBlockBooking.js
+    │   │   ├── freBookingDetails.js
+    │   │   ├── freBookingMaster.js
+    │   │   ├── freBookingNumber.js
+    │   │   ├── freFlightStatus.js
+    │   │   ├── freTeeTimeDetails.js
+    │   │   ├── freTeeTimeMaster.js
+    │   │   ├── freTemplateDetails.js
+    │   │   ├── freTemplateMaster.js
+    │   │   └── freTemplateOfDay.js
+    │   ├── mrm/                 # Member management models
+    │   │   ├── mrmCommonCode.js
+    │   │   └── mrmPersonalInfo.js
+    │   └── sys/                 # System models
+    │       ├── sysOnItem.js
+    │       ├── sysOnModule.js
+    │       ├── sysOnParameter.js
+    │       ├── sysOnUser.js
+    │       ├── sysOnUserGroup.js
+    │       └── sysOnUserGroupMenu.js
+    ├── routes/                  # Các route xử lý API
+    │   ├── v1/                  # API version 1
+    │   │   ├── auth.route.js
+    │   │   ├── booking.route.js
+    │   │   ├── guest.route.js
+    │   │   └── index.js         # Tổng hợp route
+    │   └── v2/                  # API version 2 (future)
+    ├── services/                # Các service (chứa logic nghiệp vụ)
+    │   ├── auth/                # Authentication services
+    │   │   ├── index.js
+    │   │   ├── guest/
+    │   │   │   └── login.js
+    │   │   ├── staff/
+    │   │   │   └── login.js
+    │   │   └── token/
+    │   │       ├── generate-token.js
+    │   │       └── refresh-token.js
+    │   └── booking/             # Booking services
+    │       ├── index.js
+    │       ├── general/
+    │       │   ├── comCourseMasterService.js
+    │       │   ├── comGuestService.js
+    │       │   ├── comGuestTypeService.js
+    │       │   ├── freBlockBookingService.js
+    │       │   ├── freBookingDetailsService.js
+    │       │   ├── freBookingMasterService.js
+    │       │   └── freBookingNumberService.js
+    │       ├── guest/
+    │       └── staff/
+    ├── sockets/                 # Quản lý Socket.IO
+    │   └── booking.socket.js
+    ├── test/                    # Unit tests
+    │   ├── auth.test.js
+    │   ├── README.md
+    │   ├── setup.js
+    │   └── mocks/
+    │       └── user.mock.js
+    ├── utils/                   # Các tiện ích
+    │   ├── apiError.utils.js    # Xử lý lỗi API
+    │   ├── constant.utils.js    # Các hằng số
+    │   ├── formatter.utils.js   # Format dữ liệu
+    │   ├── redis.utils.js       # Redis utilities
+    │   ├── response.utils.js    # Format response
+    │   └── socket.utils.js      # Socket.IO utilities
+    └── validations/             # Schema validation
+        ├── auth/
+        │   ├── index.js
+        │   └── login.js
+        ├── booking/
+        │   ├── get-courses-by-date.js
+        │   ├── get-module-items-by-type.js
+        │   ├── index.js
+        │   └── upsert-booking.js
+        └── guest/
+            ├── index.js
+            └── searchGuestByName.js
+```
+
+## Tính Năng Chính
+1. **Quản lý Booking**
+   - Xử lý booking với trạng thái: pending, confirmed, cancelled
+   - Ngăn chặn xung đột dữ liệu khi nhiều người đặt cùng một sân golf (Redis lock)
+   - Thông báo realtime qua Socket.IO khi có booking mới
+
+2. **Xác Thực & Bảo Mật**
+   - JWT authentication với refresh token
+   - Role-based authorization
+   - Rate limiting để chống spam request
+   - Cookie-based authentication
+
+3. **Hiệu Năng**
+   - Redis caching cho dữ liệu tĩnh
+   - Connection pooling với Sequelize
+   - Compression middleware
+
+## Giải Pháp Phòng Tránh Xung Đột Dữ Liệu
+1. **Redis Distributed Locks**:
+   - Sử dụng Redis để tạo distributed lock khi xử lý booking
+   - Đảm bảo chỉ một request được xử lý tại một thời điểm cho một tài nguyên cụ thể (ví dụ: một khung giờ của sân golf)
+
+2. **Optimistic Concurrency Control**:
+   - Sử dụng version/timestamp trên các bản ghi để phát hiện và xử lý xung đột
+   - Sequelize hỗ trợ optimistic locking qua trường version
+
+3. **Database Transactions**:
+   - Đảm bảo tính toàn vẹn dữ liệu khi thực hiện nhiều thao tác liên quan
+
+## Bảo Mật & Best Practices
+1. **Bảo Mật**:
+   - Sử dụng Helmet để thiết lập HTTP headers bảo mật
+   - Implement CORS policy
+   - Rate limiting để chống DoS và brute force
+   - Sanitize input từ người dùng với Joi
+   - Mã hóa password với bcryptjs
+   - Sử dụng secure cookies cho JWT
+
+2. **Logging & Monitoring**:
+   - Winston để log lỗi và hoạt động hệ thống
+   - Separate logs cho errors và combined operations
+
+3. **Tối Ưu Performance**:
+   - Redis caching cho frequently accessed data
+   - Connection pooling cho database operations
+   - Compression middleware để giảm dung lượng response
+
+## Hướng Dẫn Cài Đặt & Chạy Ứng Dụng
+
+### Yêu Cầu Hệ Thống
+- Node.js (v14 trở lên)
+- SQL Server
+- Redis Server
+
+### Cài Đặt
+1. Clone repository:
+   ```bash
+   git clone <repository-url>
+   cd backend
+   ```
+
+2. Cài đặt dependencies:
+   ```bash
+   yarn install
+   ```
+
+3. Cấu hình môi trường:
+   - Tạo file .env từ .env.example
+   - Cập nhật các thông số kết nối database, Redis, và các cài đặt khác
+
+4. Khởi chạy ứng dụng:
+   ```bash
+   # Development mode
+   yarn dev
+   
+   # Production mode
+   yarn start
+   ```
+
+### Chạy Tests
+```bash
+yarn test
+```
+
+## Tài Liệu API
+API documentation có thể truy cập tại `/api-docs` sau khi khởi động server.
+
+## Phát Triển & Đóng Góp
+1. Tuân thủ quy tắc coding style đã được thiết lập
+2. Viết unit tests cho mọi tính năng mới
+3. Đảm bảo tất cả tests pass trước khi submit pull request
+
+## License
+Copyright © 2024 CalendarOne. All rights reserved.
