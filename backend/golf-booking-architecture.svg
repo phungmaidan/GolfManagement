@@ -1,0 +1,107 @@
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f8f9fa" />
+  
+  <!-- Client/Frontend Layer -->
+  <rect x="50" y="50" width="700" height="100" rx="10" ry="10" fill="#e3f2fd" stroke="#2196f3" stroke-width="2" />
+  <text x="400" y="90" font-family="Arial" font-size="20" text-anchor="middle" font-weight="bold">Client Layer</text>
+  <rect x="150" y="110" width="150" height="30" rx="5" ry="5" fill="#bbdefb" stroke="#1976d2" stroke-width="1" />
+  <text x="225" y="130" font-family="Arial" font-size="14" text-anchor="middle">Web Application</text>
+  <rect x="350" y="110" width="150" height="30" rx="5" ry="5" fill="#bbdefb" stroke="#1976d2" stroke-width="1" />
+  <text x="425" y="130" font-family="Arial" font-size="14" text-anchor="middle">Mobile App</text>
+  <rect x="550" y="110" width="150" height="30" rx="5" ry="5" fill="#bbdefb" stroke="#1976d2" stroke-width="1" />
+  <text x="625" y="130" font-family="Arial" font-size="14" text-anchor="middle">Admin Dashboard</text>
+  
+  <!-- API Gateway Layer -->
+  <rect x="50" y="170" width="700" height="70" rx="10" ry="10" fill="#ffecb3" stroke="#ffc107" stroke-width="2" />
+  <text x="400" y="205" font-family="Arial" font-size="20" text-anchor="middle" font-weight="bold">API Gateway</text>
+  <rect x="200" y="210" width="120" height="20" rx="5" ry="5" fill="#ffe082" stroke="#ffa000" stroke-width="1" />
+  <text x="260" y="225" font-family="Arial" font-size="12" text-anchor="middle">Rate Limiting</text>
+  <rect x="340" y="210" width="120" height="20" rx="5" ry="5" fill="#ffe082" stroke="#ffa000" stroke-width="1" />
+  <text x="400" y="225" font-family="Arial" font-size="12" text-anchor="middle">Authentication</text>
+  <rect x="480" y="210" width="120" height="20" rx="5" ry="5" fill="#ffe082" stroke="#ffa000" stroke-width="1" />
+  <text x="540" y="225" font-family="Arial" font-size="12" text-anchor="middle">Logging</text>
+  
+  <!-- Backend Layer -->
+  <rect x="50" y="260" width="700" height="200" rx="10" ry="10" fill="#e8f5e9" stroke="#4caf50" stroke-width="2" />
+  <text x="400" y="290" font-family="Arial" font-size="20" text-anchor="middle" font-weight="bold">Backend Layer (Node.js + Express)</text>
+  
+  <!-- Controllers -->
+  <rect x="70" y="310" width="150" height="130" rx="5" ry="5" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" />
+  <text x="145" y="330" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Controllers</text>
+  <rect x="85" y="340" width="120" height="25" rx="5" ry="5" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1" />
+  <text x="145" y="358" font-family="Arial" font-size="12" text-anchor="middle">BookingController</text>
+  <rect x="85" y="370" width="120" height="25" rx="5" ry="5" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1" />
+  <text x="145" y="388" font-family="Arial" font-size="12" text-anchor="middle">GolfCourseController</text>
+  <rect x="85" y="400" width="120" height="25" rx="5" ry="5" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1" />
+  <text x="145" y="418" font-family="Arial" font-size="12" text-anchor="middle">UserController</text>
+  
+  <!-- Services -->
+  <rect x="240" y="310" width="150" height="130" rx="5" ry="5" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" />
+  <text x="315" y="330" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Services</text>
+  <rect x="255" y="340" width="120" height="25" rx="5" ry="5" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1" />
+  <text x="315" y="358" font-family="Arial" font-size="12" text-anchor="middle">BookingService</text>
+  <rect x="255" y="370" width="120" height="25" rx="5" ry="5" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1" />
+  <text x="315" y="388" font-family="Arial" font-size="12" text-anchor="middle">GolfCourseService</text>
+  <rect x="255" y="400" width="120" height="25" rx="5" ry="5" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1" />
+  <text x="315" y="418" font-family="Arial" font-size="12" text-anchor="middle">AuthService</text>
+  
+  <!-- Models -->
+  <rect x="410" y="310" width="150" height="130" rx="5" ry="5" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" />
+  <text x="485" y="330" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Models</text>
+  <rect x="425" y="340" width="120" height="25" rx="5" ry="5" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1" />
+  <text x="485" y="358" font-family="Arial" font-size="12" text-anchor="middle">Booking</text>
+  <rect x="425" y="370" width="120" height="25" rx="5" ry="5" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1" />
+  <text x="485" y="388" font-family="Arial" font-size="12" text-anchor="middle">GolfCourse</text>
+  <rect x="425" y="400" width="120" height="25" rx="5" ry="5" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1" />
+  <text x="485" y="418" font-family="Arial" font-size="12" text-anchor="middle">User</text>
+  
+  <!-- Middleware -->
+  <rect x="580" y="310" width="150" height="130" rx="5" ry="5" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" />
+  <text x="655" y="330" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Middleware</text>
+  <rect x="595" y="340" width="120" height="25" rx="5" ry="5" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1" />
+  <text x="655" y="358" font-family="Arial" font-size="12" text-anchor="middle">AuthMiddleware</text>
+  <rect x="595" y="370" width="120" height="25" rx="5" ry="5" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1" />
+  <text x="655" y="388" font-family="Arial" font-size="12" text-anchor="middle">ValidationMiddleware</text>
+  <rect x="595" y="400" width="120" height="25" rx="5" ry="5" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1" />
+  <text x="655" y="418" font-family="Arial" font-size="12" text-anchor="middle">ErrorHandlingMiddleware</text>
+  
+  <!-- Infrastructure Layer -->
+  <rect x="50" y="480" width="700" height="100" rx="10" ry="10" fill="#e1bee7" stroke="#9c27b0" stroke-width="2" />
+  <text x="400" y="510" font-family="Arial" font-size="20" text-anchor="middle" font-weight="bold">Infrastructure Layer</text>
+  
+  <rect x="70" y="530" width="150" height="30" rx="5" ry="5" fill="#ce93d8" stroke="#7b1fa2" stroke-width="1" />
+  <text x="145" y="550" font-family="Arial" font-size="14" text-anchor="middle">SQL Server</text>
+  
+  <rect x="240" y="530" width="150" height="30" rx="5" ry="5" fill="#ce93d8" stroke="#7b1fa2" stroke-width="1" />
+  <text x="315" y="550" font-family="Arial" font-size="14" text-anchor="middle">Redis (Cache)</text>
+  
+  <rect x="410" y="530" width="150" height="30" rx="5" ry="5" fill="#ce93d8" stroke="#7b1fa2" stroke-width="1" />
+  <text x="485" y="550" font-family="Arial" font-size="14" text-anchor="middle">Redis (Lock)</text>
+  
+  <rect x="580" y="530" width="150" height="30" rx="5" ry="5" fill="#ce93d8" stroke="#7b1fa2" stroke-width="1" />
+  <text x="655" y="550" font-family="Arial" font-size="14" text-anchor="middle">Socket.IO</text>
+  
+  <!-- Arrows -->
+  <!-- Client to API Gateway -->
+  <line x1="400" y1="150" x2="400" y2="170" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <!-- API Gateway to Backend -->
+  <line x1="400" y1="240" x2="400" y2="260" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <!-- Controllers to Services -->
+  <line x1="220" y1="375" x2="240" y2="375" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <!-- Services to Models -->
+  <line x1="390" y1="375" x2="410" y2="375" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <!-- Backend to Infrastructure -->
+  <line x1="400" y1="460" x2="400" y2="480" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <!-- Arrow definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+  </defs>
+</svg>
