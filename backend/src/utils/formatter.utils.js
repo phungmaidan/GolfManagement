@@ -1,4 +1,3 @@
-import { pick } from 'lodash'
 import moment from 'moment'
 
 export const DATE_FORMAT = 'YYYY-MM-DD'
@@ -19,27 +18,4 @@ export const slugify = (val) => {
     .replace(/[^a-z0-9 -]/g, '') // remove non-alphanumeric characters
     .replace(/\s+/g, '-') // replace spaces with hyphens
     .replace(/-+/g, '-') // remove consecutive hyphens
-}
-
-// Lấy một vài dữ liệu cụ thể trong User để tránh việc trả về các dữ liệu nhạy cảm như hash password
-export const pickUser = (user) => {
-  if (!user) return {}
-  return pick(user, [
-    'ID',
-    'Name',
-    'UserGroup',
-    'Level',
-    'Active'
-  ])
-}
-
-// Lấy một vài dữ liệu cụ thể trong Guest để tránh việc trả về các dữ liệu nhạy cảm như hash password
-export const pickGuest = (Guest) => {
-  if (!Guest) return {}
-  return pick(Guest, [
-    'GuestID',
-    'Username',
-    'AccountStatus',
-    'DisplayName'
-  ])
 }

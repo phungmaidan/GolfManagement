@@ -1,13 +1,12 @@
 import db from '../../../models/index.js'
 import { redisClient } from '../../../config/redis.config.js'
 import { CACHE_TTL } from '../../../utils/constant.utils.js'
-const { FreTeeTimeDetails } = db;
+const { FreTeeTimeDetails, sequelize } = db;
 
-const getDetailsByDateCourseSession = async (date, courseId, session) => {
+const getDetailsByDateCourseSession = async (date, courseId, session, transaction) => {
     try {
         // Create cache key
         const cacheKey = `teeTimeDetails:${date}:${courseId}:${session}`;
-
         // Check cache
         try {
             const cachedData = await redisClient.get(cacheKey);
@@ -20,15 +19,22 @@ const getDetailsByDateCourseSession = async (date, courseId, session) => {
 
         // Query tee time details from database
         const teeTimeDetails = await FreTeeTimeDetails.findAll({
+            attributes: [
+                'TeeTime',
+                'TeeBox',
+                'Flight',
+                'Status',
+                'Squeenze'
+            ],
             where: {
-                TxnDate: date,
+                TxnDate: sequelize.literal(`[FreTeeTimeDetails].[TxnDate] = CAST('${date}' AS VARCHAR)`),
                 CourseID: courseId,
                 Session: session
             },
             order: [['TeeTime', 'ASC'], ['TeeBox', 'ASC']],
+            transaction: transaction,
             raw: true
         });
-
         // Store in cache
         try {
             if (teeTimeDetails.length > 0) {
@@ -37,7 +43,6 @@ const getDetailsByDateCourseSession = async (date, courseId, session) => {
         } catch (cacheError) {
             console.error('Error setting Redis cache:', cacheError);
         }
-
         return teeTimeDetails;
     } catch (error) {
         console.error('Error in TeeTimeDetailsService.getDetailsByDateCourseSession:', error)

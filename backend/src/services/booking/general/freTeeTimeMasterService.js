@@ -2,9 +2,9 @@ import db from '../../../models/index.js'
 import { Op } from 'sequelize'
 import { redisClient } from '../../../config/redis.config.js'
 import { CACHE_TTL } from '../../../utils/constant.utils.js'
-const { FreTeeTimeMaster } = db
+const { FreTeeTimeMaster, sequelize } = db
 
-const getTeeTimeMasterByDateCoureTemplateID = async (date, courseID, templateID) => {
+const getTeeTimeMasterByDateCoureTemplateID = async (date, courseID, templateID, transaction) => {
     // Tạo khóa cache
     const cacheKey = `teeTimeMaster:${courseID}:${new Date(date).toISOString().split('T')[0]}:${templateID}`;
 
@@ -18,15 +18,13 @@ const getTeeTimeMasterByDateCoureTemplateID = async (date, courseID, templateID)
         console.error('Lỗi khi truy cập Redis cache:', cacheError);
     }
 
-    let transaction;
     try {
-        transaction = await sequelize.transaction();
-
         // Kiểm tra xem đã có dữ liệu trong FreTeeTimeMaster chưa
+        console.log('date:', date, 'courseID:', courseID, 'templateID:', templateID)
         const teeTimeMasterResult = await FreTeeTimeMaster.findAll({
             where: {
                 CourseID: courseID,
-                TxnDate: date,
+                TxnDate: sequelize.literal(`[FreTeeTimeMaster].[TxnDate] = CAST('${date}' AS VARCHAR)`),
                 [Op.or]: [
                     { TemplateID: templateID },
                     { TemplateID: null }
@@ -38,7 +36,6 @@ const getTeeTimeMasterByDateCoureTemplateID = async (date, courseID, templateID)
 
         if (teeTimeMasterResult.length > 0) {
             await redisClient.set(cacheKey, JSON.stringify(teeTimeMasterResult), 'EX', CACHE_TTL.LONG_TERM);
-            await transaction.commit();
             return teeTimeMasterResult;
         }
 
@@ -48,10 +45,9 @@ const getTeeTimeMasterByDateCoureTemplateID = async (date, courseID, templateID)
         const createdData = await releaseTeeTime(date, courseID, templateID, transaction);
 
         if (createdData.length > 0) {
-            await redisClient.set(cacheKey, JSON.stringify(createdData), 'EX', cacheTTL);
+            await redisClient.set(cacheKey, JSON.stringify(createdData), 'EX', CACHE_TTL.LONG_TERM);
         }
 
-        await transaction.commit();
         return createdData;
 
     } catch (error) {
@@ -60,23 +56,28 @@ const getTeeTimeMasterByDateCoureTemplateID = async (date, courseID, templateID)
     }
 }
 
-const releaseTeeTime = async (date, courseID, templateID, transaction) => {
+const releaseTeeTime = async (date, courseID, templateID, transaction, userID = 'admin') => {
     try {
         const result = await sequelize.query(
-            'EXEC sp_FreReleaseTeeTime @CourseID = :courseID, @TxnDate = :date, @TemplateID = :templateID',
+            'EXEC sp_FreReleaseTeeTime @CourseID = :courseID, @TxnDate = :date, @TemplateID = :templateID, @UserID = :userID',
             {
-                replacements: { courseID, date, templateID },
+                replacements: {
+                    courseID,
+                    date,
+                    templateID,
+                    userID
+                },
                 type: sequelize.QueryTypes.SELECT,
                 transaction
             }
         );
 
-        return result || [] // Trả về mảng rỗng nếu không có dữ liệu;
+        return result || []; // Nếu procedure không trả dữ liệu SELECT thì sẽ là []
     } catch (error) {
-        console.error('Error in releaseTeeTime:', error)
-        throw error
+        console.error('Error in releaseTeeTime:', error);
+        throw error;
     }
-}
+};
 
 /**
  * Xóa cache của FreTeeTimeMaster cho courseID, date, (templateID nếu có) cụ thể

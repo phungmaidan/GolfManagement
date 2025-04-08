@@ -2,7 +2,6 @@ import db from '../../../models/index.js';
 import { redisClient } from '../../../config/redis.config.js';
 import { CACHE_TTL } from '../../../utils/constant.utils.js';
 import { Op } from 'sequelize';
-
 const { FreBookingMaster, sequelize } = db;
 const RECORD_STATUS = {
     REGISTERED: 'Registered'
@@ -18,7 +17,7 @@ const getBookingMasterById = async (bookingId, transaction) => {
     }
 }
 
-const getBookingMasterByDateCourseSession = async (date, course, session) => {
+const getBookingMasterByDateCourseSession = async (date, course, session, transaction) => {
     const cacheKey = `bookingMaster:${date}:${course}:${session}`;
     try {
         const cachedData = await redisClient.get(cacheKey);
@@ -31,9 +30,19 @@ const getBookingMasterByDateCourseSession = async (date, course, session) => {
 
     try {
         const freBookingMasters = await FreBookingMaster.findAll({
+            attributes: [
+                'TeeTime',
+                'TeeBox',
+                'Flight',
+                'BookingID',
+                'GuestType',
+                'MemberNo',
+                'Name',
+                'Pax',
+            ],
             where: {
                 CourseID: course,
-                BookingDate: date,
+                BookingDate: sequelize.literal(`[FreBookingMaster].[BookingDate] = CAST('${date}' AS VARCHAR)`),
                 Session: session,
                 [Op.or]: [
                     { RecordStatus: null },
@@ -41,7 +50,8 @@ const getBookingMasterByDateCourseSession = async (date, course, session) => {
                 ]
             },
             raw: true,
-            order: [['Session', 'ASC'], ['TeeBox', 'ASC'], ['TeeTime', 'ASC'], ['BookingID', 'ASC']]
+            order: [['Session', 'ASC'], ['TeeBox', 'ASC'], ['TeeTime', 'ASC'], ['BookingID', 'ASC']],
+            transaction: transaction
         });
 
         if (freBookingMasters.length > 0) {

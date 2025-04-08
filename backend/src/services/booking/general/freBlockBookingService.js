@@ -1,9 +1,9 @@
 import db from '../../../models/index.js'
 import { redisClient } from '../../../config/redis.config.js'
 import { CACHE_TTL } from '../../../utils/constant.utils.js'
-const { FreBlockBooking } = db
+const { FreBlockBooking, sequelize } = db
 
-const getBlockBookingByDate = async (date) => {
+const getBlockBookingByDateCourseSession = async (date, course, session, transaction) => {
     // Create cache key
     const cacheKey = `blockBooking:${new Date(date).toISOString().split('T')[0]}`;
 
@@ -19,10 +19,21 @@ const getBlockBookingByDate = async (date) => {
 
     try {
         const freBlockBookings = await FreBlockBooking.findAll({
+            attributes: [
+                'TeeTime',
+                'TeeBox',
+                'Flight',
+                'Remark',
+                'Color',
+            ],
             where: {
-                TransactionDate: date
+                TransactionDate: sequelize.literal(`[FreBlockBooking].[TransactionDate] = CAST('${date}' AS VARCHAR)`),
+                CourseID: course,
+                Session: session,
             },
-            raw: true
+            raw: true,
+            order: [['Session', 'ASC'], ['TeeBox', 'ASC'], ['TeeTime', 'ASC']],
+            transaction: transaction
         })
 
         // Store in cache
@@ -36,7 +47,7 @@ const getBlockBookingByDate = async (date) => {
 
         return freBlockBookings
     } catch (error) {
-        console.error('Error in FreBlockBookingService.getBlockBookingByDate:', error)
+        console.error('Error in FreBlockBookingService.getBlockBookingByDateCourseSession:', error)
         throw error
     }
 }
@@ -54,6 +65,6 @@ const invalidateCache = async (date) => {
 };
 
 export const FreBlockBookingService = {
-    getBlockBookingByDate,
+    getBlockBookingByDateCourseSession,
     invalidateCache
 }

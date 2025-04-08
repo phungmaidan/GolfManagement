@@ -23,7 +23,7 @@ const getTemplateOfDayByCourseId = async (courseId) => {
             where: {
                 CourseID: courseId
             },
-            order: [['id', 'DESC']],
+            order: [['CourseID', 'DESC']],
             raw: true
         });
 

@@ -10,6 +10,7 @@ import { FreBookingNumberService } from "./general/freBookingNumberService.js"
 import { FreFlightStatusService } from "./general/freFlightStatusService.js"
 import { FreTeeTimeDetailsService } from "./general/freTeeTimeDetailsService.js"
 import { FreTeeTimeMasterService } from "./general/freTeeTimeMasterService.js"
+import { FreTemplateDetailsService } from "./general/freTemplateDetailsService.js"
 import { FreTemplateMasterService } from "./general/freTemplateMasterService.js"
 import { FreTemplateOfDayService } from "./general/freTemplateOfDayService.js"
 import { MrmCommonCodeService } from "./general/mrmCommonCodeService.js"
@@ -30,6 +31,7 @@ export const bookingService = {
     FreFlightStatusService,
     FreTeeTimeDetailsService,
     FreTeeTimeMasterService,
+    FreTemplateDetailsService,
     FreTemplateMasterService,
     FreTemplateOfDayService,
     MrmCommonCodeService,
