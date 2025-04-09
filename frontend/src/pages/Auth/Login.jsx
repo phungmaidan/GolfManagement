@@ -6,7 +6,7 @@ import { loginUserAPI } from '~/redux/user/userSlice'
 function Login() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const [account, setAccount] = useState('')
+  const [username, setUserName] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -15,9 +15,8 @@ function Login() {
     event.preventDefault()
     setIsLoading(true)
     setError(null)
-
     try {
-      await dispatch(loginUserAPI({ account, password }))
+      await dispatch(loginUserAPI({ username, password }))
       navigate('/')
     } catch (err) {
       setError('Invalid credentials. Please try again.')
@@ -45,19 +44,19 @@ function Login() {
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label
-            htmlFor="account"
+            htmlFor="username"
             className="block text-luxury-gold-200 text-sm font-medium mb-2"
           >
-            Account
+            Username
           </label>
           <input
-            id="account"
-            name="account"
+            id="username"
+            name="username"
             type="text"
             required
-            value={account}
-            onChange={(e) => setAccount(e.target.value)}
-            placeholder="Enter your account"
+            value={username}
+            onChange={(e) => setUserName(e.target.value)}
+            placeholder="Enter your username"
             className="w-full px-4 py-2.5 bg-golf-green-700 border border-golf-green-600 text-white rounded-md focus:outline-none placeholder-white transition-all"
           />
         </div>

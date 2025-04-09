@@ -6,7 +6,7 @@ export const getModuleItemsByType = async (req, res, next) => {
         moduleId: Joi.string().required().messages({
             'any.required': 'Module ID is required'
         }),
-        type: Joi.string().valid('Tasks', 'Reports', 'Settings').required().messages({
+        type: Joi.string().valid('Tasks', 'Reports', 'Setting').required().messages({
             'any.required': 'Module type is required',
             'any.only': 'Module type must be one of [Tasks, Reports, Setting]'
         })

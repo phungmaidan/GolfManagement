@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { getItemAPI, selectSelectedFunction, selectSelectedModule, selectItems } from '~/redux/module/moduleSlice'
+import { useSelector, useDispatch, shallowEqual } from 'react-redux'
+import {
+  getItemAPI,
+  selectSelectedFunction,
+  selectSelectedModule,
+  selectItems
+} from '~/redux/module/moduleSlice'
 import Item_ContentArea from './Item_ContentArea'
 
 const ContentArea = () => {
   const dispatch = useDispatch()
+
+  // Tối ưu selector bằng shallowEqual
+  const currentModule = useSelector(selectSelectedModule, shallowEqual)
+  const currentFunction = useSelector(selectSelectedFunction, shallowEqual)
   const items = useSelector(selectItems)
-  const currentModule = useSelector(selectSelectedModule)
-  const currentFunction = useSelector(selectSelectedFunction)
+
   const [loading, setLoading] = useState(true)
-  const [display, setDisplay] = useState({ module: currentModule, func: currentFunction })
 
   useEffect(() => {
     const fetchData = async () => {
@@ -17,12 +24,17 @@ const ContentArea = () => {
       try {
         await dispatch(getItemAPI())
       } finally {
-        setDisplay({ module: currentModule, func: currentFunction })
         setLoading(false)
       }
     }
-    fetchData()
-  }, [dispatch, currentModule, currentFunction])
+
+    // Gọi API khi module & function hợp lệ, và chưa có items
+    if (currentModule?.id && currentFunction?.id && items.length === 0) {
+      fetchData()
+    } else {
+      setLoading(false)
+    }
+  }, [currentModule?.id, currentFunction?.id])
 
   return (
     <div className="pt-3 pl-3 pr-3 overflow-hidden">
@@ -32,17 +44,17 @@ const ContentArea = () => {
         </div>
       ) : (
         <div
-          key={`${display.module?.ModuleName}-${display.func?.label}`}
+          key={`${currentModule?.Name}-${currentFunction?.label}`}
           className="bg-white bg-opacity-40 backdrop-blur-md rounded animate-fadeIn shadow-xl border border-golf-green-300 p-4 sm:p-8"
         >
           <h2 className="text-xl sm:text-2xl font-medium text-golf-green-800 mb-4 sm:mb-8">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0">
               <span className="text-luxury-gold-500 truncate">
-                {display.module?.ModuleName}
+                {currentModule?.Name}
               </span>
               <span className="hidden sm:inline mx-3 text-gray-400">•</span>
               <span className="text-golf-green-700 truncate">
-                {display.func?.label}
+                {currentFunction?.label}
               </span>
             </div>
           </h2>

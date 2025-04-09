@@ -7,7 +7,6 @@ function TopNavigation() {
   const dispatch = useDispatch()
   const userModule = useSelector(selectUserModule)
   const selectedModule = useSelector(selectSelectedModule)
-
   useEffect(() => {
     if (!selectedModule && userModule?.length > 0) {
       dispatch(setSelectedModule(userModule[0]))
@@ -37,7 +36,7 @@ function TopNavigation() {
         <div className="px-6 h-16 flex items-center min-w-max">
           {userModule.map((item) => (
             <button
-              key={item.ModuleID}
+              key={item?.ID}
               className={`
                 whitespace-nowrap
                 cursor-pointer 
@@ -48,14 +47,14 @@ function TopNavigation() {
                 duration-300 
                 relative
                 ${
-            selectedModule?.ModuleID === item.ModuleID
+            selectedModule?.ID === item.ID
               ? 'text-luxury-gold-500 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-luxury-gold-500'
               : 'text-golf-green-800 hover:text-luxury-gold-400 hover:scale-105'
             }
               `}
               onClick={() => handleModuleClick(item)}
             >
-              {item.ModuleName}
+              {item.Name}
             </button>
           ))}
         </div>

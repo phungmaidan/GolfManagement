@@ -25,7 +25,7 @@ export const saveBookingAPI = createAsyncThunk(
   async (bookingData, thunkAPI) => {
     try {
       const response = await authorizedAxiosInstance.post(
-        `${API_ROOT}/v1/items/save-booking`,
+        `${API_ROOT}/api/v1/bookings`,
         bookingData
       )
 

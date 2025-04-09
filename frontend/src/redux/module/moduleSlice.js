@@ -29,7 +29,7 @@ export const getItemAPI = createAsyncThunk(
     try {
       // Gọi API, lưu ý nếu API của cần query parameters, có thể truyền chúng qua option params
       const response = await authorizedAxiosInstance.get(
-        `${API_ROOT}/v1/modules/${selectedModule.ModuleID}/${selectedFunction.label}`
+        `${API_ROOT}/api/v1/bookings/modules/${selectedModule.ID}/${selectedFunction.label}/items`
       )
       return response.data
     } catch (error) {
@@ -58,7 +58,7 @@ const moduleSlice = createSlice({
     builder
       .addCase(getItemAPI.fulfilled, (state, action) => {
         // Cập nhật danh sách items từ API
-        state.items = action.payload
+        state.items = action.payload?.items || []
 
       })
       .addCase(getItemAPI.rejected, (state, action) => {

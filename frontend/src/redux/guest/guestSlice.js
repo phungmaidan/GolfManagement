@@ -42,7 +42,7 @@ export const saveBookingAPI = createAsyncThunk(
       const guestInfo = user.userDetails
       const { selectedCourse, selectedDate, selectedTimeSlot } = guest
 
-      const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/guests/save-booking`, {
+      const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/v1/guests/save-booking`, {
         guestInfo,
         bookingDetails: {
           courseId: selectedCourse?.id,

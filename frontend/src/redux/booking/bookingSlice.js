@@ -24,9 +24,9 @@ export const getCouseAPI = createAsyncThunk(
   async (date, thunkAPI) => {
     try {
       const params = { date: date }
-      const response = await authorizedAxiosInstance.get(`${API_ROOT}/v1/items/get-course`, { params })
+      const response = await authorizedAxiosInstance.get(`${API_ROOT}/api/v1/bookings/courses`, { params })
       // Trả về cả date và response.data
-      return { courses: response.data, date }
+      return { data: response.data, date }
     } catch (error) {
       toast.error('Lỗi khi lấy dữ liệu course')
       return thunkAPI.rejectWithValue(error.response?.data || error.message)
@@ -50,7 +50,7 @@ export const getScheduleAPI = createAsyncThunk(
 
 
       const response = await authorizedAxiosInstance.get(
-        `${API_ROOT}/v1/items/get-schedule`,
+        `${API_ROOT}/api/v1/booking/get-schedule`,
         { params }
       )
       return response.data
@@ -78,9 +78,9 @@ const bookingSlice = createSlice({
         state.errorGetCourse = null
       })
       .addCase(getCouseAPI.fulfilled, (state, { payload }) => {
-        state.statusGetCourse = 'succeeded'
-        state.courseList = payload.courses
-        state.selectedCourse = state.courseList[0].CourseID
+        state.statusGetCourse = payload?.data?.status
+        state.courseList = payload?.data?.courses
+        state.selectedCourse = state?.data?.courses[0].CourseID
         state.selectedDate = payload.date // Cập nhật selectedDate
       })
       .addCase(getCouseAPI.rejected, (state, { payload }) => {

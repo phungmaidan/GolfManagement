@@ -18,7 +18,7 @@ const initialState = {
 export const loginUserAPI = createAsyncThunk(
   'user/loginUserAPI',
   async (data) => {
-    const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/users/login`, data)
+    const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/v1/auth/staff/login`, data)
     // Lưu ý axios sẽ trả kết quả về qua property của nó là data
     return response.data
   }
@@ -27,7 +27,7 @@ export const loginUserAPI = createAsyncThunk(
 export const updateUserAPI = createAsyncThunk(
   'user/updateUserAPI',
   async (data) => {
-    const response = await authorizedAxiosInstance.put(`${API_ROOT}/v1/users/update`, data)
+    const response = await authorizedAxiosInstance.put(`${API_ROOT}/api/v1/auth/staff/update`, data)
     return response.status
   }
 )
@@ -35,7 +35,7 @@ export const updateUserAPI = createAsyncThunk(
 export const logoutUserAPI = createAsyncThunk(
   'user/logoutUserAPI',
   async (showSuccessMessage = true) => {
-    const response = await authorizedAxiosInstance.delete(`${API_ROOT}/v1/users/logout`)
+    const response = await authorizedAxiosInstance.delete(`${API_ROOT}/api/v1/auth/staff/logout`)
     if (showSuccessMessage) {
       toast.success('Logged out successfully!')
     }
@@ -46,7 +46,7 @@ export const logoutUserAPI = createAsyncThunk(
 export const loginGuestAPI = createAsyncThunk(
   'guest/loginGuestAPI',
   async (data) => {
-    const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/guests/login`, data)
+    const response = await authorizedAxiosInstance.post(`${API_ROOT}/api/v1/auth/guest/login`, data)
     // Lưu ý axios sẽ trả kết quả về qua property của nó là data
     return response.data
   }
@@ -62,12 +62,12 @@ export const userSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(loginUserAPI.fulfilled, (state, action) => {
       // action.payload ở đây chính là response.data trả về ở trên
-      state.currentUser = action.payload?.ID
-      state.accessToken = action.payload?.accessToken
-      state.isActive = action.payload?.Active
+      state.currentUser = action.payload?.data?.user?.id
+      state.accessToken = action.payload?.data?.accessToken
+      state.isActive = true
       state.isStaff = true
-      state.userDetails = action.payload
-      state.userModule = action.payload?.userModule
+      state.userDetails = action.payload?.data?.user
+      state.userModule = action.payload?.data?.modules
     })
     builder.addCase(logoutUserAPI.fulfilled, (state) => {
       /**

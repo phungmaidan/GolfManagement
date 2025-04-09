@@ -39,7 +39,7 @@ function Item_ContentArea({ items }) {
   const handleFunctionClick = (item) => {
     if (!item) return // Đảm bảo item hợp lệ
     dispatch(setSelectedItem(item))
-    const pathName = slugify(item.ItemName)
+    const pathName = slugify(item.Name)
     navigate(`/dashboards/${pathName}`)
   }
 
@@ -54,9 +54,9 @@ function Item_ContentArea({ items }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {currentItems.map((item) => (
           <button
-            key={item.ItemID}
+            key={item.ID}
             onClick={() => handleFunctionClick(item)}
-            className="group bg-white/50 hover:bg-luxury-gold-50
+            className="group bg-white/50 cursor-pointer hover:bg-luxury-gold-50
               border border-golf-green-200 hover:border-luxury-gold-300
               rounded-lg p-4 transition-all duration-300
               shadow-sm hover:shadow-md"
@@ -64,7 +64,7 @@ function Item_ContentArea({ items }) {
             <div className="flex items-center justify-between w-full">
               <span className="text-golf-green-800 group-hover:text-luxury-gold-700
                 font-medium text-sm sm:text-base transition-colors text-left">
-                {item.ItemName}
+                {item.Name}
               </span>
               <span className="text-golf-green-400 group-hover:text-luxury-gold-500
                 group-hover:translate-x-1 transition-all flex-shrink-0">
