@@ -164,9 +164,35 @@ const getSchedules = async (req, res, next) => {
   }
 }
 
+const getBookingDetails = async (req, res, next) => {
+  const transaction = await sequelize.transaction()
+  try {
+    const { id } = req.query
+    const bookingMaster = await bookingService.FreBookingMasterService.getBookingMasterById(id, transaction)
+    if (!bookingMaster) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        status: 'error',
+        message: `No booking found for the given ${id} ID.`
+      })
+    }
+    const bookingDetails = await bookingService.FreBookingDetailsService.getDetailsByBookingID(id, transaction)
+    transaction.commit()
+    res.status(StatusCodes.OK).json({
+      status: 'success',
+      bookingMaster,
+      bookingDetails
+    })
+  } catch (error) {
+    await transaction.rollback();
+    logger.error('Error in getBookingDetails controller:', error)
+    next(error)
+  }
+}
+
 export const bookingController = {
   getModuleItemsByType,
   getCoursesByDate,
   upsertBooking,
-  getSchedules
+  getSchedules,
+  getBookingDetails
 }

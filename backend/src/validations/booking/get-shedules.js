@@ -23,7 +23,7 @@ export const getSchedules = async (req, res, next) => {
     try {
         // Gộp cả req.params thành một object để validate
         const validatedData = await getSchedulesSchema.validateAsync(
-            { ...req.body },
+            { ...req.query },
             { abortEarly: false }
         )
         Object.assign(req, validatedData)

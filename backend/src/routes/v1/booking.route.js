@@ -12,6 +12,7 @@ router.use(verifyToken)
 router.get('/modules/:moduleId/:type/items', bookingValidation.getModuleItemsByType, bookingController.getModuleItemsByType)
 router.get('/courses', bookingValidation.getCoursesByDate, bookingController.getCoursesByDate)
 router.get('/schedules', bookingValidation.getSchedules, bookingController.getSchedules)
+router.get('/', bookingController.getBookingDetails)
 router.post('/', bookingValidation.upsertBooking, bookingController.upsertBooking)
 // Admin only routes
 // router.get('/', isAdmin, bookingController.getAllBookings)

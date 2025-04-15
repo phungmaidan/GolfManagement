@@ -5,7 +5,6 @@ import BookingPopup from './BookingPopup/BookingPopup'
 
 const BookingPortal = React.memo(() => {
   const isPopupOpen = useSelector(selectIsPopBookingOpen)
-
   if (!isPopupOpen) return null
   return <BookingPopup />
 })

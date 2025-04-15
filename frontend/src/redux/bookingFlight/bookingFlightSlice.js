@@ -15,8 +15,8 @@ const initialState = {
     flight: null,
     TeeBox: '',
     teeTime: '',
-    bookMap: [],
-    bookingIndex: -1
+    bookingId: [],
+    bookingData: []
   }
 }
 
@@ -62,6 +62,7 @@ const bookingFlightSlice = createSlice({
     },
     openBookingPopup: (state, action) => {
       state.isPopupOpen = true
+      console.log('openBookingPopup', action.payload)
       state.selectedBooking = action.payload
     },
     closeBookingPopup: (state, action) => {

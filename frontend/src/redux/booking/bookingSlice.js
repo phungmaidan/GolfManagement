@@ -7,12 +7,10 @@ import { API_ROOT } from '~/utils/constants'
 const initialState = {
   todayDate: new Date().toISOString().split('T')[0],
   selectedDate: new Date().toISOString().split('T')[0],
+  sellectedSession: 'Morning',
   courseList: [],
   selectedCourse: null,
-  HoleDescriptions: null,
-  TeeTimeInfo: null,
-  MorningDetail: null,
-  AfternoonDetail: null,
+  teeTimes: null,
   statusGetCourse: 'idle',
   errorGetCourse: null,
   statusGetSchedule: 'idle',
@@ -36,7 +34,7 @@ export const getCouseAPI = createAsyncThunk(
 
 export const getScheduleAPI = createAsyncThunk(
   'booking/getScheduleAPI',
-  async ({ date, course }, thunkAPI) => {
+  async ({ date, course, templateId, session }, thunkAPI) => {
     try {
       // Kiểm tra tham số trước khi gọi API
       if (!date || !course) {
@@ -44,13 +42,15 @@ export const getScheduleAPI = createAsyncThunk(
       }
 
       const params = {
-        CourseID: course,
-        date: date
+        courseId: course,
+        date: date,
+        templateId: templateId,
+        session: session
       }
 
 
       const response = await authorizedAxiosInstance.get(
-        `${API_ROOT}/api/v1/booking/get-schedule`,
+        `${API_ROOT}/api/v1/bookings/schedules`,
         { params }
       )
       return response.data
@@ -59,6 +59,7 @@ export const getScheduleAPI = createAsyncThunk(
     }
   }
 )
+
 
 const bookingSlice = createSlice({
   name: 'booking',
@@ -69,7 +70,10 @@ const bookingSlice = createSlice({
     },
     setSelectedCourse: (state, { payload }) => {
       state.selectedCourse = payload
-    }
+    },
+    setSelectedSession: (state, { payload }) => {
+      state.sellectedSession = payload
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -80,8 +84,8 @@ const bookingSlice = createSlice({
       .addCase(getCouseAPI.fulfilled, (state, { payload }) => {
         state.statusGetCourse = payload?.data?.status
         state.courseList = payload?.data?.courses
-        state.selectedCourse = state?.data?.courses[0].CourseID
-        state.selectedDate = payload.date // Cập nhật selectedDate
+        state.selectedCourse = state.courseList[0]
+        state.selectedDate = payload.date
       })
       .addCase(getCouseAPI.rejected, (state, { payload }) => {
         state.statusGetCourse = 'failed'
@@ -94,35 +98,28 @@ const bookingSlice = createSlice({
         state.errorGetSchedule = null
       })
       .addCase(getScheduleAPI.fulfilled, (state, { payload }) => {
-        state.statusGetSchedule = 'succeeded'
-        state.TeeTimeInfo = payload?.TeeTimeInfo
-        state.HoleDescriptions = payload?.HoleDescriptions
-        state.MorningDetail = payload?.MorningDetail
-        state.AfternoonDetail = payload?.AfternoonDetail
+        state.statusGetSchedule = payload?.status
+        state.teeTimes = payload?.teeTimes
       })
       .addCase(getScheduleAPI.rejected, (state, { payload }) => {
         state.statusGetSchedule = 'failed'
         state.errorGetSchedule = payload
-        state.TeeTimeInfo = null
-        state.MorningDetail = null
-        state.AfternoonDetail = null
+        state.teeTimes = null
       })
   }
 })
 
 export const {
   setSelectedDate,
-  setSelectedCourse
+  setSelectedCourse,
+  setSelectedSession
 } = bookingSlice.actions
 
-
+export const selectSelectedSession = (state) => state.booking.sellectedSession
 export const selectSelectedDate = (state) => state.booking.selectedDate
 export const selectSelectedCourse = (state) => state.booking.selectedCourse
 export const selectCourseList = (state) => state.booking.courseList
-export const selectTeeTimeInfo = (state) => state.booking.TeeTimeInfo
-export const selectHoleDescriptions = (state) => state.booking.HoleDescriptions
-export const selectMorningDetail = (state) => state.booking.MorningDetail
-export const selectAfternoonDetail = (state) => state.booking.AfternoonDetail
+export const selectTeeTimes = (state) => state.booking.teeTimes
 export const selectTodayDate = (state) => state.booking.todayDate
 
 export const selectStatusGetCourse = (state) => state.booking.statusGetCourse

@@ -7,7 +7,8 @@ import {
   selectCourseList,
   selectSelectedDate,
   selectSelectedCourse,
-  selectStatusGetCourse
+  selectStatusGetCourse,
+  selectSelectedSession
 } from '~/redux/booking/bookingSlice'
 import { joinRoom } from '~/redux/socket/socketSlice'
 
@@ -18,6 +19,7 @@ function CourseSelector() {
   const selectedDate = useSelector(selectSelectedDate)
   const selectedCourse = useSelector(selectSelectedCourse)
   const statusGetCourse = useSelector(selectStatusGetCourse)
+  const selectedSession = useSelector(selectSelectedSession)
 
   useEffect(() => {
     if (statusGetCourse === 'idle') {
@@ -25,21 +27,26 @@ function CourseSelector() {
     }
   }, [dispatch, statusGetCourse, selectedDate])
   const handleChangeCourse = useCallback((event) => {
-    const newCourseId = event.target.value
-    if (newCourseId !== selectedCourse) {
-      dispatch(setSelectedCourse(newCourseId))
-      dispatch(getScheduleAPI({ date: selectedDate, course: newCourseId }))
-      // Join new room when course changes
-      dispatch(joinRoom({ date: selectedDate, courseId: newCourseId }))
+    const selectedCourseValueID = event.target.value
+    const newSelectedCourse = courses.find(course => course.CourseID === selectedCourseValueID)
+    if (newSelectedCourse?.CourseID != selectedCourse?.CourseID) {
+      dispatch(setSelectedCourse(newSelectedCourse))
+      dispatch(getScheduleAPI({
+        date: selectedDate,
+        course: newSelectedCourse.CourseID,
+        templateId: newSelectedCourse.TemplateID,
+        session: selectedSession
+      }))
+      dispatch(joinRoom({ date: selectedDate, courseId: newSelectedCourse.CourseID }))
     }
-  }, [selectedCourse, dispatch, selectedDate])
+  }, [courses, selectedCourse, dispatch, selectedDate, selectedSession])
 
   let context
   if (hasCourses) {
     context =
       <select
         className="border outline-0 border-golf-green-700 text-golf-green-700 rounded-md p-2"
-        value={selectedCourse ?? ''}
+        value={selectedCourse.CourseID ?? ''}
         onChange={handleChangeCourse}
       >
         {courses.map(course => (

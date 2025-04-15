@@ -3,14 +3,12 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import DropdownMenu from './DropdownMenu/DropdownMenu'
-import PlayerCell from './PlayerCell/PlayerCell'
+import PlayerCells from './PlayerCells/PlayerCells'
 import TeeTimeCell from './TeeTimeCell/TeeTimeCell'
-import { processItemUtils } from '~/utils/processItemUtils'
 import { updateBookingData } from '~/redux/socket/socketSlice'
 
-const FlightTableRow = React.memo(({ item, isBlock, Session }) => {
+const FlightTableRow = React.memo(({ item, Session }) => {
   // Mỗi booking(item) trong 1 flight có thể có 1 đến 3 group booking nên phải tách ra thành các group khác nhau để truy vấn chính xác, BookingIndices lưu vị trí của các guest thuộc cùng 1 group trong 1 flight
-  const processedItem = processItemUtils.processItemFlightTable(item)
   const dispatch = useDispatch()
   const handlePlayerClick = (booking, bookingIndex) => {
     const bookingData = {
@@ -23,25 +21,23 @@ const FlightTableRow = React.memo(({ item, isBlock, Session }) => {
     }
     dispatch(updateBookingData(bookingData))
   }
-
   return (
     <tr className={`
       hover:bg-gray-50 transition duration-300 ease-in-out
-      ${isBlock ? 'border-2 border-red-500 animate-pulse' : ''}
+      ${item.status == 'block' ? 'border-2 border-red-500 animate-pulse' : ''}
     `}>
-      <TeeTimeCell teeTime={processedItem.TeeTime} />
-      {processedItem.players.map((player, i) => (
-        <PlayerCell
-          key={i}
-          player={player}
-          isBlockRow={processedItem.isBlockRow}
-          bookingIndex={processedItem.bookingIndices[i]}
-          onClick={() => !isBlock && handlePlayerClick(processedItem, processedItem.bookingIndices[i])}
-        />
-      ))}
+      <TeeTimeCell teeTime={item.TeeTime} />
+      {item.status == 'booked_blocked' ? (
+        <td className="border px-4 py-2 text-sm bg-red-200 text-center" colSpan={4}>
+          {item?.blocking?.Remark || ''}
+        </td>
+      ) : (
+        <PlayerCells item={item}/>
+      )}
       <td className="border px-4 py-2 text-center text-sm">
         <DropdownMenu
-          onAction={(action) => console.log(action, processedItem)}
+          onAction={(action) => console.log(action)}
+          flightId={item.Flight}
         />
       </td>
     </tr>

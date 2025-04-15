@@ -3,11 +3,10 @@ import { useSelector, useDispatch } from 'react-redux'
 import {
   selectStatusGetSchedule,
   selectErrorGetSchedule,
-  selectMorningDetail,
-  selectAfternoonDetail,
   selectSelectedDate,
   selectSelectedCourse,
-  getScheduleAPI
+  selectSelectedSession,
+  selectTeeTimes
 } from '~/redux/booking/bookingSlice'
 import { selectLastBookingUpdate } from '~/redux/socket/socketSlice'
 import FlightTable from './FlightTable/FlightTable'
@@ -16,11 +15,11 @@ const DailyOperation = () => {
   const dispatch = useDispatch()
   const statusGetSchedule = useSelector(selectStatusGetSchedule)
   const errorGetSchedule = useSelector(selectErrorGetSchedule)
-  const MorningDetail = useSelector(selectMorningDetail)
-  const AfternoonDetail = useSelector(selectAfternoonDetail)
   const lastBookingUpdate = useSelector(selectLastBookingUpdate)
+  const selectedSession = useSelector(selectSelectedSession)
   const selectedDate = useSelector(selectSelectedDate)
   const selectedCourse = useSelector(selectSelectedCourse)
+  const teeTimes = useSelector(selectTeeTimes)
 
   // Effect to handle visual feedback on booking updates
   useEffect(() => {
@@ -32,20 +31,13 @@ const DailyOperation = () => {
   }, [lastBookingUpdate, selectedDate, selectedCourse])
 
   let content
-  if (statusGetSchedule === 'succeeded') {
+  if (statusGetSchedule === 'success') {
     content = (
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fadeIn">
-        <FlightTable
-          title="Morning"
-          schedule={MorningDetail}
-          Session="Morning"
-        />
-        <FlightTable
-          title="Afternoon"
-          schedule={AfternoonDetail}
-          Session="Afternoon"
-        />
-      </div>
+      <FlightTable
+        title={selectedSession}
+        schedule={teeTimes}
+        Session={selectedSession}
+      />
     )
   }
   else if (statusGetSchedule === 'loading') {

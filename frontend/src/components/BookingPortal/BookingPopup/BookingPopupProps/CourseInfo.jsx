@@ -3,8 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import {
   selectSelectedDate,
-  selectSelectedCourse,
-  selectHoleDescriptions
+  selectSelectedCourse
 } from '~/redux/booking/bookingSlice'
 import { selectSelectedBooking } from '~/redux/bookingFlight/bookingFlightSlice'
 
@@ -13,7 +12,7 @@ const CourseInfo = () => {
   const bookingFlight = useSelector(selectSelectedBooking)
   const selectedCourse = useSelector(selectSelectedCourse)
   const selectedDate = useSelector(selectSelectedDate)
-  const HoleDescriptions = useSelector(selectHoleDescriptions)
+  const HoleDescriptions = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18']
 
   return (
     <div>
@@ -29,7 +28,7 @@ const CourseInfo = () => {
             readOnly
           />
         </div>
-        
+
         <div>
           <label className="block text-xs text-gray-600">Tee Box</label>
           <input

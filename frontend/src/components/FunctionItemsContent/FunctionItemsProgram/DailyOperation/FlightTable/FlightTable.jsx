@@ -29,14 +29,11 @@ const FlightTable = ({ title, schedule, Session }) => {
           <tbody className="divide-y divide-yellow-400">
             {schedule.map((item) => {
               const flightKey = `${item.Flight}-${item.TeeTime}-${item.TeeBox}`
-              const userId = blockedFlightInfo.get(flightKey)
-              const isBlock = Boolean(userId)
               return (
                 <FlightTableRow
                   key={flightKey}
                   item={item}
                   Session={Session}
-                  isBlock={isBlock}
                 />
               )
             })}
